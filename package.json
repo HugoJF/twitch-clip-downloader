@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cli-progress": "^3.8.2",
     "dotenv": "^8.2.0",
+    "ora": "^4.0.4",
     "prompts": "^2.3.2",
     "tiny-async-pool": "^1.1.0",
     "twitch-api-v5": "^2.0.4",

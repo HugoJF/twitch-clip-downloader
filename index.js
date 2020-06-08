@@ -3,6 +3,8 @@ const fs = require('fs')
 const youtubedl = require('youtube-dl')
 const pool = require('tiny-async-pool')
 const prompts = require('prompts');
+const ora = require('ora');
+const cliProgress = require('cli-progress');
 
 api.clientID = process.env.CLIENT_ID;
 
@@ -10,11 +12,14 @@ const DEBUGGING = process.env.DEBUG;
 const PAGINATION_SIZE = process.env.PAGINATION_SIZE;
 const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES;
 
+let apiSpinner;
+let downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
 let finished = 0;
 let clips = [];
 
 function debug(...messages) {
-    if (DEBUGGING) {
+    if (DEBUGGING == true) {
         console.log(...messages);
     }
 }
@@ -30,7 +35,7 @@ function downloadClip(clip) {
         })
          
         video.on('end', function () {
-            console.log(`Finished ${++finished} out of ${clips.length}`)
+            downloadBar.update(++finished);
             res(true);
         })
 
@@ -40,29 +45,53 @@ function downloadClip(clip) {
 }
 
 function triggerPool() {
-    pool(YOUTUBEDL_INSTANCES, clips, downloadClip).then(result => console.log(result));
+    pool(YOUTUBEDL_INSTANCES, clips, downloadClip).then(result => {
+        downloadBar.stop();
+        console.log('Finished clip download!');
+        console.log(`Errors: ${clips.length - finished}`);
+    });
 }
 
 async function fetchClips(channel, cursor = null) {
+    if (!apiSpinner) {
+        apiSpinner = ora('Paginating API, please wait...').start();
+    }
+
     api.clips.top({
         channel: channel,
         period: 'all',
         limit: PAGINATION_SIZE,
         cursor: cursor
-    }, (err, res) => {
+    }, async (err, res) => {
         if (err) {
             console.log(err);
             process.exit(1);
         }
 
-        clips = [...clips, ...res.clips];
+        const {clips: _clips, _cursor} = res;
 
-        let cur = res._cursor;
-        if (cur) {
-            console.log('Fetching more at cursor', cur, 'clips count: ', clips.length);
-            fetchClips(channel, cur);
+        clips = [...clips, ..._clips];
+
+        if (_cursor) {
+            apiSpinner.text = `Found ${clips.length} clips, please wait...`
+
+            fetchClips(channel, _cursor);
         } else {
-            console.log('Finished fetching clips, found', clips.length)
+            apiSpinner.succeed(`Finished API pagination.`);
+            apiSpinner = null;
+
+            const response = await prompts({
+                type: 'confirm',
+                name: 'value',
+                message: `Found ${clips.length} clips to download, download now?`,
+                initial: true
+            });
+            
+            if (!response.value) {
+                console.log('Bye!');
+                process.exit(0);
+            }
+            downloadBar.start(clips.length, 0);
             triggerPool();
         }
     });
@@ -74,12 +103,6 @@ async function start() {
         name: 'channel',
         message: 'What channel do you want to download clips from?',
         validate: value => value.match(/\.tv|\//g) ? 'Usernames only (without URLs)' : true
-    });
-    const responses = await prompts({
-        type: 'confirm',
-        name: 'value',
-        message: 'Can you confirm?',
-        initial: true
     });
 
     fetchClips(response.channel);
