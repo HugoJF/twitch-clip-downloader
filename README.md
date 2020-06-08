@@ -1,6 +1,11 @@
 # Twitch Clips Downloader
 NodeJS tool to download every clip (and it's metadata) from a Twitch channel
 
+# `WARNING: THIS WILL ONLY DOWNLOAD THE TOP ~1000 CLIPS FROM THE CHANNEL`
+More information:
+  - https://discuss.dev.twitch.tv/t/when-i-load-all-the-top-clips-only-1100-will-be-loaded-can-i-load-more-than-1100/16689
+  - https://discuss.dev.twitch.tv/t/i-want-to-get-all-clips-by-user-id/12745
+
 ## Dependencies
   - NodeJS
   - NPM
