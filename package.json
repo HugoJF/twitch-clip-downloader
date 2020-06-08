@@ -1,0 +1,16 @@
+{
+  "name": "clips-downloader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tiny-async-pool": "^1.1.0",
+    "twitch-api-v5": "^2.0.4",
+    "youtube-dl": "^3.0.2"
+  }
+}
