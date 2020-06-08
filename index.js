@@ -2,15 +2,19 @@ const api = require('twitch-api-v5');
 const fs = require('fs')
 const youtubedl = require('youtube-dl')
 const pool = require('tiny-async-pool')
+const prompts = require('prompts');
 
 api.clientID = process.env.CLIENT_ID;
 
-const debugging = process.env.DEBUG;
+const DEBUGGING = process.env.DEBUG;
+const PAGINATION_SIZE = process.env.PAGINATION_SIZE;
+const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES;
+
 let finished = 0;
 let clips = [];
 
 function debug(...messages) {
-    if (debugging) {
+    if (DEBUGGING) {
         console.log(...messages);
     }
 }
@@ -36,14 +40,14 @@ function downloadClip(clip) {
 }
 
 function triggerPool() {
-    pool(10, clips, downloadClip).then(result => console.log(result));
+    pool(YOUTUBEDL_INSTANCES, clips, downloadClip).then(result => console.log(result));
 }
 
-function fetchClips(cursor = null) {
+async function fetchClips(channel, cursor = null) {
     api.clips.top({
-        channel: 'lari',
+        channel: channel,
         period: 'all',
-        limit: 100,
+        limit: PAGINATION_SIZE,
         cursor: cursor
     }, (err, res) => {
         if (err) {
@@ -56,7 +60,7 @@ function fetchClips(cursor = null) {
         let cur = res._cursor;
         if (cur) {
             console.log('Fetching more at cursor', cur, 'clips count: ', clips.length);
-            fetchClips(cur);
+            fetchClips(channel, cur);
         } else {
             console.log('Finished fetching clips, found', clips.length)
             triggerPool();
@@ -64,4 +68,21 @@ function fetchClips(cursor = null) {
     });
 }
 
-fetchClips();
+async function start() {
+    const response = await prompts({
+        type: 'text',
+        name: 'channel',
+        message: 'What channel do you want to download clips from?',
+        validate: value => value.match(/\.tv|\//g) ? 'Usernames only (without URLs)' : true
+    });
+    const responses = await prompts({
+        type: 'confirm',
+        name: 'value',
+        message: 'Can you confirm?',
+        initial: true
+    });
+
+    fetchClips(response.channel);
+}
+
+start();

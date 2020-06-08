@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "prompts": "^2.3.2",
     "tiny-async-pool": "^1.1.0",
     "twitch-api-v5": "^2.0.4",
     "youtube-dl": "^3.0.2"
