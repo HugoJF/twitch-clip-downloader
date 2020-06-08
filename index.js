@@ -3,20 +3,26 @@ const fs = require('fs')
 const youtubedl = require('youtube-dl')
 const pool = require('tiny-async-pool')
 
-api.clientID = '';
+api.clientID = process.env.CLIENT_ID;
 
+const debugging = process.env.DEBUG;
 let finished = 0;
 let clips = [];
+
+function debug(...messages) {
+    if (debugging) {
+        console.log(...messages);
+    }
+}
 
 function downloadClip(clip) {
     return new Promise((res, rej) => {
         const video = youtubedl(clip.url)
          
-        // Will be called when the download starts.
         video.on('info', function(info) {
-          console.log('Clip download started', clip.slug)
-          console.log('Filename:', info._filename)
-          console.log('Size:', info.size)
+          debug('Clip download started', clip.slug)
+          debug('Filename:', info._filename)
+          debug('Size:', info.size)
         })
          
         video.on('end', function () {
