@@ -9,12 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
     "cli-progress": "^3.8.2",
     "dotenv": "^8.2.0",
     "ora": "^4.0.4",
     "prompts": "^2.3.2",
     "tiny-async-pool": "^1.1.0",
-    "twitch-api-v5": "^2.0.4",
     "youtube-dl": "^3.0.2"
   }
 }
