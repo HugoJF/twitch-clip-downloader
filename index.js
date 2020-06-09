@@ -1,4 +1,4 @@
-const api = require('twitch-api-v5');
+const api = require('./api');
 const fs = require('fs')
 const youtubedl = require('youtube-dl')
 const pool = require('tiny-async-pool')
@@ -56,53 +56,54 @@ async function fetchClips(channel, cursor = null) {
     if (!apiSpinner) {
         apiSpinner = ora('Paginating API, please wait...').start();
     }
+    
+    try {
+        let request = await api.clips.top({
+            channel: channel,
+            period: 'all',
+            limit: PAGINATION_SIZE,
+            cursor: cursor
+        });
+        var res = request.data;
+    } catch (e) {
+        console.error(err);
+        process.exit(1);
+    }
 
-    api.clips.top({
-        channel: channel,
-        period: 'all',
-        limit: PAGINATION_SIZE,
-        cursor: cursor
-    }, async (err, res) => {
-        if (err) {
-            console.error(err);
-            process.exit(1);
+    if (res.error) {
+        console.error(`Error while fetching clips [code ${res.status}]: ${res.error}`);
+        console.error(res.message);
+        process.exit(1);
+    }
+
+    debug(JSON.stringify(res));
+
+    const {clips: _clips, _cursor} = res;
+
+    clips = [...clips, ..._clips];
+
+    if (_cursor) {
+        apiSpinner.text = `Found ${clips.length} clips, please wait...`
+
+        fetchClips(channel, _cursor);
+    } else {
+        apiSpinner.succeed(`Finished API pagination.`);
+        apiSpinner = null;
+
+        const response = await prompts({
+            type: 'confirm',
+            name: 'value',
+            message: `Found ${clips.length} clips to download, download now?`,
+            initial: true
+        });
+        
+        if (!response.value) {
+            console.log('Bye!');
+            process.exit(0);
         }
-
-        if (res.error) {
-            console.error(`Error while fetching clips [code ${res.status}]: ${res.error}`);
-            console.error(res.message);
-            process.exit(1);
-        }
-
-        debug(JSON.stringify(res));
-
-        const {clips: _clips, _cursor} = res;
-
-        clips = [...clips, ..._clips];
-
-        if (_cursor) {
-            apiSpinner.text = `Found ${clips.length} clips, please wait...`
-
-            fetchClips(channel, _cursor);
-        } else {
-            apiSpinner.succeed(`Finished API pagination.`);
-            apiSpinner = null;
-
-            const response = await prompts({
-                type: 'confirm',
-                name: 'value',
-                message: `Found ${clips.length} clips to download, download now?`,
-                initial: true
-            });
-            
-            if (!response.value) {
-                console.log('Bye!');
-                process.exit(0);
-            }
-            downloadBar.start(clips.length, 0);
-            triggerPool();
-        }
-    });
+        downloadBar.start(clips.length, 0);
+        triggerPool();
+    }
 }
 
 async function start() {
