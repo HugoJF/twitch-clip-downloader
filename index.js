@@ -64,9 +64,17 @@ async function fetchClips(channel, cursor = null) {
         cursor: cursor
     }, async (err, res) => {
         if (err) {
-            console.log(err);
+            console.error(err);
             process.exit(1);
         }
+
+        if (res.error) {
+            console.error(`Error while fetching clips [code ${res.status}]: ${res.error}`);
+            console.error(res.message);
+            process.exit(1);
+        }
+
+        debug(JSON.stringify(res));
 
         const {clips: _clips, _cursor} = res;
 
