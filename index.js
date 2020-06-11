@@ -5,7 +5,6 @@ const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
 const {ensureConfigsAreLoaded} = require('./lib/cli/environment');
-const {createEnvIfNecessary} = require('./lib/cli/get-twitch-login-info');
 
 let apiSpinner;
 let downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -17,9 +16,7 @@ async function fetchUserId(name) {
 }
 
 async function start() {
-    await createEnvIfNecessary();
-
-    ensureConfigsAreLoaded();
+    await ensureConfigsAreLoaded();
 
     const response = await prompts({
         type: 'text',
