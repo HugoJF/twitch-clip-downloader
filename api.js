@@ -1,29 +1,28 @@
-const axios = require("axios");
+const twitch = require('./twitch');
+const fs = require('fs');
 
-const api = (options) => axios.request({
-	baseURL: 'https://api.twitch.tv/kraken',
-	headers: {
-		"Accept": "application/vnd.twitchtv.v5+json",
-		"Client-ID": process.env.CLIENT_ID,
-		"Content-Type": "application/json",
-	},
-	...options,
-})
+let _api;
 
-module.exports = {
-	clips: {
-		/**
-		 * @param {object} options The options for the thing
-		 * @param {string} options.channel The channel the clips originate from
-		 * @param {"all" | "day" | "week" | "month"} options.period The period of time to filter the clips by
-		 * @param {number} options.limit The max number of clips to get
-		 * @param {string} options.cursor The place to start reading clips from
-		 */
-		top: function(params) {
-			return api({
-				url: "clips/top",
-				params,
-			})
-		}
-	}
+async function load() {
+    let token = undefined;
+    const path = './token.txt';
+
+    try {
+        token = fs.readFileSync(path);
+        token = token.toString();
+        console.log('Read Twitch API OAuth2 token from file.');
+    } catch (e) {
+        console.log('Could not read Twich API OAuth2 token from file, generating another one...');
+        let response = await twitch.auth();
+        token = response.data.access_token;
+        fs.writeFileSync(path, token);
+    }
+
+    _api = twitch.api(token);
 }
+
+function api() {
+    return _api;
+}
+
+module.exports = {api, load};
