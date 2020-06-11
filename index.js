@@ -1,109 +1,17 @@
-const api = require('./api');
-const fs = require('fs')
-const youtubedl = require('youtube-dl')
-const pool = require('tiny-async-pool')
+const {downloadClips} = require('./clip-downloader');
+const {fetchClips} = require("./clip-fetcher");
+const {load, api} = require('./api');
+const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
-const cliProgress = require('cli-progress');
-
-api.clientID = process.env.CLIENT_ID;
-
-const DEBUGGING = process.env.DEBUG;
-const PAGINATION_SIZE = process.env.PAGINATION_SIZE;
-const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES;
 
 let apiSpinner;
 let downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-let finished = 0;
-let clips = [];
+async function fetchUserId(name) {
+    let user = await api().users(name);
 
-function debug(...messages) {
-    if (DEBUGGING == true) {
-        console.log(...messages);
-    }
-}
-
-function downloadClip(clip) {
-    return new Promise((res, rej) => {
-        const video = youtubedl(clip.url)
-         
-        video.on('info', function(info) {
-          debug('Clip download started', clip.slug)
-          debug('Filename:', info._filename)
-          debug('Size:', info.size)
-        })
-         
-        video.on('end', function () {
-            downloadBar.update(++finished);
-            res(true);
-        })
-
-        video.pipe(fs.createWriteStream(`clips/${clip.slug}.mp4`))
-        fs.writeFileSync(`clips/${clip.slug}.meta`, JSON.stringify(clip));
-    })
-}
-
-function triggerPool() {
-    pool(YOUTUBEDL_INSTANCES, clips, downloadClip).then(result => {
-        downloadBar.stop();
-        console.log('Finished clip download!');
-        console.log(`Errors: ${clips.length - finished}`);
-    });
-}
-
-async function fetchClips(channel, cursor = null) {
-    if (!apiSpinner) {
-        apiSpinner = ora('Paginating API, please wait...').start();
-    }
-    
-    try {
-        let request = await api.clips.top({
-            channel: channel,
-            period: 'all',
-            limit: PAGINATION_SIZE,
-            cursor: cursor
-        });
-        var res = request.data;
-    } catch (e) {
-        console.error(err);
-        process.exit(1);
-    }
-
-    if (res.error) {
-        console.error(`Error while fetching clips [code ${res.status}]: ${res.error}`);
-        console.error(res.message);
-        process.exit(1);
-    }
-
-    debug(JSON.stringify(res));
-
-    const {clips: _clips, _cursor} = res;
-
-    clips = [...clips, ..._clips];
-
-    if (_cursor) {
-        apiSpinner.text = `Found ${clips.length} clips, please wait...`
-
-        fetchClips(channel, _cursor);
-    } else {
-        apiSpinner.succeed(`Finished API pagination.`);
-        apiSpinner = null;
-
-        const response = await prompts({
-            type: 'confirm',
-            name: 'value',
-            message: `Found ${clips.length} clips to download, download now?`,
-            initial: true
-        });
-        
-        if (!response.value) {
-            console.log('Bye!');
-            process.exit(0);
-        }
-        downloadBar.start(clips.length, 0);
-        triggerPool();
-    }
+    return user.data.data[0].id;
 }
 
 async function start() {
@@ -114,7 +22,64 @@ async function start() {
         validate: value => value.match(/\.tv|\//g) ? 'Usernames only (without URLs)' : true
     });
 
-    fetchClips(response.channel);
+    await load();
+
+    /**
+     * API fetching phase
+     */
+
+    let totalBatches = 0;
+    let finishedBatches = 0;
+    if (!apiSpinner) {
+        apiSpinner = ora('Paginating API, please wait...').start();
+    }
+
+    function onBatchGenerated(count) {
+        totalBatches = count;
+    }
+
+    function onBatchFinished() {
+        finishedBatches++;
+    }
+
+    function onCountUpdate(total) {
+        apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
+    }
+
+    let id = await fetchUserId(response.channel);
+    let clips = await fetchClips(id, onBatchGenerated, onBatchFinished, onCountUpdate);
+    let clipCount = Object.values(clips).length;
+
+    apiSpinner.succeed(`Finished API pagination.`);
+    apiSpinner = null;
+
+    /**
+     * Confirmation phase
+     */
+
+    const confirmation = await prompts({
+        type: 'confirm',
+        name: 'value',
+        message: `Found ${clipCount} clips to download, download now?`,
+        initial: true
+    });
+
+    if (!confirmation.value) {
+        console.log('Bye!');
+        process.exit(0);
+    }
+
+    /**
+     * Download phase
+     */
+
+    downloadBar.start(clipCount, 0);
+
+    let finished = await downloadClips(Object.values(clips), count => downloadBar.update(count));
+
+    downloadBar.stop();
+
+    console.log(`Finished download of ${finished} out of ${clipCount}!`);
 }
 
 start();

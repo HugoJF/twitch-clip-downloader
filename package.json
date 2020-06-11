@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "cli-progress": "^3.8.2",
+    "date-fns": "^2.14.0",
     "dotenv": "^8.2.0",
     "ora": "^4.0.4",
     "prompts": "^2.3.2",
