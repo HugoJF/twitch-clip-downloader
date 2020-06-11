@@ -1,10 +1,11 @@
+const {ensureConfigsAreLoaded} = require('./lib/cli/environment');
 const {downloadClips} = require('./clip-downloader');
 const {fetchClips} = require('./clip-fetcher');
 const {load, api} = require('./api');
 const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
-const {ensureConfigsAreLoaded} = require('./lib/cli/environment');
+
 
 let apiSpinner;
 let downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
