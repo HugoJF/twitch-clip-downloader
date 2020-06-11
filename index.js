@@ -5,6 +5,12 @@ const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
 
+ensureConfigsAreLoaded();
+
+function ensureConfigsAreLoaded() {
+    require('dotenv').config();
+}
+
 let apiSpinner;
 let downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
