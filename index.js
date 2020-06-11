@@ -1,26 +1,12 @@
 const {downloadClips} = require('./clip-downloader');
-const {fetchClips} = require("./clip-fetcher");
+const {fetchClips} = require('./clip-fetcher');
 const {load, api} = require('./api');
 const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
+const {ensureConfigsAreLoaded}=require('./lib/cli/environment-variables');
 
 ensureConfigsAreLoaded();
-
-function ensureConfigsAreLoaded() {
-    require('dotenv').config();
-
-    ensureEnvironmentKeyIsLoaded('CLIENT_ID');
-    ensureEnvironmentKeyIsLoaded('CLIENT_SECRET');
-}
-
-function ensureEnvironmentKeyIsLoaded(key) {
-    if (!process.env[key]) {
-        console.error(`ERROR!\n${key} not set!`);
-        console.error(`\nPlease set ${key} on ${__dirname}/.env`);
-        process.exit(0);
-    }
-}
 
 let apiSpinner;
 let downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
