@@ -9,6 +9,17 @@ ensureConfigsAreLoaded();
 
 function ensureConfigsAreLoaded() {
     require('dotenv').config();
+
+    ensureEnvironmentKeyIsLoaded('CLIENT_ID');
+    ensureEnvironmentKeyIsLoaded('CLIENT_SECRET');
+}
+
+function ensureEnvironmentKeyIsLoaded(key) {
+    if (!process.env[key]) {
+        console.error(`ERROR!\n${key} not set!`);
+        console.error(`\nPlease set ${key} on ${__dirname}/.env`);
+        process.exit(0);
+    }
 }
 
 let apiSpinner;
