@@ -8,10 +8,10 @@ const ora = require('ora');
 
 
 let apiSpinner;
-let downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
 async function fetchUserId(name) {
-    let user = await api().users(name);
+    const user = await api().users(name);
 
     return user.data.data[0].id;
 }
@@ -25,6 +25,15 @@ async function start() {
         message: 'What channel do you want to download clips from?',
         validate: value => value.match(/\.tv|\//g) ? 'Usernames only (without URLs)' : true
     });
+
+    if (Object.keys(response).length === 0) {
+        console.error('ERROR!');
+        console.error('Couldn\'t get channel input.');
+
+        process.exit(0);
+    }
+
+
 
     await load();
 
