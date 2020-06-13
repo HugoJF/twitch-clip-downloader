@@ -7,6 +7,7 @@ const prompts = require('prompts');
 const ora = require('ora');
 
 const {showErrorAndExit} = require('./lib/cli/errors');
+const {channelPrompt} = require('./lib/cli/prompts');
 
 let apiSpinner;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -20,18 +21,7 @@ async function fetchUserId(name) {
 async function start() {
     await ensureConfigsAreLoaded();
 
-    const response = await prompts({
-        type: 'text',
-        name: 'channel',
-        message: 'What channel do you want to download clips from?',
-        validate: value => value.match(/\.tv|\//g) ? 'Usernames only (without URLs)' : true
-    });
-
-    if (Object.keys(response).length === 0) {
-        printErrorsAndExit('Couldn\'t get channel input.')
-    }
-
-
+    const channel = await channelPrompt();
 
     await load();
 
@@ -57,9 +47,9 @@ async function start() {
         apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
     }
 
-    let id = await fetchUserId(response.channel);
-    let clips = await fetchClips(id, onBatchGenerated, onBatchFinished, onCountUpdate);
-    let clipCount = Object.values(clips).length;
+    const id = await fetchUserId(channel);
+    const clips = await fetchClips(id, onBatchGenerated, onBatchFinished, onCountUpdate);
+    const clipCount = Object.values(clips).length;
 
     apiSpinner.succeed(`Finished API pagination.`);
     apiSpinner = null;
