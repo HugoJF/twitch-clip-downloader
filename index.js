@@ -6,6 +6,7 @@ const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
 
+const {showErrorAndExit} = require('./lib/cli/errors');
 
 let apiSpinner;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -27,10 +28,7 @@ async function start() {
     });
 
     if (Object.keys(response).length === 0) {
-        console.error('ERROR!');
-        console.error('Couldn\'t get channel input.');
-
-        process.exit(0);
+        printErrorsAndExit('Couldn\'t get channel input.')
     }
 
 
