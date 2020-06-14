@@ -1,13 +1,14 @@
-const {sleep, debug, generateBatches} = require('./utils');
-const {api} = require('./api');
 const pool = require('tiny-async-pool');
-const fns = require('date-fns');
-const {iterable} = require("./utils");
+const fns  = require('date-fns');
+
+const { sleep, debug, generateBatches } = require('./utils');
+const { api } = require('./api');
+const { iterable } = require('./utils');
 
 // 10 should be enough to keep rate-limit under control
 const API_INSTANCES = 10;
 
-async function fetchClips(userId, onBatchGenerated, onBatchFinish, onCountUpdate) {
+async function fetchClips (userId, onBatchGenerated, onBatchFinish, onCountUpdate) {
     const batches = generateBatches();
     const counts = {};
     let id = 0;
@@ -16,19 +17,19 @@ async function fetchClips(userId, onBatchGenerated, onBatchFinish, onCountUpdate
         onBatchGenerated(batches.length);
     }
 
-    function onBatchUpdate(id, count) {
+    function onBatchUpdate (id, count) {
         counts[id] = count;
 
-        let total = Object.values(counts).reduce((acc, cur) => acc + cur, 0);
+        const total = Object.values(counts).reduce((acc, cur) => acc + cur, 0);
 
         if (onCountUpdate) {
             onCountUpdate(total);
         }
     }
 
-    async function process(period) {
-        let index = id++;
-        let clips = await fetchClipsFromBatch(userId, onBatchUpdate.bind(this, index), period);
+    async function process (period) {
+        const index = id++;
+        const clips = await fetchClipsFromBatch(userId, onBatchUpdate.bind(this, index), period);
 
         if (onBatchFinish) {
             onBatchFinish(index, Object.values(clips).length);
@@ -37,15 +38,15 @@ async function fetchClips(userId, onBatchGenerated, onBatchFinish, onCountUpdate
         return clips;
     }
 
-    let clipBatches = await pool(API_INSTANCES, batches, process);
+    const clipBatches = await pool(API_INSTANCES, batches, process);
 
-    return clipBatches.reduce((all, batch) => ({...all, ...batch}), {});
+    return clipBatches.reduce((all, batch) => ({ ...all, ...batch }), {});
 }
 
-async function fetchClipsFromBatch(userId, onUpdate, period) {
-    let clips = {};
-    let cursor = undefined;
-    const {from, to} = period;
+async function fetchClipsFromBatch (userId, onUpdate, period) {
+    const clips = {};
+    let cursor;
+    const { from, to } = period;
 
     do {
         const response = await paginate(userId, period, cursor);
@@ -66,7 +67,7 @@ async function fetchClipsFromBatch(userId, onUpdate, period) {
             cursor = response.pagination.cursor;
         }
 
-        for (let clip of response.data) {
+        for (const clip of response.data) {
             clips[clip.id] = clip;
         }
 
@@ -78,23 +79,23 @@ async function fetchClipsFromBatch(userId, onUpdate, period) {
     return clips;
 }
 
-async function paginate(userId, period, cursor) {
+async function paginate (userId, period, cursor) {
     try {
-        let {from, to} = period;
+        const { from, to } = period;
 
         debug('Broadcaster ID', userId);
         debug('From', from);
         debug('To', to);
 
-        let response = await api().clips({
+        const response = await api().clips({
             broadcaster_id: userId,
-            first: 100,
-            after: cursor,
-            started_at: fns.formatRFC3339(from),
-            ended_at: fns.formatRFC3339(to),
+            first:          100,
+            after:          cursor,
+            started_at:     fns.formatRFC3339(from),
+            ended_at:       fns.formatRFC3339(to)
         });
 
-        const {headers, status, data, error, message} = response;
+        const { headers, status, data, error, message } = response;
 
         if (error) {
             console.error(`Error while fetching clips [code ${status}]: ${error}`);
@@ -112,4 +113,4 @@ async function paginate(userId, period, cursor) {
     }
 }
 
-module.exports = {fetchClips};
+module.exports = { fetchClips };

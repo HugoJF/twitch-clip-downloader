@@ -1,0 +1,35 @@
+{
+  "root": true,
+  "extends": "standard",
+  "plugins": [
+    "standard"
+  ],
+  "env": {
+    "browser": false,
+    "node": true
+  },
+  "rules": {
+    "eqeqeq": ["error", "smart"],
+    "semi": ["error", "always"],
+    "prefer-const": "error",
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "quotes": [ "error", "single" ],
+    "key-spacing": [
+      "error",
+      {
+        "beforeColon": false,
+        "afterColon": true,
+        "mode": "minimum",
+        "align": "value"
+      }
+    ],
+    "no-multi-spaces": [
+      "error", {
+        "exceptions": {
+          "VariableDeclarator": true,
+          "ImportDeclaration": true
+        }
+      }
+    ]
+  }
+}

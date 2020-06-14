@@ -1,10 +1,11 @@
-const twitch = require('./twitch');
 const fs = require('fs');
+
+const twitch = require('./twitch');
 
 let _api;
 
-async function load() {
-    let token = undefined;
+async function load () {
+    let token;
     const path = './token.txt';
 
     try {
@@ -13,7 +14,7 @@ async function load() {
         console.log('Read Twitch API OAuth2 token from file.');
     } catch (e) {
         console.log('Could not read Twich API OAuth2 token from file, generating another one...');
-        let response = await twitch.auth();
+        const response = await twitch.auth();
         token = response.data.access_token;
         fs.writeFileSync(path, token);
     }
@@ -21,8 +22,8 @@ async function load() {
     _api = twitch.api(token);
 }
 
-function api() {
+function api () {
     return _api;
 }
 
-module.exports = {api, load};
+module.exports = { api, load };

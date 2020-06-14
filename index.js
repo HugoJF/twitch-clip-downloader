@@ -1,24 +1,23 @@
-const {ensureConfigsAreLoaded} = require('./lib/cli/environment');
-const {downloadClips} = require('./clip-downloader');
-const {fetchClips} = require('./clip-fetcher');
-const {load, api} = require('./api');
+const { ensureConfigsAreLoaded } = require('./lib/cli/environment');
+const { downloadClips } = require('./clip-downloader');
+const { fetchClips } = require('./clip-fetcher');
+const { load, api } = require('./api');
 const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
 
-const {showErrorAndExit} = require('./lib/cli/errors');
-const {channelPrompt} = require('./lib/cli/prompts');
+const { channelPrompt } = require('./lib/cli/prompts');
 
 let apiSpinner;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-async function fetchUserId(name) {
+async function fetchUserId (name) {
     const user = await api().users(name);
 
     return user.data.data[0].id;
 }
 
-async function start() {
+async function start () {
     await ensureConfigsAreLoaded();
 
     const channel = await channelPrompt();
@@ -35,15 +34,15 @@ async function start() {
         apiSpinner = ora('Paginating API, please wait...').start();
     }
 
-    function onBatchGenerated(count) {
+    function onBatchGenerated (count) {
         totalBatches = count;
     }
 
-    function onBatchFinished() {
+    function onBatchFinished () {
         finishedBatches++;
     }
 
-    function onCountUpdate(total) {
+    function onCountUpdate (total) {
         apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
     }
 
@@ -51,7 +50,7 @@ async function start() {
     const clips = await fetchClips(id, onBatchGenerated, onBatchFinished, onCountUpdate);
     const clipCount = Object.values(clips).length;
 
-    apiSpinner.succeed(`Finished API pagination.`);
+    apiSpinner.succeed('Finished API pagination.');
     apiSpinner = null;
 
     /**
@@ -59,8 +58,8 @@ async function start() {
      */
 
     const confirmation = await prompts({
-        type: 'confirm',
-        name: 'value',
+        type:    'confirm',
+        name:    'value',
         message: `Found ${clipCount} clips to download, download now?`,
         initial: true
     });
@@ -76,7 +75,7 @@ async function start() {
 
     downloadBar.start(clipCount, 0);
 
-    let finished = await downloadClips(Object.values(clips), count => downloadBar.update(count));
+    const finished = await downloadClips(Object.values(clips), count => downloadBar.update(count));
 
     downloadBar.stop();
 
