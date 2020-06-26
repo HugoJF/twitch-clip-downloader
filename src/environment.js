@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 const path   = require('path');
 const chalk  = require('chalk');
 
-const { writeFile, fileExists } = require('../filesystem');
+const { writeFile, fileExists } = require('./filesystem');
 const { printErrorsAndExit } = require('./errors');
 const { envInfoPrompt } = require('./prompts');
 
