@@ -1,5 +1,4 @@
 const fs = require('fs');
-
 const twitch = require('./twitch');
 
 let _api;

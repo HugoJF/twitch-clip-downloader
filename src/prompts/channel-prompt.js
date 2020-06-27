@@ -1,5 +1,4 @@
 const prompts = require('prompts');
-
 const { printErrorsAndExit } = require('../errors');
 
 const validateChannel = (channel) => {

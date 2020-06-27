@@ -1,7 +1,6 @@
 const fs        = require('fs');
 const youtubedl = require('youtube-dl');
 const pool      = require('tiny-async-pool');
-
 const { debug } = require('./utils');
 
 const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES || 3;
