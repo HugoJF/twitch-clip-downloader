@@ -9,6 +9,13 @@ const envPath = path.resolve(path.join(__dirname, '..', '..', '.env'));
 
 const loadEnvironment = () => dotenv.config();
 
+const DEFAULTS = {
+    DEBUG:               false,
+    CLIENT_ID:           '',
+    CLIENT_SECRET:       '',
+    YOUTUBEDL_INSTANCES: 3
+};
+
 const ensureEnvironmentKeyIsLoaded = (key) => {
     if (!process.env[key]) {
         printErrorsAndExit(`Environment variable ${chalk.underline.blue(key)} not set!`,
@@ -37,30 +44,16 @@ const ensureConfigsAreLoaded = async () => {
 
     loadEnvironment();
 
-    const environmentKeys = [
-        'DEBUG',
-        'CLIENT_ID',
-        'CLIENT_SECRET',
-        'YOUTUBEDL_INSTANCES'
-    ];
+    const environmentKeys = Object.keys(DEFAULTS);
 
     environmentKeys.forEach(ensureEnvironmentKeyIsLoaded);
 };
 
 const writeEnvFile = async (values = {}) => {
-    const DEFAULTS = {
-        DEBUG:               false,
-        CLIENT_ID:           '',
-        CLIENT_SECRET:       '',
-        YOUTUBEDL_INSTANCES: 3
-    };
+    const config = {...DEFAULTS, ...values};
 
-    const config = Object.assign({}, DEFAULTS, values);
-
-    let fileContent = '';
-    for (const key in config) {
-        fileContent += `${key}=${config[key]}\n`;
-    }
+    const pieces = Object.keys(config).map(key => `${key}=${config[key]}`);
+    const fileContent = pieces.join('\n');
 
     return writeFile(envPath, fileContent);
 };

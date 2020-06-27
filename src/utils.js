@@ -8,6 +8,7 @@ function debug (...messages) {
 
 function generateBatches () {
     let base = fns.endOfToday();
+
     // The day Twitch Clips were announced
     const end = new Date(2016, 5, 26);
     const periods = [];

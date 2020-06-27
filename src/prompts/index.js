@@ -8,7 +8,6 @@ fs.readdirSync(__dirname)
     .filter(ignoreUnwantedFiles)
     .forEach(file => {
         const rawPromptName = file.split('.')[0];
-
         const promptName = normalizeName(rawPromptName);
 
         allPrompts[promptName] = require(path.join(__dirname, file));
