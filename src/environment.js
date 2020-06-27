@@ -1,9 +1,9 @@
 const dotenv = require('dotenv');
 const path   = require('path');
 const chalk  = require('chalk');
+const envInfoPrompt = require('./prompts/env-prompt');
 const { writeFile, fileExists } = require('./filesystem');
 const { printErrorsAndExit } = require('./errors');
-const { envInfoPrompt } = require('./prompts');
 
 const envPath = path.resolve(path.join(__dirname, '..', '..', '.env'));
 

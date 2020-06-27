@@ -1,7 +1,7 @@
+const channelPrompt = require('./prompts/channel-prompt');
 const { ensureConfigsAreLoaded } = require('./environment');
 const { downloadClips } = require('./clip-downloader');
 const { fetchClips } = require('./clip-fetcher');
-const { channelPrompt } = require('./prompts');
 const { load, api } = require('./api');
 const cliProgress = require('cli-progress');
 const prompts = require('prompts');
