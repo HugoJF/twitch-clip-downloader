@@ -5,7 +5,7 @@ const envInfoPrompt = require('./prompts/env-prompt');
 const { writeFile, fileExists } = require('./filesystem');
 const { printErrorsAndExit } = require('./errors');
 
-const envPath = path.resolve(path.join(__dirname, '..', '..', '.env'));
+const envPath = path.resolve(path.join(__dirname, '..', '.env'));
 
 const loadEnvironment = () => dotenv.config();
 
