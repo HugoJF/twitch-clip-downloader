@@ -9,12 +9,14 @@ const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES || 3;
 function downloadClip (clip, onDownloaded) {
     return new Promise((resolve, reject) => {
         const videoPath = `clips/${clip.id}.mp4`;
+        const tempVideoPath = `${videoPath}.pending`;
         if (fileExistsSync(videoPath)) {
             debug(`Skipping ${clip.id} since we already found it at ${videoPath}`);
             resolve(true);
             return;
         }
         const video = youtubedl(clip.url);
+        fs.writeFileSync(`clips/${clip.id}.meta`, JSON.stringify(clip));
 
         video.on('info', (info) => {
             debug('Clip download started', clip.id);
@@ -28,12 +30,12 @@ function downloadClip (clip, onDownloaded) {
         });
 
         video.on('end', () => {
+            fs.renameSync(tempVideoPath, videoPath);
             onDownloaded();
             resolve(true);
         });
 
-        video.pipe(fs.createWriteStream(videoPath));
-        fs.writeFileSync(`clips/${clip.id}.meta`, JSON.stringify(clip));
+        video.pipe(fs.createWriteStream(tempVideoPath));
     });
 }
 
