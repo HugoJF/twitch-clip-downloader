@@ -3,6 +3,7 @@ const { ensureConfigsAreLoaded } = require('./environment');
 const { downloadClips } = require('./clip-downloader');
 const { fetchClips } = require('./clip-fetcher');
 const { load, api } = require('./api');
+const { writeMetaFile } = require('./meta');
 const cliProgress = require('cli-progress');
 const prompts = require('prompts');
 const ora = require('ora');
@@ -51,6 +52,11 @@ async function start () {
 
     apiSpinner.succeed('Finished API pagination.');
     apiSpinner = null;
+
+    /**
+     * Metadata phase
+     */
+    writeMetaFile(channel, clips);
 
     /**
      * Confirmation phase
