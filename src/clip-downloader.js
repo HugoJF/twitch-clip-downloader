@@ -1,6 +1,6 @@
-const fs        = require('fs');
+const fs = require('fs');
 const youtubedl = require('youtube-dl');
-const pool      = require('tiny-async-pool');
+const pool = require('tiny-async-pool');
 const { debug } = require('./utils');
 const { fileExistsSync } = require('./filesystem');
 
@@ -37,8 +37,19 @@ function downloadClip (clip, onDownloaded) {
     });
 }
 
+async function ensureClipsDirectoryExists () {
+    if (!fileExistsSync('clips')) {
+        debug('Could not find clips directory, creating it...');
+        fs.mkdirSync('clips');
+    } else {
+        debug('Clips directory found!');
+    }
+}
+
 async function startDownload (clips, onCountUpdate) {
     let finished = 0;
+
+    await ensureClipsDirectoryExists();
 
     async function process (clip) {
         await downloadClip(clip, () => {
