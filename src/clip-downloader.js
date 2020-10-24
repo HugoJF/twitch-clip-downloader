@@ -2,11 +2,18 @@ const fs        = require('fs');
 const youtubedl = require('youtube-dl');
 const pool      = require('tiny-async-pool');
 const { debug } = require('./utils');
+const { fileExistsSync } = require('./filesystem');
 
 const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES || 3;
 
 function downloadClip (clip, onDownloaded) {
     return new Promise((resolve, reject) => {
+        const videoPath = `clips/${clip.id}.mp4`;
+        if (fileExistsSync(videoPath)) {
+            debug(`Skipping ${clip.id} since we already found it at ${videoPath}`);
+            resolve(true);
+            return;
+        }
         const video = youtubedl(clip.url);
 
         video.on('info', (info) => {
@@ -25,7 +32,7 @@ function downloadClip (clip, onDownloaded) {
             resolve(true);
         });
 
-        video.pipe(fs.createWriteStream(`clips/${clip.id}.mp4`));
+        video.pipe(fs.createWriteStream(videoPath));
         fs.writeFileSync(`clips/${clip.id}.meta`, JSON.stringify(clip));
     });
 }
