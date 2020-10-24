@@ -1,7 +1,9 @@
 # Twitch Clips Downloader
 NodeJS tool to download every clip (and it's metadata) from a Twitch channel
 
-### `This tool can PROBABLY download ALL clips from a channel (not only the top 1000)`
+## If you're looking for VOD, uploads or highlights download, please +1 this issue: https://github.com/HugoJF/twitch-clip-downloader/issues/13
+
+This tool can PROBABLY download ALL clips from a channel (not only the top 1000).
 
 This is not fully tested but seems to work as expected (tested with summit1g at around 163k clips).
 
