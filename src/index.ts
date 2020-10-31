@@ -1,17 +1,17 @@
-const channelPrompt = require('./prompts/channel-prompt');
-const { ensureConfigsAreLoaded } = require('./environment');
-const { downloadClips } = require('./clip-downloader');
-const { fetchClips } = require('./clip-fetcher');
-const { load, api } = require('./api');
-const { writeMetaFile } = require('./meta');
-const cliProgress = require('cli-progress');
-const prompts = require('prompts');
-const ora = require('ora');
+import {channelPrompt} from './prompts/channel-prompt';
+import {ensureConfigsAreLoaded} from "./environment";
+import {startDownload} from "./clip-downloader";
+import {fetchClips} from "./clip-fetcher";
+import {api, load} from "./api";
+import {writeMetaFile} from "./meta";
+import cliProgress from "cli-progress";
+import prompts from "prompts";
+import ora from "ora";
 
-let apiSpinner;
+let apiSpinner: ora.Ora | null;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-async function fetchUserId (name) {
+async function fetchUserId (name: string) {
     const user = await api().users(name);
 
     return user.data.data[0].id;
@@ -34,7 +34,7 @@ async function start () {
         apiSpinner = ora('Paginating API, please wait...').start();
     }
 
-    function onBatchGenerated (count) {
+    function onBatchGenerated (count: number) {
         totalBatches = count;
     }
 
@@ -42,8 +42,10 @@ async function start () {
         finishedBatches++;
     }
 
-    function onCountUpdate (total) {
-        apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
+    function onCountUpdate (total: number) {
+        if (apiSpinner) {
+            apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
+        }
     }
 
     const id = await fetchUserId(channel);
@@ -80,7 +82,7 @@ async function start () {
 
     downloadBar.start(clipCount, 0);
 
-    const finished = await downloadClips(Object.values(clips), count => downloadBar.update(count));
+    const finished = await startDownload(Object.values(clips), count => downloadBar.update(count));
 
     downloadBar.stop();
 

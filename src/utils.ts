@@ -1,35 +1,40 @@
-const fns = require('date-fns');
+import fns from "date-fns";
 
-function debug (...messages) {
+export type Period = {
+    from: Date,
+    to: Date,
+}
+
+export function debug (...messages: any[]) {
     if (process.env.DEBUG === 'true') {
         console.log(...messages);
     }
 }
 
-function generateBatches () {
+export function generateBatches (): Period[] {
     let base = fns.endOfToday();
 
     // The day Twitch Clips were announced
     const end = new Date(2016, 5, 26);
-    const periods = [];
+    const batches: Period[] = [];
 
     while (fns.compareAsc(base, end) >= 0) {
         const next = fns.subDays(base, 7);
-        periods.push({ from: next, to: base });
+        batches.push({ from: next, to: base });
         base = next;
     }
 
-    return periods;
+    return batches;
 }
 
-function sleep (delay) {
+export function sleep (delay: number) {
     return new Promise(resolve => {
         setTimeout(resolve, delay);
     });
 }
 
 // https://stackoverflow.com/questions/18884249/checking-whether-something-is-iterable
-function iterable (obj) {
+export function iterable (obj: any) {
     // checks for null and undefined
     if (obj == null) {
         return false;
@@ -37,5 +42,3 @@ function iterable (obj) {
 
     return typeof obj[Symbol.iterator] === 'function';
 }
-
-module.exports = { sleep, debug, generateBatches, iterable };

@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 
-const printErrors = (...errors) => {
+export const printErrors = (...errors: any[]) => {
     console.error(`\n${chalk.redBright('ERROR!')}`);
 
     for (const error of errors) {
@@ -8,13 +8,8 @@ const printErrors = (...errors) => {
     }
 };
 
-const printErrorsAndExit = (...errors) => {
+export const printErrorsAndExit = (...errors: any[]) => {
     printErrors(...errors);
 
     process.exit(0);
-};
-
-module.exports = {
-    printErrors: printErrors,
-    printErrorsAndExit
 };

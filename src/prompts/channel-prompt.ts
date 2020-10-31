@@ -1,8 +1,10 @@
-const prompts = require('prompts');
-const { printErrorsAndExit } = require('../errors');
+import prompts from "prompts";
+import {printErrorsAndExit} from "../errors";
 
-const validateChannel = (channel) => {
-    if (channel.match(/\.tv|\//g)) {
+const CHANNEL_REGEX = /\.tv|\//g;
+
+const validateChannel = (channel: string) => {
+    if (channel.match(CHANNEL_REGEX)) {
         return 'Usernames only (without URLs)!';
     }
 
@@ -13,7 +15,7 @@ const validateChannel = (channel) => {
     return true;
 };
 
-const channelPrompt = async () => {
+export const channelPrompt = async () => {
     const response = await prompts({
         type:     'text',
         name:     'channel',
@@ -27,5 +29,3 @@ const channelPrompt = async () => {
 
     return response.channel;
 };
-
-module.exports = channelPrompt;

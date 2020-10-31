@@ -1,22 +1,22 @@
-const pool = require('tiny-async-pool');
-const fns  = require('date-fns');
-const { sleep, debug, generateBatches } = require('./utils');
-const { api } = require('./api');
-const { iterable } = require('./utils');
+import pool from "tiny-async-pool";
+import fns from "date-fns";
+import {debug, generateBatches, iterable, Period, sleep} from "./utils";
+import {api} from "./api";
+
 
 // 10 should be enough to keep rate-limit under control
 const API_INSTANCES = 10;
 
-async function fetchClips (userId, onBatchGenerated, onBatchFinish, onCountUpdate) {
+export async function fetchClips (userId: string, onBatchGenerated, onBatchFinish, onCountUpdate: (count: number) => void) {
     const batches = generateBatches();
-    const counts = {};
+    const counts: {[id: number]: number} = {};
     let id = 0;
 
     if (onBatchGenerated) {
         onBatchGenerated(batches.length);
     }
 
-    function onBatchUpdate (id, count) {
+    function onBatchUpdate (id: number, count: number) {
         counts[id] = count;
 
         const total = Object.values(counts).reduce((acc, cur) => acc + cur, 0);
@@ -26,7 +26,7 @@ async function fetchClips (userId, onBatchGenerated, onBatchFinish, onCountUpdat
         }
     }
 
-    async function process (period) {
+    async function process (period: Period) {
         const index = id++;
         const clips = await fetchClipsFromBatch(userId, onBatchUpdate.bind(this, index), period);
 
@@ -42,8 +42,8 @@ async function fetchClips (userId, onBatchGenerated, onBatchFinish, onCountUpdat
     return clipBatches.reduce((all, batch) => ({ ...all, ...batch }), {});
 }
 
-async function fetchClipsFromBatch (userId, onUpdate, period) {
-    const clips = {};
+async function fetchClipsFromBatch (userId: string, onUpdate, period: Period) {
+    const clips: {[id: number]: object} = {};
     let cursor;
     const { from, to } = period;
 
@@ -78,7 +78,7 @@ async function fetchClipsFromBatch (userId, onUpdate, period) {
     return clips;
 }
 
-async function paginate (userId, period, cursor) {
+async function paginate (userId: string, period: Period, cursor: undefined|string) {
     try {
         const { from, to } = period;
 
@@ -111,5 +111,3 @@ async function paginate (userId, period, cursor) {
         return false;
     }
 }
-
-module.exports = { fetchClips };

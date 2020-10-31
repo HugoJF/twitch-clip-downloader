@@ -1,7 +1,7 @@
-const prompts = require('prompts');
-const { printErrorsAndExit } = require('../errors');
+import prompts from "prompts";
+import {printErrorsAndExit} from "../errors";
 
-const validateClientSecret = (value) => {
+const validateClientSecret = (value: string) => {
     if (value.trim().length === 0) {
         return 'CLIENT_SECRET can\'t be empty!';
     }

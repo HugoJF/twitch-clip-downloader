@@ -1,5 +1,5 @@
-const prompts = require('prompts');
-const { printErrorsAndExit } = require('../errors');
+import prompts from "prompts";
+import {printErrorsAndExit} from "../errors";
 
 const youtubedlPrompt = async () => {
     const response = await prompts({

@@ -1,7 +1,7 @@
-const prompts = require('prompts');
-const { printErrorsAndExit } = require('../errors');
+import prompts from "prompts";
+import {printErrorsAndExit} from "../errors";
 
-const validateClientId = (value) => {
+const validateClientId = (value: string) => {
     if (value.trim().length === 0) {
         return 'CLIENT_ID can\'t be empty!';
     }

@@ -1,5 +1,5 @@
-const prompts = require('prompts');
-const { printErrorsAndExit } = require('../errors');
+import prompts from "prompts";
+import {printErrorsAndExit} from "../errors";
 
 const debugPrompt = async () => {
     const response = await prompts({
@@ -7,7 +7,7 @@ const debugPrompt = async () => {
         name:    'DEBUG',
         message: 'Run in debug mode?',
         initial: false,
-        format:  value => `${value}`
+        format:  (value: any) => value.toString()
     });
 
     if (Object.keys(response).length === 0) {

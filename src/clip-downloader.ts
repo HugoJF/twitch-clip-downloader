@@ -1,8 +1,8 @@
-const fs = require('fs');
-const youtubedl = require('youtube-dl');
-const pool = require('tiny-async-pool');
-const { debug } = require('./utils');
-const { fileExistsSync } = require('./filesystem');
+import fs from "fs";
+import youtubedl from "youtube-dl";
+import pool from "tiny-async-pool";
+import {debug} from "./utils";
+import {fileExistsSync} from "./filesystem";
 
 const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES || 3;
 
@@ -15,7 +15,7 @@ function downloadClip (clip, onDownloaded) {
             resolve(true);
             return;
         }
-        const video = youtubedl(clip.url);
+        const video = youtubedl(clip.url, [], {});
         fs.writeFileSync(`clips/${clip.id}.meta`, JSON.stringify(clip));
 
         video.on('info', (info) => {
@@ -48,7 +48,7 @@ async function ensureClipsDirectoryExists () {
     }
 }
 
-async function startDownload (clips, onCountUpdate) {
+export async function startDownload (clips, onCountUpdate: (count: number) => void) {
     let finished = 0;
 
     await ensureClipsDirectoryExists();
@@ -66,5 +66,3 @@ async function startDownload (clips, onCountUpdate) {
 
     return finished;
 }
-
-module.exports = { downloadClips: startDownload };

@@ -1,22 +1,22 @@
-const dotenv = require('dotenv');
-const path   = require('path');
-const chalk  = require('chalk');
-const envInfoPrompt = require('./prompts/env-prompt');
-const { writeFile, fileExists } = require('./filesystem');
-const { printErrorsAndExit } = require('./errors');
+import dotenv from "dotenv";
+import path from "path";
+import chalk from "chalk";
+import {envPrompt} from "./prompts/env-prompt";
+import {fileExists, write} from "./filesystem";
+import {printErrorsAndExit} from "./errors";
 
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
 
 const loadEnvironment = () => dotenv.config();
 
-const DEFAULTS = {
+const DEFAULTS: object = {
     DEBUG:               false,
     CLIENT_ID:           '',
     CLIENT_SECRET:       '',
     YOUTUBEDL_INSTANCES: 3
 };
 
-const ensureEnvironmentKeyIsLoaded = (key) => {
+const ensureEnvironmentKeyIsLoaded = (key: string) => {
     if (!process.env[key]) {
         printErrorsAndExit(`Environment variable ${chalk.underline.blue(key)} not set!`,
             `\nPlease set ${chalk.blue(key)} on ${chalk.cyan('.env')} file.`);
@@ -33,13 +33,13 @@ const createIfEnvNotSet = async () => {
         console.log(`Register an application on ${chalk.magenta('Twitch')} Console: ${chalk.underline.blue('https://dev.twitch.tv/console/apps')}`);
         console.log(`Click ${chalk.cyan('Manage')} and copy the ${chalk.green('CLIENT_ID')} and generate a ${chalk.green('CLIENT_SECRET')}.\n\n`);
 
-        const data = await envInfoPrompt();
+        const data = await envPrompt();
 
         await writeEnvFile(data);
     }
 };
 
-const ensureConfigsAreLoaded = async () => {
+export const ensureConfigsAreLoaded = async () => {
     await createIfEnvNotSet();
 
     loadEnvironment();
@@ -49,16 +49,12 @@ const ensureConfigsAreLoaded = async () => {
     environmentKeys.forEach(ensureEnvironmentKeyIsLoaded);
 };
 
-const writeEnvFile = async (values = {}) => {
+export const writeEnvFile = async (values: object = {}) => {
     const config = {...DEFAULTS, ...values};
 
-    const pieces = Object.keys(config).map(key => `${key}=${config[key]}`);
+    // @ts-ignore
+    const pieces = Object.keys(config).map(key => `${key}=${config[key].toString()}`);
     const fileContent = pieces.join('\n');
 
-    return writeFile(envPath, fileContent);
-};
-
-module.exports = {
-    writeEnvFile,
-    ensureConfigsAreLoaded
+    return write(envPath, fileContent);
 };

@@ -1,9 +1,9 @@
 const fs = require('fs');
 const twitch = require('./twitch');
 
-let _api;
+let _api: any;
 
-async function load () {
+export async function load () {
     let token;
     const path = './token.txt';
 
@@ -21,8 +21,6 @@ async function load () {
     _api = twitch.api(token);
 }
 
-function api () {
+export function api () {
     return _api;
 }
-
-module.exports = { api, load };
