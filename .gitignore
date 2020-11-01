@@ -2,5 +2,8 @@ clips
 node_modules
 .env
 .idea
+bin
+build
 token.txt
 *.meta
+mix-manifest.json

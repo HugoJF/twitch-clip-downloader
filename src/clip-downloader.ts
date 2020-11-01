@@ -1,12 +1,13 @@
-import fs from "fs";
-import youtubedl from "youtube-dl";
-import pool from "tiny-async-pool";
-import {debug} from "./utils";
+import fs               from "fs";
+import youtubedl        from "youtube-dl";
+import pool             from "tiny-async-pool";
+import {debug}          from "./utils";
 import {fileExistsSync} from "./filesystem";
+import {Clip}           from "./twitch";
 
-const YOUTUBEDL_INSTANCES = process.env.YOUTUBEDL_INSTANCES || 3;
+const YOUTUBEDL_INSTANCES: number = parseInt(process.env.YOUTUBEDL_INSTANCES || '3');
 
-function downloadClip (clip, onDownloaded) {
+function downloadClip (clip: Clip, onDownloaded: () => void) {
     return new Promise((resolve, reject) => {
         const videoPath = `clips/${clip.id}.mp4`;
         const tempVideoPath = `${videoPath}.pending`;
@@ -48,12 +49,12 @@ async function ensureClipsDirectoryExists () {
     }
 }
 
-export async function startDownload (clips, onCountUpdate: (count: number) => void) {
+export async function startDownload (clips: Clip[], onCountUpdate: (count: number) => void) {
     let finished = 0;
 
     await ensureClipsDirectoryExists();
 
-    async function process (clip) {
+    async function process (clip: Clip) {
         await downloadClip(clip, () => {
             finished++;
             if (onCountUpdate) {

@@ -1,4 +1,4 @@
-let mix = require('laravel-mix');
+const mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,7 +11,15 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.ts('src/index.ts', 'build/');
+mix.ts('src/index.ts', 'build/')
+    .webpackConfig({
+        // Fixes net, fs, and other imports
+        target: 'node',
+        // Fixes __dirname resolving
+        node:   {
+            __dirname: false
+        }
+    });
 
 // Full API
 // mix.js(src, output);

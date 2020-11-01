@@ -1,7 +1,7 @@
-const fs = require('fs');
-const twitch = require('./twitch');
+import fs from "fs";
+import * as twitch from "./twitch";
 
-let _api: any;
+let _api: ReturnType<typeof twitch.api>;
 
 export async function load () {
     let token;

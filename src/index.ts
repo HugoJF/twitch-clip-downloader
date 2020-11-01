@@ -12,7 +12,7 @@ let apiSpinner: ora.Ora | null;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
 async function fetchUserId (name: string) {
-    const user = await api().users(name);
+    const user = await api().users({login: name});
 
     return user.data.data[0].id;
 }
@@ -58,7 +58,7 @@ async function start () {
     /**
      * Metadata phase
      */
-    writeMetaFile(channel, clips);
+    writeMetaFile(channel, Object.values(clips));
 
     /**
      * Confirmation phase

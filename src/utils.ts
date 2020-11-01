@@ -1,4 +1,4 @@
-import fns from "date-fns";
+import * as fns from "date-fns";
 
 export type Period = {
     from: Date,

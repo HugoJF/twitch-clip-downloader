@@ -1,22 +1,28 @@
-import pool from "tiny-async-pool";
-import fns from "date-fns";
+import pool                                              from "tiny-async-pool";
+import * as fns                                          from "date-fns";
 import {debug, generateBatches, iterable, Period, sleep} from "./utils";
-import {api} from "./api";
+import {api}                                             from "./api";
+import {Clip, TwitchClipsApiResponse}                    from "./twitch";
 
 
 // 10 should be enough to keep rate-limit under control
 const API_INSTANCES = 10;
 
-export async function fetchClips (userId: string, onBatchGenerated, onBatchFinish, onCountUpdate: (count: number) => void) {
+export async function fetchClips(
+    userId: string,
+    onBatchGenerated: (batchLength: number) => void,
+    onBatchFinish: (batchLength: number, clipCount: number) => void,
+    onCountUpdate: (count: number) => void
+) {
     const batches = generateBatches();
-    const counts: {[id: number]: number} = {};
+    const counts: { [id: number]: number } = {};
     let id = 0;
 
     if (onBatchGenerated) {
         onBatchGenerated(batches.length);
     }
 
-    function onBatchUpdate (id: number, count: number) {
+    function onBatchUpdate(id: number, count: number) {
         counts[id] = count;
 
         const total = Object.values(counts).reduce((acc, cur) => acc + cur, 0);
@@ -26,9 +32,9 @@ export async function fetchClips (userId: string, onBatchGenerated, onBatchFinis
         }
     }
 
-    async function process (period: Period) {
+    async function process(period: Period) {
         const index = id++;
-        const clips = await fetchClipsFromBatch(userId, onBatchUpdate.bind(this, index), period);
+        const clips = await fetchClipsFromBatch(userId, (clipCount) => onBatchUpdate(index, clipCount), period);
 
         if (onBatchFinish) {
             onBatchFinish(index, Object.values(clips).length);
@@ -39,16 +45,17 @@ export async function fetchClips (userId: string, onBatchGenerated, onBatchFinis
 
     const clipBatches = await pool(API_INSTANCES, batches, process);
 
-    return clipBatches.reduce((all, batch) => ({ ...all, ...batch }), {});
+    return clipBatches.reduce((all, batch) => ({...all, ...batch}), {});
 }
 
-async function fetchClipsFromBatch (userId: string, onUpdate, period: Period) {
-    const clips: {[id: number]: object} = {};
+async function fetchClipsFromBatch(userId: string, onUpdate: (clipCount: number) => void, period: Period) {
+    const clips: { [id: string]: Clip } = {};
+    const {from, to} = period;
     let cursor;
-    const { from, to } = period;
 
     do {
-        const response = await paginate(userId, period, cursor);
+        const responsePromise = paginate(userId, period, cursor);
+        const response = await responsePromise;
 
         if (response === false) {
             console.error('Error while paginating, waiting a few seconds before continuing...');
@@ -78,9 +85,9 @@ async function fetchClipsFromBatch (userId: string, onUpdate, period: Period) {
     return clips;
 }
 
-async function paginate (userId: string, period: Period, cursor: undefined|string) {
+async function paginate(userId: string, period: Period, cursor: undefined | string): Promise<TwitchClipsApiResponse | false> {
     try {
-        const { from, to } = period;
+        const {from, to} = period;
 
         debug('Broadcaster ID', userId);
         debug('From', from);
@@ -88,17 +95,16 @@ async function paginate (userId: string, period: Period, cursor: undefined|strin
 
         const response = await api().clips({
             broadcaster_id: userId,
-            first:          100,
-            after:          cursor,
-            started_at:     fns.formatRFC3339(from),
-            ended_at:       fns.formatRFC3339(to)
+            first: 100,
+            after: cursor,
+            started_at: fns.formatRFC3339(from),
+            ended_at: fns.formatRFC3339(to)
         });
 
-        const { headers, status, data, error, message } = response;
+        const {headers, status, data} = response;
 
-        if (error) {
-            console.error(`Error while fetching clips [code ${status}]: ${error}`);
-            console.error(message);
+        if (status !== 200) {
+            console.error(`Error while fetching clips [code ${status}]: ${data.data}`);
             process.exit(1);
         }
 
