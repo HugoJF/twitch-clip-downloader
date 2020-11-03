@@ -1,12 +1,16 @@
-import pool                                              from "tiny-async-pool";
-import * as fns                                          from "date-fns";
-import {debug, generateBatches, iterable, Period, sleep} from "./utils";
-import {api}                                             from "./api";
-import {Clip, TwitchClipsApiResponse}                    from "./twitch";
+import pool                                                           from "tiny-async-pool";
+import * as fns                                                       from "date-fns";
+import {debug, generateBatches, iterable, Period, sleep, splitPeriod} from "./utils";
+import {api}                                                          from "./api";
+import {Clip, TwitchClipsApiResponse}                                 from "./twitch";
 
+interface Dict<T> {
+    [key: string]: T;
+}
 
 // 10 should be enough to keep rate-limit under control
-const API_INSTANCES = 10;
+const API_INSTANCES = 5;
+const BATCH_CLIP_THRESHOLD = 500;
 
 export async function fetchClips(
     userId: string,
@@ -48,12 +52,17 @@ export async function fetchClips(
     return clipBatches.reduce((all, batch) => ({...all, ...batch}), {});
 }
 
-async function fetchClipsFromBatch(userId: string, onUpdate: (clipCount: number) => void, period: Period) {
-    const clips: { [id: string]: Clip } = {};
-    const {from, to} = period;
+async function fetchClipsFromBatch(
+    userId: string,
+    onUpdate: (clipCount: number) => void,
+    period: Period
+): Promise<Dict<Clip>> {
+    const {left, right} = period;
+    let clips: Dict<Clip> = {};
     let cursor;
 
     do {
+        // This somehow fixes type-hinting in PhpStorm
         const responsePromise = paginate(userId, period, cursor);
         const response = await responsePromise;
 
@@ -78,27 +87,43 @@ async function fetchClipsFromBatch(userId: string, onUpdate: (clipCount: number)
         }
 
         onUpdate(Object.keys(clips).length);
-
-        debug('Period', from, 'to', to, 'resulted in', Object.keys(clips).length, 'clips');
     } while (cursor);
+
+    debug('Period', left, 'to', right, 'resulted in', Object.keys(clips).length, 'clips');
+
+    const clipCount = Object.keys(clips).length;
+
+    if (clipCount > BATCH_CLIP_THRESHOLD) {
+        debug(`Found ${clipCount} in one period, which is above the ${BATCH_CLIP_THRESHOLD} limit, splitting period...`);
+        const newPeriods = splitPeriod(period);
+
+        const newClipsDicts: Dict<Clip>[] = [];
+
+        for (let newPeriod of newPeriods) {
+            debug(`Fetching clips from ${newPeriod.left} to ${newPeriod.right}`);
+            // FIXME: onUpdate call back does not accept a null here
+            newClipsDicts.push(await fetchClipsFromBatch(userId, (a) => a, newPeriod));
+        }
+
+        const newClips = newClipsDicts.reduce((total, part) => ({...total, ...part}), {});
+
+        debug(`After splitting period, found ${Object.keys(newClips).length} (from period ${clipCount})`);
+        clips = {...clips, ...newClips};
+    }
 
     return clips;
 }
 
 async function paginate(userId: string, period: Period, cursor: undefined | string): Promise<TwitchClipsApiResponse | false> {
     try {
-        const {from, to} = period;
-
-        debug('Broadcaster ID', userId);
-        debug('From', from);
-        debug('To', to);
+        const {left, right} = period;
 
         const response = await api().clips({
             broadcaster_id: userId,
             first: 100,
             after: cursor,
-            started_at: fns.formatRFC3339(from),
-            ended_at: fns.formatRFC3339(to)
+            started_at: fns.formatRFC3339(left),
+            ended_at: fns.formatRFC3339(right)
         });
 
         const {headers, status, data} = response;
@@ -108,8 +133,8 @@ async function paginate(userId: string, period: Period, cursor: undefined | stri
             process.exit(1);
         }
 
-        debug(headers);
-        debug(data);
+        // debug(headers);
+        // debug(data);
 
         return data;
     } catch (e) {
