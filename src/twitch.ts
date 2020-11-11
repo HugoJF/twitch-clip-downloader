@@ -1,4 +1,5 @@
 import axios, {AxiosRequestConfig} from "axios";
+import {apiDelay, debug, sleep} from "./utils";
 
 export type HelixOptions = Omit<AxiosRequestConfig, "baseURL" | "Headers">
 export type OAuth2Options = Omit<AxiosRequestConfig, "baseURL" | "method">
@@ -61,16 +62,31 @@ export type Clip = {
     view_count: number,
 }
 
-const helix = <T>(token: string, options: HelixOptions) => axios.request<T>({
-    baseURL: 'https://api.twitch.tv/helix',
-    headers: {
-        Authorization: `Bearer ${token}`,
-        'Client-ID': process.env.CLIENT_ID
-    },
-    ...options
-});
+const helix = async <T>(token: string, options: HelixOptions) => {
+    const request = await axios.request<T>({
+        baseURL: 'https://api.twitch.tv/helix',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Client-ID': process.env.CLIENT_ID
+        },
+        ...options
+    });
 
-const oauth2 = (options: OAuth2Options) => axios.request({
+    const rateLimitRemaining = request.headers?.['ratelimit-remaining'];
+    const rateLimitLimit = request.headers?.['ratelimit-limit'];
+
+    if (rateLimitLimit && rateLimitRemaining) {
+        const delay = apiDelay(parseInt(rateLimitRemaining), parseInt(rateLimitLimit), 60 * 1000 /* millis */);
+        debug(`Delaying API response by ${delay}ms. Rate limit ${rateLimitRemaining}/${rateLimitLimit}`);
+        await sleep(delay);
+    } else {
+        debug('Could not read API rate-limit headers', request.headers);
+    }
+
+    return request;
+};
+
+const generateOauthTokenRequest = (options: OAuth2Options) => axios.request({
     baseURL: 'https://id.twitch.tv/oauth2/token',
     method: 'POST',
     ...options
@@ -91,8 +107,8 @@ export const api = (token: string) => ({
     }
 });
 
-export function auth() {
-    return oauth2({
+export async function generateOauthToken(): Promise<string> {
+    const response = await generateOauthTokenRequest({
         params: {
             client_id: process.env.CLIENT_ID,
             client_secret: process.env.CLIENT_SECRET,
@@ -100,4 +116,20 @@ export function auth() {
             grant_type: 'client_credentials'
         }
     });
+
+    if (response.status !== 200 && response.status !== 201) {
+        console.log(`Failed to generate Twitch API token, response status: ${response.status}`);
+        debug(response.data);
+        throw new Error(response.statusText);
+    }
+
+    const token = response.data?.access_token;
+
+    if (!token) {
+        console.log(`API did not generate an access_token`);
+        debug(response.data);
+        throw new Error('API did not generate an access_token');
+    }
+
+    return token.toString();
 }

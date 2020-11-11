@@ -1,4 +1,4 @@
-import * as fns                                 from "date-fns";
+import * as fns from "date-fns";
 import {differenceInHours, differenceInMinutes} from "date-fns";
 
 const SPLIT_FACTOR = 2;
@@ -8,7 +8,7 @@ export type Period = {
     right: Date,
 }
 
-export function debug (...messages: any[]) {
+export function debug(...messages: any[]) {
     if (process.env.DEBUG === 'true') {
         console.log(...messages);
     }
@@ -27,7 +27,7 @@ export function splitPeriod(period: Period): Period[] {
     return generateBatchesFrom(period.left, period.right, ceil);
 }
 
-export function generateBatches (): Period[] {
+export function generateBatches(): Period[] {
     // The day Twitch Clips were announced
     const left = new Date(2016, 5, 26);
     const right = fns.endOfToday();
@@ -35,26 +35,37 @@ export function generateBatches (): Period[] {
     return generateBatchesFrom(left, right, 24 * 60);
 }
 
-export function generateBatchesFrom (left: Date, right: Date, minutesIncrements: number): Period[] {
+export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: number): Period[] {
     const batches: Period[] = [];
 
     while (fns.compareAsc(right, left) >= 0) {
         const next = fns.addMinutes(left, minutesIncrements);
-        batches.push({ left: left, right: next });
+        batches.push({left: left, right: next});
         left = next;
     }
 
     return batches;
 }
 
-export function sleep (delay: number) {
+export function apiDelay(remaining: number, total: number, resetTime: number) {
+    const degree = 3;
+    const startsAt = total * 0.1;
+
+    if (startsAt < remaining) return 0;
+
+    const factor = 1 - Math.pow(remaining / startsAt, degree);
+
+    return resetTime * factor;
+}
+
+export function sleep(delay: number) {
     return new Promise(resolve => {
         setTimeout(resolve, delay);
     });
 }
 
 // https://stackoverflow.com/questions/18884249/checking-whether-something-is-iterable
-export function iterable (obj: any) {
+export function iterable(obj: any) {
     // checks for null and undefined
     if (obj == null) {
         return false;

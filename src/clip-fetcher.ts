@@ -9,7 +9,7 @@ interface Dict<T> {
 }
 
 // 10 should be enough to keep rate-limit under control
-const API_INSTANCES = 5;
+const API_INSTANCES = 20;
 const BATCH_CLIP_THRESHOLD = 500;
 
 export async function fetchClips(
