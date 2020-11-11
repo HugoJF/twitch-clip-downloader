@@ -39,9 +39,9 @@ export function generateBatchesFrom (left: Date, right: Date, minutesIncrements:
     const batches: Period[] = [];
 
     while (fns.compareAsc(right, left) >= 0) {
-        const next = fns.subMinutes(right, minutesIncrements);
-        batches.push({ left: next, right: right });
-        right = next;
+        const next = fns.addMinutes(left, minutesIncrements);
+        batches.push({ left: left, right: next });
+        left = next;
     }
 
     return batches;
