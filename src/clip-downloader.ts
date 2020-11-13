@@ -1,9 +1,9 @@
 import fs               from "fs";
 import youtubedl        from "youtube-dl";
 import pool             from "tiny-async-pool";
-import {debug}          from "./utils";
-import {fileExistsSync} from "./filesystem";
-import {Clip}           from "./twitch";
+import {debug}      from "./utils";
+import {existsSync} from "./filesystem";
+import {Clip}       from "./twitch";
 
 const YOUTUBEDL_INSTANCES: number = parseInt(process.env.YOUTUBEDL_INSTANCES || '3');
 
@@ -11,7 +11,7 @@ function downloadClip (clip: Clip, onDownloaded: () => void) {
     return new Promise((resolve, reject) => {
         const videoPath = `clips/${clip.id}.mp4`;
         const tempVideoPath = `${videoPath}.pending`;
-        if (fileExistsSync(videoPath)) {
+        if (existsSync(videoPath)) {
             debug(`Skipping ${clip.id} since we already found it at ${videoPath}`);
             resolve(true);
             return;
@@ -41,7 +41,7 @@ function downloadClip (clip: Clip, onDownloaded: () => void) {
 }
 
 async function ensureClipsDirectoryExists () {
-    if (!fileExistsSync('clips')) {
+    if (!existsSync('clips')) {
         debug('Could not find clips directory, creating it...');
         fs.mkdirSync('clips');
     } else {

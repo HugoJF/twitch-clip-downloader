@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import path from "path";
 import chalk from "chalk";
-import {envPrompt} from "./prompts/env-prompt";
-import {fileExists, write} from "./filesystem";
+import {envPrompt}          from "./prompts/env-prompt";
+import {exists, write}      from "./filesystem";
 import {printErrorsAndExit} from "./errors";
 
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
@@ -24,7 +24,7 @@ const ensureEnvironmentKeyIsLoaded = (key: string) => {
 };
 
 const createIfEnvNotSet = async () => {
-    const envExists = await fileExists(envPath);
+    const envExists = await exists(envPath);
 
     if (!envExists) {
         console.log(`Looks like you haven't set your ${chalk.cyan('.env')} file yet!`);
