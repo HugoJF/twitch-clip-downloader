@@ -39,7 +39,7 @@ function downloadClip (clip: Clip, onDownloaded: () => void) {
     });
 }
 
-async function ensureClipsDirectoryExists () {
+function ensureClipsDirectoryExists () {
     if (!existsSync('clips')) {
         debug('Could not find clips directory, creating it...');
         fs.mkdirSync('clips');

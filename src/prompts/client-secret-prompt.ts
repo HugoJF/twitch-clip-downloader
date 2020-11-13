@@ -9,7 +9,7 @@ const validateClientSecret = (value: string) => {
     return true;
 };
 
-export default async function clientSecretPrompt()  {
+export async function clientSecretPrompt()  {
     const response = await prompts({
         type:     'text',
         name:     'CLIENT_SECRET',

@@ -1,5 +1,5 @@
-import * as fns from "date-fns";
-import {differenceInHours, differenceInMinutes} from "date-fns";
+import * as fns                                         from "date-fns";
+import {differenceInHours, differenceInMinutes, format} from "date-fns";
 
 const SPLIT_FACTOR = 2;
 
@@ -58,6 +58,10 @@ export function apiDelay(remaining: number, total: number, resetTime: number) {
     const factor = 1 - Math.pow(remaining / startsAt, degree);
 
     return resetTime * factor;
+}
+
+export function pathableDate(date: Date) {
+    return format(date, 'yyyy-LL-dd_hh-mm-ss')
 }
 
 export function sleep(delay: number) {

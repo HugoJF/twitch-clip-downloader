@@ -1,9 +1,11 @@
 import pool                                                           from "tiny-async-pool";
 import * as fns                                                       from "date-fns";
-import {debug, generateBatches, iterable, Period, sleep, splitPeriod} from "./utils";
-import {api}                                                          from "./api";
-import {Clip, TwitchClipsApiResponse}        from "./twitch";
-import {API_INSTANCES, BATCH_CLIP_THRESHOLD} from "./configs";
+import {format}                                                                     from "date-fns";
+import {debug, generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from "./utils";
+import {api}                                                                        from "./api";
+import {Clip, TwitchClipsApiResponse}                                 from "./twitch";
+import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                          from "./configs";
+import {checkCache, getCache, saveCache}                              from "./cache";
 
 interface Dict<T> {
     [key: string]: T;
@@ -34,8 +36,24 @@ export async function fetchClips(
     }
 
     async function process(period: Period) {
+        let clips;
         const index = id++;
-        const clips = await fetchClipsFromBatch(userId, (clipCount) => onBatchUpdate(index, clipCount), period);
+        // Build the cache file path
+        const leftDate = pathableDate(period.left);
+        const rightDate = pathableDate(period.right);
+        const cacheKey = `${leftDate}+${rightDate}`;
+        const cacheDir = `${userId}-clips`;
+        const cacheExists = await checkCache(cacheDir, cacheKey);
+
+        if (cacheExists) {
+            debug(`Found cache for key ${cacheKey}`);
+            const buffer = await getCache(cacheDir, cacheKey);
+            clips = JSON.parse(buffer);
+        } else {
+            debug(`Could not find cache for key ${cacheKey}`);
+            clips = await fetchClipsFromBatch(userId, (clipCount) => onBatchUpdate(index, clipCount), period);
+            saveCache(cacheDir, cacheKey, JSON.stringify(clips));
+        }
 
         if (onBatchFinish) {
             onBatchFinish(index, Object.values(clips).length);

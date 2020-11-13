@@ -1,8 +1,10 @@
 import {promisify} from "util";
-import fs from "fs";
+import fs          from "fs";
 
 export const access = promisify(fs.access);
 export const write = promisify(fs.writeFile);
+export const readFile = promisify(fs.readFile);
+export const writeFile = promisify(fs.writeFile);
 
 export const existsSync = (filePath: string) => {
     try {
