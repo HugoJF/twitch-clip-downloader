@@ -48,7 +48,9 @@ export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: 
 }
 
 export function apiDelay(remaining: number, total: number, resetTime: number) {
+    // How fast the delay grows
     const degree = 3;
+    // Delay starts when remaining requests is below 10% the total rate-limit
     const startsAt = total * 0.1;
 
     if (startsAt < remaining) return 0;

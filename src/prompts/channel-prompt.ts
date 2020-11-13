@@ -15,7 +15,7 @@ const validateChannel = (channel: string) => {
     return true;
 };
 
-export const channelPrompt = async () => {
+export default async function channelPrompt() {
     const response = await prompts({
         type:     'text',
         name:     'channel',

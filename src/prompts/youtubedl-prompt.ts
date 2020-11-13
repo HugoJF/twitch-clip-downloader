@@ -1,7 +1,7 @@
 import prompts from "prompts";
 import {printErrorsAndExit} from "../errors";
 
-const youtubedlPrompt = async () => {
+export default async function youtubedlPrompt() {
     const response = await prompts({
         type:    'number',
         name:    'YOUTUBEDL_INSTANCES',
@@ -16,5 +16,3 @@ const youtubedlPrompt = async () => {
 
     return response.YOUTUBEDL_INSTANCES;
 };
-
-module.exports = youtubedlPrompt;

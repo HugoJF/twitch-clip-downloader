@@ -2,15 +2,12 @@ import pool                                                           from "tiny
 import * as fns                                                       from "date-fns";
 import {debug, generateBatches, iterable, Period, sleep, splitPeriod} from "./utils";
 import {api}                                                          from "./api";
-import {Clip, TwitchClipsApiResponse}                                 from "./twitch";
+import {Clip, TwitchClipsApiResponse}        from "./twitch";
+import {API_INSTANCES, BATCH_CLIP_THRESHOLD} from "./configs";
 
 interface Dict<T> {
     [key: string]: T;
 }
-
-// 10 should be enough to keep rate-limit under control
-const API_INSTANCES = 20;
-const BATCH_CLIP_THRESHOLD = 500;
 
 export async function fetchClips(
     userId: string,

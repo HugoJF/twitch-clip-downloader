@@ -1,14 +1,14 @@
-import fs from "fs";
-import * as twitch from "./twitch";
+import fs               from "fs";
+import * as twitch      from "./twitch";
+import {API_TOKEN_PATH} from "./configs";
 
-let _api: ReturnType<typeof twitch.api>;
+let instance: ReturnType<typeof twitch.api>;
 
 export async function load () {
     let token: string;
-    const path = './token.txt';
 
     try {
-        const buffer = fs.readFileSync(path);
+        const buffer = fs.readFileSync(API_TOKEN_PATH);
         token = buffer.toString();
         console.log('Read Twitch API OAuth2 token from file.');
     } catch (e) {
@@ -16,12 +16,12 @@ export async function load () {
 
         token = await twitch.generateOauthToken();
 
-        fs.writeFileSync(path, token);
+        fs.writeFileSync(API_TOKEN_PATH, token);
     }
 
-    _api = twitch.api(token);
+    instance = twitch.api(token);
 }
 
 export function api () {
-    return _api;
+    return instance;
 }

@@ -1,11 +1,10 @@
-import fs               from "fs";
-import youtubedl        from "youtube-dl";
-import pool             from "tiny-async-pool";
-import {debug}      from "./utils";
-import {existsSync} from "./filesystem";
-import {Clip}       from "./twitch";
-
-const YOUTUBEDL_INSTANCES: number = parseInt(process.env.YOUTUBEDL_INSTANCES || '3');
+import fs                    from "fs";
+import youtubedl             from "youtube-dl";
+import pool                  from "tiny-async-pool";
+import {debug}               from "./utils";
+import {existsSync}          from "./filesystem";
+import {Clip}                from "./twitch";
+import {YOUTUBEDL_INSTANCES} from "./configs";
 
 function downloadClip (clip: Clip, onDownloaded: () => void) {
     return new Promise((resolve, reject) => {

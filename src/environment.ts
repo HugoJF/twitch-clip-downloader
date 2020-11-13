@@ -7,13 +7,15 @@ import {printErrorsAndExit} from "./errors";
 
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
 
-const loadEnvironment = () => dotenv.config();
-
 const DEFAULTS: object = {
     DEBUG:               false,
     CLIENT_ID:           '',
     CLIENT_SECRET:       '',
     YOUTUBEDL_INSTANCES: 3
+};
+
+const loadEnvironment = () => {
+    dotenv.config();
 };
 
 const ensureEnvironmentKeyIsLoaded = (key: string) => {
