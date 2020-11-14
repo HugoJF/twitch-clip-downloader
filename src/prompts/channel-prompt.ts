@@ -19,7 +19,7 @@ export async function channelPrompt() {
     const response = await prompts({
         type:     'text',
         name:     'channel',
-        message:  'What channel do you want to download clips from?',
+        message:  'Which channel do you want to download media from?',
         validate: validateChannel
     });
 
@@ -28,4 +28,4 @@ export async function channelPrompt() {
     }
 
     return response.channel;
-};
+}

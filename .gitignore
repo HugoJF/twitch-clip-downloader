@@ -8,3 +8,4 @@ token.txt
 *.meta
 mix-manifest.json
 cache/
+todo

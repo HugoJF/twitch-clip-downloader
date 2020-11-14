@@ -1,92 +1,52 @@
-import {channelPrompt} from './prompts/channel-prompt';
+import {channelPrompt}          from './prompts/channel-prompt';
 import {ensureConfigsAreLoaded} from "./environment";
-import {startDownload} from "./clip-downloader";
-import {fetchClips} from "./clip-fetcher";
-import {api, load} from "./api";
-import {writeMetaFile} from "./meta";
-import cliProgress from "cli-progress";
-import prompts from "prompts";
-import ora from "ora";
+import {api, load}              from "./api";
+import cliProgress              from "cli-progress";
+import ora                      from "ora";
+import {clips}                  from "./clips-downloader";
+import prompts                  from "prompts";
+import {videos}                 from "./videos-downloader";
 
 let apiSpinner: ora.Ora | null;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-async function fetchUserId (name: string) {
+async function fetchUserId(name: string) {
     const user = await api().users({login: name});
 
     return user.data.data[0].id;
 }
 
-async function start () {
+async function start() {
     await ensureConfigsAreLoaded();
 
     const channel = await channelPrompt();
 
+    // FIXME: LOAD WAT
     await load();
 
-    /**
-     * API fetching phase
-     */
-
-    let totalBatches = 0;
-    let finishedBatches = 0;
-    if (!apiSpinner) {
-        apiSpinner = ora('Paginating API, please wait...').start();
-    }
-
-    function onBatchGenerated (count: number) {
-        totalBatches = count;
-    }
-
-    function onBatchFinished () {
-        finishedBatches++;
-    }
-
-    function onCountUpdate (total: number) {
-        if (apiSpinner) {
-            apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
-        }
-    }
-
     const id = await fetchUserId(channel);
-    const clips = await fetchClips(id, onBatchGenerated, onBatchFinished, onCountUpdate);
-    const clipCount = Object.values(clips).length;
 
-    apiSpinner.succeed('Finished API pagination.');
-    apiSpinner = null;
-
-    /**
-     * Metadata phase
-     */
-    writeMetaFile(channel, Object.values(clips));
-
-    /**
-     * Confirmation phase
-     */
-
-    const confirmation = await prompts({
-        type:    'confirm',
-        name:    'value',
-        message: `Found ${clipCount} clips to download, download now?`,
+    const downloadClips = await prompts({
+        type: 'confirm',
+        name: 'value',
+        message: `Do you want to download clips from "${channel}"?`,
         initial: true
     });
 
-    if (!confirmation.value) {
-        console.log('Bye!');
-        process.exit(0);
+    if (downloadClips.value) {
+        await clips(channel, id);
     }
 
-    /**
-     * Download phase
-     */
+    const downloadVideos = await prompts({
+        type: 'confirm',
+        name: 'value',
+        message: `Do you want to download videos (VODs, highlights, uploads) from "${channel}"?`,
+        initial: true
+    });
 
-    downloadBar.start(clipCount, 0);
-
-    const finished = await startDownload(Object.values(clips), count => downloadBar.update(count));
-
-    downloadBar.stop();
-
-    console.log(`Finished download of ${finished} out of ${clipCount}!`);
+    if (downloadVideos.value) {
+        await videos(channel, id);
+    }
 }
 
 start();

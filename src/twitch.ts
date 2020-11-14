@@ -1,5 +1,5 @@
 import axios, {AxiosRequestConfig} from "axios";
-import {apiDelay, debug, sleep} from "./utils";
+import {apiDelay, debug, sleep}    from "./utils";
 
 export type HelixOptions = Omit<AxiosRequestConfig, "baseURL" | "Headers">
 export type OAuth2Options = Omit<AxiosRequestConfig, "baseURL" | "method">
@@ -30,6 +30,25 @@ export type TwitchUsersApiResponse = {
     data: User[],
 }
 
+export type TwitchVideosApiParams = {
+    user_id: string,
+    game_id?: string,
+    after?: string,
+    before?: string,
+    first?: number,
+    language?: string,
+    period?: string,
+    sort?: string,
+    type?: string,
+};
+
+export type TwitchVideosApiResponse = {
+    data: Video[],
+    pagination: {
+        cursor: string
+    }
+};
+
 export type User = {
     broadcaster_type: string,
     description: string,
@@ -54,12 +73,28 @@ export type Clip = {
     game_id: string,
     id: string,
     language: string,
-    pagination: string,
     thumbnail_url: string,
     title: string,
     url: string,
     video_id: string,
     view_count: number,
+}
+
+export type Video = {
+    created_at: string,
+    description: string,
+    duration: string,
+    id: string,
+    language: string,
+    published_at: string,
+    thumbnail_url: string,
+    title: string,
+    type: string,
+    url: string,
+    user_id: string,
+    user_name: string,
+    view_count: number,
+    viewable: string,
 }
 
 const helix = async <T>(token: string, options: HelixOptions) => {
@@ -104,6 +139,12 @@ export const api = (token: string) => ({
             url: 'users',
             params
         });
+    },
+    videos: function (params: TwitchVideosApiParams) {
+        return helix<TwitchVideosApiResponse>(token, {
+            url: 'videos',
+            params,
+        })
     }
 });
 
