@@ -122,7 +122,7 @@ async function fetchClipsFromBatch(
 
         const newClips = newClipsDicts.reduce((total, part) => ({...total, ...part}), {});
 
-        debug(`After splitting period, found ${Object.keys(newClips).length} (from period ${clipCount})`);
+        debug(`After splitting period, found ${Object.keys(newClips).length} (from previous ${clipCount})`);
         clips = {...clips, ...newClips};
     }
 

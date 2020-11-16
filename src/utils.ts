@@ -29,10 +29,10 @@ export function splitPeriod(period: Period): Period[] {
 
 export function generateBatches(): Period[] {
     // The day Twitch Clips were announced
-    const left = new Date(2016, 5, 26);
+    const left = new Date(2016, 4, 26);
     const right = fns.endOfToday();
 
-    return generateBatchesFrom(left, right, 24 * 60);
+    return generateBatchesFrom(left, right, 30*24*60);
 }
 
 export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: number): Period[] {
@@ -43,7 +43,7 @@ export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: 
         batches.push({left: left, right: next});
         left = next;
     }
-
+    console.log(batches);
     return batches;
 }
 
