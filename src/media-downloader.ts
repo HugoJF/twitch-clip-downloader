@@ -1,10 +1,13 @@
-import fs                    from "fs";
-import youtubedl             from "youtube-dl";
-import pool                  from "tiny-async-pool";
+import fs                                  from "fs";
+import pool                                from "tiny-async-pool";
 import {debug}                             from "./utils";
 import {ensureDirectoryExists, existsSync} from "./filesystem";
 import {Clip, Video}                       from "./twitch";
 import {YOUTUBEDL_INSTANCES}               from "./configs";
+// @ts-ignore
+import YoutubeDlWrap                       from "youtube-dl-wrap";
+
+const youtubeDlWrap = new YoutubeDlWrap("./bin/youtube-dl.exe");
 
 function downloadMedia (url: string, name: string, directory: string, onDownloaded: () => void) {
     return new Promise((resolve, reject) => {
@@ -16,20 +19,17 @@ function downloadMedia (url: string, name: string, directory: string, onDownload
             resolve(true);
             return;
         }
-        const downloader = youtubedl(url, [], {});
+        let downloader = youtubeDlWrap.execStream([url, "-f", "best"]);
 
-        downloader.on('info', (info) => {
-            debug('Clip download started', name);
-            debug('Filename:', info._filename);
-            debug('Size:', info.size);
-        });
+        downloader.on("progress", (progress: any) =>
+                console.log(progress.percent, progress.totalSize, progress.currentSpeed, progress.eta));
 
-        downloader.on('error', err => {
+        downloader.on('error', (err: any) => {
             console.error(err);
             reject(err);
         });
 
-        downloader.on('end', () => {
+        downloader.on('close', () => {
             fs.renameSync(tempVideoPath, mediaPath);
             onDownloaded();
             resolve(true);
