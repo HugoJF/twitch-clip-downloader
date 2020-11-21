@@ -8,6 +8,7 @@ import YoutubeDlWrap                       from "youtube-dl-wrap";
 import {fragments}                         from "./video-fragments-fetcher";
 import {download}                          from "./downloader";
 import {logger}                            from "./logger";
+import {EventEmitter}                      from "events";
 
 const youtubeDlWrap = new YoutubeDlWrap("./bin/youtube-dl.exe");
 
@@ -62,14 +63,13 @@ export async function startClipsDownload(clips: Clip[], onCountUpdate: (count: n
     return finished;
 }
 
-export async function startVideosDownload(videos: Video[], onCountUpdate: (count: number) => void) {
-    let finished = 0;
-
+export async function startVideosDownload(videos: Video[]) {
     ensureDirectoryExists('videos');
 
     logger.verbose('Starting video download');
     for (let video of videos) {
         logger.info(`Download video ${video.id}: ${video.title}`);
+        const fragmentDownloadInstances = 50;
         const id = video.id;
         const urls = await fragments(video.url);
         const entries = Object.entries(urls);
@@ -80,18 +80,19 @@ export async function startVideosDownload(videos: Video[], onCountUpdate: (count
         ensureDirectoryExists(`videos/${id}`);
 
         logger.verbose('Starting download pool');
-        const frags = await pool<typeof entries[0], string>(50, entries, async ([name, url]) => {
-            const path = `videos/${id}/${name}`;
+        const frags = await pool<typeof entries[0], string>(
+            fragmentDownloadInstances,
+            entries,
+            async ([name, url]) => {
+                const path = `videos/${id}/${name}`;
 
-            if (!existsSync(path)) {
-                await download(url, path);
-            } else {
-                logger.verbose(`Skipped download of ${url}, already exists`);
-            }
+                if (!existsSync(path)) {
+                    await download(url, path);
+                } else {
+                    logger.verbose(`Skipped download of ${url}, already exists`);
+                }
 
-            return name;
-        });
+                return name;
+            });
     }
-
-    return finished;
 }

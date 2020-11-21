@@ -1,14 +1,9 @@
 import {channelPrompt}          from './prompts/channel-prompt';
 import {ensureConfigsAreLoaded} from "./environment";
 import {api, load}              from "./api";
-import cliProgress              from "cli-progress";
-import ora                      from "ora";
 import {clips}                  from "./clips-downloader";
-import prompts                  from "prompts";
-import {videos}                 from "./videos-downloader";
-
-let apiSpinner: ora.Ora | null;
-const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+import prompts                    from "prompts";
+import {VideosDownloader} from "./videos-downloader";
 
 async function fetchUserId(name: string) {
     const user = await api().users({login: name});
@@ -45,7 +40,9 @@ async function start() {
     });
 
     if (downloadVideos.value) {
-        await videos(channel, id);
+        const videosDownloader = new VideosDownloader(channel, id);
+
+        await videosDownloader.start();
     }
 }
 
