@@ -28,6 +28,7 @@
     "ora": "^4.0.4",
     "prompts": "^2.4.0",
     "tiny-async-pool": "^1.2.0",
+    "winston": "^3.3.3",
     "youtube-dl-wrap": "latest"
   },
   "devDependencies": {

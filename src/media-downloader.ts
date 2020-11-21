@@ -80,7 +80,7 @@ export async function startVideosDownload(videos: Video[], onCountUpdate: (count
         ensureDirectoryExists(`videos/${id}`);
 
         debug('Starting download pool');
-        await pool<typeof entries[0], string>(50, entries, async ([name, url]) => {
+        const frags = await pool<typeof entries[0], string>(50, entries, async ([name, url]) => {
             const path = `videos/${id}/${name}`;
 
             if (!existsSync(path)) {
