@@ -1,9 +1,9 @@
-import ora                  from "ora";
-import {fetchClips}         from "./clip-fetcher";
-import {writeMetaFile}      from "./meta";
-import prompts              from "prompts";
-import {startClipsDownload} from "./media-downloader";
-import cliProgress          from "cli-progress";
+import ora                       from "ora";
+import {ClipFetcher} from "./clip-fetcher";
+import {writeMetaFile}           from "./meta";
+import prompts                   from "prompts";
+import {startClipsDownload}      from "./media-downloader";
+import cliProgress               from "cli-progress";
 
 let apiSpinner: ora.Ora | null;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -19,21 +19,20 @@ export async function clips(channel: string, userId: string) {
         apiSpinner = ora('Paginating API, please wait...').start();
     }
 
-    function onBatchGenerated(count: number) {
-        totalBatches = count;
-    }
+    const clipsFetcher = new ClipFetcher(userId);
 
-    function onBatchFinished() {
-        finishedBatches++;
-    }
+    clipsFetcher.on('clip-count', total => {
+        if (!apiSpinner) return;
 
-    function onCountUpdate(total: number) {
-        if (apiSpinner) {
-            apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
-        }
-    }
+        apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
+    });
 
-    const clips = await fetchClips(userId, onBatchGenerated, onBatchFinished, onCountUpdate);
+    clipsFetcher.on('batch-generated', count => totalBatches = count);
+
+    clipsFetcher.on('batch-finished', () => finishedBatches++);
+
+    const clips = await clipsFetcher.start();
+
     const clipCount = Object.values(clips).length;
 
     apiSpinner.succeed('Finished API pagination.');
