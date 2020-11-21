@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 export const printErrors = (...errors: any[]) => {
     console.error(`\n${chalk.redBright('ERROR!')}`);

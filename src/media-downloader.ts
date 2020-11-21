@@ -1,30 +1,30 @@
 import fs                                  from "fs";
 import pool                                from "tiny-async-pool";
-import {debug}                                     from "./utils";
-import {ensureDirectoryExists, exists, existsSync} from "./filesystem";
-import {Clip, Video}                               from "./twitch";
+import {ensureDirectoryExists, existsSync} from "./filesystem";
+import {Clip, Video}                       from "./twitch";
 import {YOUTUBEDL_INSTANCES}               from "./configs";
 // @ts-ignore
 import YoutubeDlWrap                       from "youtube-dl-wrap";
 import {fragments}                         from "./video-fragments-fetcher";
 import {download}                          from "./downloader";
+import {logger}                            from "./logger";
 
 const youtubeDlWrap = new YoutubeDlWrap("./bin/youtube-dl.exe");
 
 function downloadMedia(url: string, name: string, directory: string, onDownloaded: () => void) {
     return new Promise((resolve, reject) => {
-        debug(`Downloading media ${name} at directory ${directory} from URL: ${url}`);
+        logger.info(`Downloading media ${name} at directory ${directory} from URL: ${url}`);
         const mediaPath = `${directory}/${name}.mp4`;
         const tempVideoPath = `${mediaPath}.pending`;
         if (existsSync(mediaPath)) {
-            debug(`Skipping ${name} since we already found it at ${mediaPath}`);
+            logger.verbose(`Skipping ${name} since we already found it at ${mediaPath}`);
             resolve(true);
             return;
         }
         let downloader = youtubeDlWrap.execStream([url, "-f", "best"]);
 
         downloader.on("progress", (progress: any) =>
-            debug(progress.percent, progress.totalSize, progress.currentSpeed, progress.eta));
+            logger.verbose(progress.percent, progress.totalSize, progress.currentSpeed, progress.eta));
 
         downloader.on('error', (err: any) => {
             console.error(err);
@@ -67,26 +67,26 @@ export async function startVideosDownload(videos: Video[], onCountUpdate: (count
 
     ensureDirectoryExists('videos');
 
-    debug('Starting video download');
+    logger.verbose('Starting video download');
     for (let video of videos) {
-        debug(`Download video ${video.id}: ${video.title}`);
+        logger.info(`Download video ${video.id}: ${video.title}`);
         const id = video.id;
         const urls = await fragments(video.url);
         const entries = Object.entries(urls);
 
-        debug(`Found ${Object.values(urls).length} fragments`);
-        debug(urls);
+        logger.info(`Found ${Object.values(urls).length} fragments`);
+        logger.verbose({urls});
 
         ensureDirectoryExists(`videos/${id}`);
 
-        debug('Starting download pool');
+        logger.verbose('Starting download pool');
         const frags = await pool<typeof entries[0], string>(50, entries, async ([name, url]) => {
             const path = `videos/${id}/${name}`;
 
             if (!existsSync(path)) {
                 await download(url, path);
             } else {
-                debug(`Skipped download of ${url}, already exists`);
+                logger.verbose(`Skipped download of ${url}, already exists`);
             }
 
             return name;

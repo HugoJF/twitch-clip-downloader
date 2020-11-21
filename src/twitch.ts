@@ -1,5 +1,6 @@
 import axios, {AxiosRequestConfig} from "axios";
-import {apiDelay, debug, sleep}    from "./utils";
+import {apiDelay, sleep}           from "./utils";
+import {logger}                    from "./logger";
 
 export type HelixOptions = Omit<AxiosRequestConfig, "baseURL" | "Headers">
 export type OAuth2Options = Omit<AxiosRequestConfig, "baseURL" | "method">
@@ -112,10 +113,10 @@ const helix = async <T>(token: string, options: HelixOptions) => {
 
     if (rateLimitLimit && rateLimitRemaining) {
         const delay = apiDelay(parseInt(rateLimitRemaining), parseInt(rateLimitLimit), 60 * 1000 /* millis */);
-        debug(`Delaying API response by ${delay}ms. Rate limit ${rateLimitRemaining}/${rateLimitLimit}`);
+        logger.info(`Delaying API response by ${delay}ms. Rate limit ${rateLimitRemaining}/${rateLimitLimit}`);
         await sleep(delay);
     } else {
-        debug('Could not read API rate-limit headers', request.headers);
+        logger.warning('Could not read API rate-limit headers', request.headers);
     }
 
     return request;
@@ -160,15 +161,15 @@ export async function generateOauthToken(): Promise<string> {
 
     if (response.status !== 200 && response.status !== 201) {
         console.log(`Failed to generate Twitch API token, response status: ${response.status}`);
-        debug(response.data);
+        logger.verbose(response.data);
         throw new Error(response.statusText);
     }
 
     const token = response.data?.access_token;
 
     if (!token) {
-        console.log(`API did not generate an access_token`);
-        debug(response.data);
+        logger.error(`API did not generate an access_token`);
+        logger.error(response.data);
         throw new Error('API did not generate an access_token');
     }
 

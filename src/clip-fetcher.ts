@@ -1,11 +1,11 @@
-import pool                                                           from "tiny-async-pool";
-import * as fns                                                       from "date-fns";
-import {format}                                                                     from "date-fns";
-import {debug, generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from "./utils";
+import pool                                                                         from "tiny-async-pool";
+import * as fns                                                                     from "date-fns";
+import {generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from "./utils";
 import {api}                                                                        from "./api";
-import {Clip, TwitchClipsApiResponse}                                 from "./twitch";
-import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                          from "./configs";
-import {checkCache, getCache, saveCache}                              from "./cache";
+import {Clip, TwitchClipsApiResponse}                                               from "./twitch";
+import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                                        from "./configs";
+import {checkCache, getCache, saveCache}                                            from "./cache";
+import {logger}                                                                     from "./logger";
 
 interface Dict<T> {
     [key: string]: T;
@@ -46,11 +46,11 @@ export async function fetchClips(
         const cacheExists = await checkCache(cacheDir, cacheKey);
 
         if (cacheExists) {
-            debug(`Found cache for key ${cacheKey}`);
+            logger.verbose(`Found cache for key ${cacheKey}`);
             const buffer = await getCache(cacheDir, cacheKey);
             clips = JSON.parse(buffer);
         } else {
-            debug(`Could not find cache for key ${cacheKey}`);
+            logger.verbose(`Could not find cache for key ${cacheKey}`);
             clips = await fetchClipsFromBatch(userId, (clipCount) => onBatchUpdate(index, clipCount), period);
             saveCache(cacheDir, cacheKey, JSON.stringify(clips));
         }
@@ -76,53 +76,57 @@ async function fetchClipsFromBatch(
     let clips: Dict<Clip> = {};
     let cursor;
 
+    logger.verbose(`Fetching clips from period ${period.left} ~ ${period.right}`);
+
     do {
         // This somehow fixes type-hinting in PhpStorm
         const responsePromise = paginate(userId, period, cursor);
         const response = await responsePromise;
 
+        logger.verbose({cursor, response});
+
         if (response === false) {
-            console.error('Error while paginating, waiting a few seconds before continuing...');
+            logger.error('Error while paginating, waiting a few seconds before continuing...');
             await sleep(10000);
             continue;
         }
 
         if (!iterable(response.data)) {
-            console.error('API returned 200 but data is not iterable, waiting before trying again...');
+            logger.error('API returned 200 but data is not iterable, waiting before trying again...');
             await sleep(10000);
             continue;
-        }
-
-        if (response.pagination) {
-            cursor = response.pagination.cursor;
         }
 
         for (const clip of response.data) {
             clips[clip.id] = clip;
         }
 
+        if (response.pagination) {
+            cursor = response.pagination.cursor;
+        }
+
         onUpdate(Object.keys(clips).length);
     } while (cursor);
 
-    debug('Period', left, 'to', right, 'resulted in', Object.keys(clips).length, 'clips');
+    logger.verbose('Period', left, 'to', right, 'resulted in', Object.keys(clips).length, 'clips');
 
     const clipCount = Object.keys(clips).length;
 
     if (clipCount > BATCH_CLIP_THRESHOLD) {
-        debug(`Found ${clipCount} in one period, which is above the ${BATCH_CLIP_THRESHOLD} limit, splitting period...`);
+        logger.info(`Found ${clipCount} in one period, which is above the ${BATCH_CLIP_THRESHOLD} limit, splitting period...`);
         const newPeriods = splitPeriod(period);
 
         const newClipsDicts: Dict<Clip>[] = [];
 
         for (let newPeriod of newPeriods) {
-            debug(`Fetching clips from ${newPeriod.left} to ${newPeriod.right}`);
+            logger.verbose(`Fetching clips from ${newPeriod.left} to ${newPeriod.right}`);
             // FIXME: onUpdate call back does not accept a null here
             newClipsDicts.push(await fetchClipsFromBatch(userId, (a) => a, newPeriod));
         }
 
         const newClips = newClipsDicts.reduce((total, part) => ({...total, ...part}), {});
 
-        debug(`After splitting period, found ${Object.keys(newClips).length} (from period ${clipCount})`);
+        logger.info(`After splitting period, found ${Object.keys(newClips).length} (from period ${clipCount})`);
         clips = {...clips, ...newClips};
     }
 

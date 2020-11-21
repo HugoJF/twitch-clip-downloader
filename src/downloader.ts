@@ -1,7 +1,6 @@
-import {debug} from "./utils";
-
-const axios = require('axios');
-const fs = require('fs');
+import axios    from 'axios';
+import fs       from 'fs';
+import {logger} from "./logger";
 
 export function download (url: string, path: string): Promise<string> {
     return new Promise(async (res, rej) => {
@@ -13,7 +12,7 @@ export function download (url: string, path: string): Promise<string> {
             });
 
             data.on('end', () => {
-                debug(`Download ${url} finished on ${path}`);
+                logger.verbose(`Download ${url} finished on ${path}`);
                 fs.renameSync(`${path}.progress`, `${path}`);
                 res(path);
             });

@@ -6,7 +6,6 @@ import ora                      from "ora";
 import {clips}                  from "./clips-downloader";
 import prompts                  from "prompts";
 import {videos}                 from "./videos-downloader";
-import {logger}                 from "./logger";
 
 let apiSpinner: ora.Ora | null;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);

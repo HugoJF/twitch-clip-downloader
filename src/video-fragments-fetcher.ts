@@ -1,4 +1,3 @@
-import {debug}  from "./utils";
 import {logger} from "./logger";
 
 const Wrap = require('youtube-dl-wrap');

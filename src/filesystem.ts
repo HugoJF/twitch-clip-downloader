@@ -1,6 +1,6 @@
 import {promisify} from "util";
 import fs          from "fs";
-import {debug}     from "./utils";
+import {logger}    from "./logger";
 
 export const access = promisify(fs.access);
 export const write = promisify(fs.writeFile);
@@ -19,10 +19,10 @@ export const existsSync = (filePath: string) => {
 
 export function ensureDirectoryExists (directory: string) {
     if (!existsSync(directory)) {
-        debug(`Could not find "${directory}", creating it...`);
+        logger.info(`Could not find "${directory}", creating it...`);
         fs.mkdirSync(directory, {recursive: true});
     } else {
-        debug(`"${directory}" directory found!`);
+        logger.verbose(`"${directory}" directory found!`);
     }
 }
 

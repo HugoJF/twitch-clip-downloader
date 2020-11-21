@@ -1,17 +1,12 @@
 import * as fns                                         from "date-fns";
 import {differenceInHours, differenceInMinutes, format} from "date-fns";
+import {logger}                                         from "./logger";
 
 const SPLIT_FACTOR = 2;
 
 export type Period = {
     left: Date,
     right: Date,
-}
-
-export function debug(...messages: any[]) {
-    if (process.env.DEBUG === 'true') {
-        console.log(...messages);
-    }
 }
 
 export function splitPeriod(period: Period): Period[] {
@@ -23,7 +18,7 @@ export function splitPeriod(period: Period): Period[] {
         throw Error(`Reached 1 minute periods, something is probably wrong.`);
     }
 
-    debug(`Splitting period of ${diffInMinutes}min in ${ceil}min increments`);
+    logger.verbose(`Splitting period of ${diffInMinutes}min in ${ceil}min increments`);
     return generateBatchesFrom(period.left, period.right, ceil);
 }
 
