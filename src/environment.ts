@@ -1,6 +1,6 @@
-import dotenv from "dotenv";
-import path from "path";
-import chalk from "chalk";
+import dotenv               from "dotenv";
+import path                 from "path";
+import chalk                from "chalk";
 import {envPrompt}          from "./prompts/env-prompt";
 import {exists, write}      from "./filesystem";
 import {printErrorsAndExit} from "./errors";

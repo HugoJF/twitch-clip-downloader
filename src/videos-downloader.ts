@@ -1,10 +1,8 @@
-import ora                  from "ora";
-import {fetchClips}         from "./clip-fetcher";
-import {writeMetaFile}      from "./meta";
-import prompts                                   from "prompts";
-import {startClipsDownload, startVideosDownload} from "./media-downloader";
-import cliProgress                               from "cli-progress";
-import {fetchVideos}        from "./video-fetcher";
+import ora                   from "ora";
+import prompts               from "prompts";
+import {startVideosDownload} from "./media-downloader";
+import cliProgress           from "cli-progress";
+import {fetchVideos}         from "./video-fetcher";
 
 let apiSpinner: ora.Ora | null;
 const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);

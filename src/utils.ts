@@ -1,6 +1,6 @@
-import * as fns                                         from "date-fns";
-import {differenceInHours, differenceInMinutes, format} from "date-fns";
-import {logger}                                         from "./logger";
+import * as fns                      from "date-fns";
+import {differenceInMinutes, format} from "date-fns";
+import {logger}                      from "./logger";
 
 const SPLIT_FACTOR = 2;
 

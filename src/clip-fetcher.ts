@@ -1,11 +1,11 @@
-import pool                                                                         from "tiny-async-pool";
-import * as fns                                                                     from "date-fns";
+import pool                                                                  from "tiny-async-pool";
+import * as fns                                                              from "date-fns";
 import {generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from "./utils";
-import {api}                                                                        from "./api";
-import {Clip, TwitchClipsApiResponse}                                               from "./twitch";
-import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                                        from "./configs";
-import {checkCache, getCache, saveCache}                                            from "./cache";
-import {logger}                                                                     from "./logger";
+import {api}                                                                 from "./api";
+import {Clip, TwitchClipsApiResponse}                                        from "./twitch";
+import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                                 from "./configs";
+import {checkCache, getCache, saveCache}                                     from "./cache";
+import {logger}                                                              from "./logger";
 
 interface Dict<T> {
     [key: string]: T;
