@@ -39,6 +39,13 @@ Run this command on your console:
 npm install
 ```
 
+##### Build project
+
+To build the TypeScript files into JavaScript files, run this command on your console:
+```bash
+npm run build
+```
+
 ##### Run via NPM
 
 Run the script via NPM with (this is needed to get `dotenv` loaded):
