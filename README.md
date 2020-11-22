@@ -18,25 +18,24 @@ This is not fully tested but seems to work as expected (tested with summit1g at 
 
 Register an application on [Twitch Console](https://dev.twitch.tv/console/apps), click **Manage** and copy the **Client ID** and generate a **Client Secret**.
 
-##### Copy .env.example
-
-Just copy (or rename it) the provided `.env.example` to `.env`
-
-
-##### Fill .env information
-
-You must fill the `CLIENT_ID` and `CLIENT_SECRET` with your newly created credentials from Twitch Console.
-
-That's it. But if you want to tweak some stuff, here are the descriptions for each variable:
-
-  - `DEBUG`: print some extra information, just keep it false for normal use;
-  - `YOUTUBEDL_INSTANCES`: how many concurrent youtube-dl instances should be used to download clips. Don't go too high because youtube-dl is pretty CPU intensive, and if you are storing in a HDD, it's just not worth it to increase beyond 10 instances.
 
 ##### Install NodeJS dependencies
 
-Run this command on your console:
+Install `cross-env`:
+```bash
+npm install -g cross-env
+```
+
+Run the following command in your console:
 ```bash
 npm install
+```
+
+##### Build the project
+
+Run the following command in your console:
+```bash
+npm run dev
 ```
 
 ##### Run via NPM
@@ -46,6 +45,10 @@ Run the script via NPM with (this is needed to get `dotenv` loaded):
 npm run start
 ```
 
-##### Prompts
+The first time you run this tool, our wizard will ask for your **Client ID** and **Client Secret** (both created in the first step) directly in your console.
+
+It will also ask if you want to run in debug mode, which can be turned off for normal usage. If you encounter any problems **please enable debug mode** creating an issue.  
+
+##### Select channel
 
 Each time you run this script, it will ask you for a channel name, and then confirm if you want to download everything.
