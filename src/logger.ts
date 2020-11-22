@@ -13,10 +13,13 @@ export const logger = createLogger({
         //
         new transports.File({filename: 'logs/errors.log', level: 'error'}),
         new transports.File({filename: 'logs/combined.log'}),
-        new transports.Console({
-            format: format.combine(
-                format.cli(),
-            )
-        }),
     ],
 });
+
+export function bootLogger() {
+    logger.add(new transports.Console({
+        format: format.combine(
+            format.cli(),
+        )
+    }));
+}

@@ -1,9 +1,10 @@
-import {channelPrompt}          from './prompts/channel-prompt';
 import {ensureConfigsAreLoaded} from "./environment";
+import {channelPrompt}          from './prompts/channel-prompt';
 import {api, load}              from "./api";
 import {clips}                  from "./clips-downloader";
-import prompts                    from "prompts";
-import {VideosDownloader} from "./videos-downloader";
+import prompts                  from "prompts";
+import {VideosDownloader}       from "./videos-downloader";
+import {bootLogger}             from "./logger";
 
 async function fetchUserId(name: string) {
     const user = await api().users({login: name});
@@ -13,6 +14,7 @@ async function fetchUserId(name: string) {
 
 async function start() {
     await ensureConfigsAreLoaded();
+    bootLogger();
 
     const channel = await channelPrompt();
 
