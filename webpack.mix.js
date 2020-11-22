@@ -19,7 +19,8 @@ mix.ts('src/index.ts', 'build/')
         node:   {
             __dirname: false
         }
-    });
+    })
+    .sourceMaps();
 
 // Full API
 // mix.js(src, output);
