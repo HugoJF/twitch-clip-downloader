@@ -5,8 +5,8 @@ import {Video}                 from "./twitch";
 import {logger}                from "./logger";
 import {ensureDirectoryExists} from "./filesystem";
 import {EventEmitter}          from "events";
-import {VideoFetcher}          from "./video-fetcher";
 import {VideoDownloader}       from "./video-downloader";
+import {VideosFetcher}         from "./videos-fetcher";
 
 export class VideosDownloader extends EventEmitter {
     private readonly channel: string;
@@ -38,8 +38,10 @@ export class VideosDownloader extends EventEmitter {
 
         this.apiSpinner.start();
 
-        const videoFetcher = new VideoFetcher(this.userId);
+        const videoFetcher = new VideosFetcher(this.userId);
 
+        // TODO: type me
+        // @ts-ignore
         videoFetcher.on('video', ({videos}) => {
             this.apiSpinner.text = `Paginating API, found ${Object.values(videos).length} videos, ${finishedBatches}/${totalBatches} please wait...`;
         });

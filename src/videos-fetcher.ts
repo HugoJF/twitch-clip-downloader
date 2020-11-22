@@ -3,7 +3,7 @@ import {api}                            from "./api";
 import {TwitchVideosApiResponse, Video} from "./twitch";
 import {EventEmitter}                   from "events";
 
-export class VideoFetcher extends EventEmitter {
+export class VideosFetcher extends EventEmitter {
     private readonly userId: string;
     private videos: Dict<Video> = {};
 

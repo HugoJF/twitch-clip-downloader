@@ -1,7 +1,7 @@
 import {logger} from "./logger";
-
-const Wrap = require('youtube-dl-wrap');
-const axios = require('axios');
+import axios from "axios";
+// @ts-ignore
+import Wrap from "youtube-dl-wrap";
 
 const youtubedl = new Wrap('./bin/youtube-dl.exe');
 
