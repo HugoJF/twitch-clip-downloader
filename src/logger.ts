@@ -1,7 +1,7 @@
 import {createLogger, format, transports} from "winston";
 
 export const logger = createLogger({
-    level: 'silly',
+    level: 'verbose',
     format: format.combine(
         format.timestamp(),
         format.prettyPrint(),
@@ -17,9 +17,11 @@ export const logger = createLogger({
 });
 
 export function bootLogger() {
-    logger.add(new transports.Console({
-        format: format.combine(
-            format.cli(),
-        )
-    }));
+    if (process.env.DEBUG === 'true') {
+        logger.add(new transports.Console({
+            format: format.combine(
+                format.cli(),
+            )
+        }));
+    }
 }

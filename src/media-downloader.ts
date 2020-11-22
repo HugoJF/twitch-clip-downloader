@@ -12,6 +12,13 @@ import {EventEmitter}                      from "events";
 
 const youtubeDlWrap = new YoutubeDlWrap("./bin/youtube-dl.exe");
 
+/**
+ * @deprecated
+ * @param url
+ * @param name
+ * @param directory
+ * @param onDownloaded
+ */
 function downloadMedia(url: string, name: string, directory: string, onDownloaded: () => void) {
     return new Promise((resolve, reject) => {
         logger.info(`Downloading media ${name} at directory ${directory} from URL: ${url}`);
@@ -42,6 +49,11 @@ function downloadMedia(url: string, name: string, directory: string, onDownloade
     });
 }
 
+/**
+ * @deprecated
+ * @param clips
+ * @param onCountUpdate
+ */
 export async function startClipsDownload(clips: Clip[], onCountUpdate: (count: number) => void) {
     let finished = 0;
 
@@ -63,6 +75,10 @@ export async function startClipsDownload(clips: Clip[], onCountUpdate: (count: n
     return finished;
 }
 
+/**
+ * @deprecated
+ * @param videos
+ */
 export async function startVideosDownload(videos: Video[]) {
     ensureDirectoryExists('videos');
 

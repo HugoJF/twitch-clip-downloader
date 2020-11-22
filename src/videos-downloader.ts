@@ -1,26 +1,34 @@
-import ora                   from "ora";
-import prompts               from "prompts";
-import {startVideosDownload} from "./media-downloader";
-import cliProgress           from "cli-progress";
-import {fetchVideos}         from "./video-fetcher";
-import {Video}               from "./twitch";
-import {logger}              from "./logger";
+import ora                     from "ora";
+import prompts                 from "prompts";
+import cliProgress             from "cli-progress";
+import {Video}                 from "./twitch";
+import {logger}                from "./logger";
+import {ensureDirectoryExists} from "./filesystem";
+import {EventEmitter}          from "events";
+import {VideoFetcher}          from "./video-fetcher";
+import {VideoDownloader}       from "./video-downloader";
 
-export class VideosDownloader {
-    channel: string;
-    userId: string;
+export class VideosDownloader extends EventEmitter {
+    private readonly channel: string;
+    private readonly userId: string;
 
-    videos?: Dict<Video>;
+    private fragmentDownloadInstances: number;
 
-    apiSpinner: ora.Ora;
-    downloadBar: cliProgress.SingleBar;
+    private apiSpinner: ora.Ora;
+    private downloadBar: cliProgress.SingleBar;
 
     constructor(channel: string, userId: string) {
+        super();
+
         this.channel = channel;
         this.userId = userId;
 
+        this.fragmentDownloadInstances = 50;
+
         this.apiSpinner = ora('Paginating API, please wait...');
-        this.downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+        this.downloadBar = new cliProgress.SingleBar({
+            format: 'Downloading video [{video}] | [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} fragments'
+        }, cliProgress.Presets.shades_classic);
     }
 
     private async fetchVideos() {
@@ -30,11 +38,13 @@ export class VideosDownloader {
 
         this.apiSpinner.start();
 
-        const onCountUpdate = (total: number) => {
-            this.apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
-        };
+        const videoFetcher = new VideoFetcher(this.userId);
 
-        this.videos = await fetchVideos(this.userId, onCountUpdate);
+        videoFetcher.on('video', ({videos}) => {
+            this.apiSpinner.text = `Paginating API, found ${Object.values(videos).length} videos, ${finishedBatches}/${totalBatches} please wait...`;
+        });
+
+        const videos = await videoFetcher.fetchVideos();
 
         this.apiSpinner.succeed('Finished API pagination.');
         this.apiSpinner.clear();
@@ -42,16 +52,13 @@ export class VideosDownloader {
         // Metadata phase
         // TODO: migrate to videos
         // writeMetaFile(channel, Object.values(videos));
+
+        return videos;
     }
 
-    private async downloadVideos() {
-        if (!this.videos) {
-            logger.error('There are no videos loaded to download');
-            throw new Error('No videos loaded');
-        }
-
+    private async downloadVideos(videos: Dict<Video>) {
         // Confirmation phase
-        const videoCount = Object.values(this.videos).length;
+        const videoCount = Object.values(videos).length;
         const confirmation = await prompts({
             type: 'confirm',
             name: 'value',
@@ -64,20 +71,42 @@ export class VideosDownloader {
             process.exit(0);
         }
 
-        // Download phase
-        this.downloadBar.start(videoCount, 0);
+        ensureDirectoryExists('videos');
 
-        const finished = await startVideosDownload(
-            Object.values(this.videos)
-        );
-
-        this.downloadBar.stop();
-
-        console.log(`Finished download of ${finished} out of ${videoCount}!`);
+        logger.verbose('Starting videos download');
+        for (let video of Object.values(videos)) {
+            await this.downloadVideo(video);
+        }
     }
 
+    private async downloadVideo(video: Video) {
+        const videoDownloader = new VideoDownloader(video);
+
+        videoDownloader.on('fragments-fetched', fragments => {
+            this.downloadBar.start(fragments, 0, {
+                video: video.title,
+            });
+        });
+
+        videoDownloader.on('fragment-downloaded', name => {
+            this.downloadBar.increment();
+        });
+
+        videoDownloader.on('speed', speed => {
+            this.downloadBar.update({
+                speed: speed / 1000 / 1000 * 8,
+            });
+        });
+
+        await videoDownloader.download();
+
+        this.downloadBar.stop();
+    }
+
+
     async start() {
-        await this.fetchVideos();
-        await this.downloadVideos();
+        const videos = await this.fetchVideos();
+
+        await this.downloadVideos(videos);
     }
 }

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "include": ["src/**/*"],
     "target": "es5",
     "lib": [
       "es6"

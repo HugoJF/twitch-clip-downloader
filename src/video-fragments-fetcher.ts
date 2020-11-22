@@ -9,7 +9,7 @@ const youtubedl = new Wrap('./bin/youtube-dl.exe');
 const firstManifestStreamPattern = /#EXT-X-STREAM.*?\n(http.*?\.m3u8)/;
 const manifestFragmentPattern = /#EXTINF.*?\n(.*?\.ts)/g;
 
-export async function fragments(url: string): Promise<{[name: string]: string}> {
+export async function fragments(url: string): Promise<Dict<string>> {
     logger.verbose(`Fetching fragments for URL: ${url}`);
 
     // Use YoutubeDL to fetch manifest URL
