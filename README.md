@@ -31,6 +31,13 @@ That's it. But if you want to tweak some stuff, here are the descriptions for ea
 
   - `DEBUG`: print some extra information, just keep it false for normal use;
   - `YOUTUBEDL_INSTANCES`: how many concurrent youtube-dl instances should be used to download clips. Don't go too high because youtube-dl is pretty CPU intensive, and if you are storing in a HDD, it's just not worth it to increase beyond 10 instances.
+  
+##### Install TypeScript globally
+
+Run this command on your console:
+```bash
+npm install -g typescript
+```
 
 ##### Install NodeJS dependencies
 
