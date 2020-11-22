@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "build",
     "target": "es5",
     "lib": [
       "es6"
@@ -15,5 +16,7 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "isolatedModules": true
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
