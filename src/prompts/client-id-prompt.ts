@@ -9,7 +9,7 @@ const validateClientId = (value: string) => {
     return true;
 };
 
-export async function clientIdPrompt() {
+export default async function clientIdPrompt() {
     const response = await prompts({
         type:     'text',
         name:     'CLIENT_ID',

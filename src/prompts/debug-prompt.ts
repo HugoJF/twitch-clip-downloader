@@ -1,7 +1,7 @@
 import prompts from "prompts";
 import {printErrorsAndExit} from "../errors";
 
-export async function debugPrompt () {
+export default async function debugPrompt () {
     const response = await prompts({
         type:    'confirm',
         name:    'DEBUG',

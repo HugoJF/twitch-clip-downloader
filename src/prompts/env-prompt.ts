@@ -1,7 +1,7 @@
-const clientIdPrompt     = require('./client-id-prompt');
-const clientSecretPrompt = require('./client-secret-prompt');
-const debugPrompt        = require('./debug-prompt');
-const youtubedlPrompt    = require('./youtubedl-prompt');
+import clientIdPrompt from "./client-id-prompt";
+import clientSecretPrompt from "./client-secret-prompt";
+import debugPrompt from "./debug-prompt";
+import youtubedlPrompt from "./youtubedl-prompt";
 
 export const envPrompt = async () => {
     const CLIENT_ID = await clientIdPrompt();

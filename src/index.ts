@@ -1,4 +1,4 @@
-import {channelPrompt} from './prompts/channel-prompt';
+import channelPrompt from './prompts/channel-prompt';
 import {ensureConfigsAreLoaded} from "./environment";
 import {startDownload} from "./clip-downloader";
 import {fetchClips} from "./clip-fetcher";
