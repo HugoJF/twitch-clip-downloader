@@ -22,4 +22,4 @@ export async function clientIdPrompt() {
     }
 
     return response.CLIENT_ID;
-};
+}

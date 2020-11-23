@@ -8,10 +8,11 @@ import {printErrorsAndExit} from "./errors";
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
 
 const DEFAULTS: object = {
-    DEBUG:               false,
-    CLIENT_ID:           '',
-    CLIENT_SECRET:       '',
-    YOUTUBEDL_INSTANCES: 3
+    DEBUG: false,
+    CLIENT_ID: '',
+    CLIENT_SECRET: '',
+    VIDEOS_PARALLEL_DOWNLOADS: 20,
+    CLIPS_PARALLEL_DOWNLOADS: 10,
 };
 
 const loadEnvironment = () => {

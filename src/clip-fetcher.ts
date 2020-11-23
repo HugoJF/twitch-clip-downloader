@@ -51,6 +51,7 @@ export class ClipFetcher extends EventEmitter {
 
     private async fetchClipsFromBatch (period: Period) {
         const {left, right} = period;
+        const clipsFromBatch: Dict<Clip> = {};
         let cursor;
 
         logger.verbose(`Fetching clips from period ${period.left} ~ ${period.right}`);
@@ -75,6 +76,7 @@ export class ClipFetcher extends EventEmitter {
             }
 
             for (const clip of response.data) {
+                clipsFromBatch[clip.id] = clip;
                 this.clips[clip.id] = clip;
             }
 
@@ -85,7 +87,7 @@ export class ClipFetcher extends EventEmitter {
             }
         } while (cursor);
 
-        const clipCount = Object.keys(this.clips).length;
+        const clipCount = Object.keys(clipsFromBatch).length;
 
         logger.verbose('Period', left, 'to', right, 'resulted in', clipCount, 'clips');
 
@@ -97,7 +99,7 @@ export class ClipFetcher extends EventEmitter {
 
             for (let newPeriod of newPeriods) {
                 logger.verbose(`Fetching clips from ${newPeriod.left} to ${newPeriod.right}`);
-                // FIXME: onUpdate call back does not accept a null here
+
                 newClipsDicts.push(await this.fetchClipsFromBatch(newPeriod));
             }
 

@@ -1,7 +1,7 @@
 import {ensureConfigsAreLoaded} from "./environment";
 import {channelPrompt}          from './prompts/channel-prompt';
 import {api, load}              from "./api";
-import {clips}                  from "./clips-downloader";
+import {ClipsDownloader}        from "./clips-downloader";
 import prompts                  from "prompts";
 import {VideosDownloader}       from "./videos-downloader";
 import {bootLogger}             from "./logger";
@@ -31,7 +31,9 @@ async function start() {
     });
 
     if (downloadClips.value) {
-        await clips(channel, id);
+        const clipsDownloader = new ClipsDownloader(channel, id);
+
+        await clipsDownloader.start();
     }
 
     const downloadVideos = await prompts({

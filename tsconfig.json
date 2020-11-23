@@ -1,20 +1,22 @@
 {
-  "compilerOptions": {
-    "include": ["src/**/*"],
-    "target": "es5",
-    "lib": [
-      "es6"
+    "include": [
+        "src/**/*"
     ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "isolatedModules": true
-  }
+    "compilerOptions": {
+        "target": "es5",
+        "lib": [
+            "es6"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "isolatedModules": true
+    }
 }

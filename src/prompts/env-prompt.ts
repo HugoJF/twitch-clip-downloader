@@ -1,13 +1,15 @@
-const clientIdPrompt     = require('./client-id-prompt');
-const clientSecretPrompt = require('./client-secret-prompt');
-const debugPrompt        = require('./debug-prompt');
-const youtubedlPrompt    = require('./youtubedl-prompt');
+import {clientIdPrompt} from "./client-id-prompt";
+import {clientSecretPrompt} from "./client-secret-prompt";
+import {debugPrompt} from "./debug-prompt";
+import {videosParallelDownloadsPrompt} from "./videos-parallel-downloads-prompt";
+import {clipsParallelDownloadsPrompt}  from "./clips-parallel-downloads-prompt";
 
 export const envPrompt = async () => {
     const CLIENT_ID = await clientIdPrompt();
     const CLIENT_SECRET = await clientSecretPrompt();
     const DEBUG = await debugPrompt();
-    const YOUTUBEDL_INSTANCES = await youtubedlPrompt();
+    const VIDEOS_PARALLEL_DOWNLOADS = await videosParallelDownloadsPrompt();
+    const CLIPS_PARALLEL_DOWNLOADS = await clipsParallelDownloadsPrompt();
 
-    return { CLIENT_ID, CLIENT_SECRET, DEBUG, YOUTUBEDL_INSTANCES };
+    return { CLIENT_ID, CLIENT_SECRET, DEBUG, VIDEOS_PARALLEL_DOWNLOADS, CLIPS_PARALLEL_DOWNLOADS };
 };

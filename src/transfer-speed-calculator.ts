@@ -1,6 +1,7 @@
 import {EventEmitter} from "events";
+import {logger}       from "./logger";
 
-const seconds = () => Math.round(Date.now() / 1000);
+const nowSeconds = () => Math.round(Date.now() / 1000);
 
 export class TransferSpeedCalculator extends EventEmitter {
     private currentNow: number;
@@ -9,18 +10,14 @@ export class TransferSpeedCalculator extends EventEmitter {
     constructor() {
         super();
 
-        this.currentNow = seconds();
+        this.currentNow = nowSeconds();
         this.bytes = 0;
-
-        this.reset();
     }
 
     data(bytes: number) {
-        const now = seconds();
-
         this.emit('progress', bytes);
 
-        if (this.currentNow !== now) {
+        if (this.currentNow !== nowSeconds()) {
             this.emit('speed', this.bytes);
             this.reset();
         }
@@ -30,6 +27,6 @@ export class TransferSpeedCalculator extends EventEmitter {
 
     reset() {
         this.bytes = 0;
-        this.currentNow = seconds();
+        this.currentNow = nowSeconds();
     }
 }

@@ -15,4 +15,4 @@ export async function debugPrompt () {
     }
 
     return response.DEBUG;
-};
+}

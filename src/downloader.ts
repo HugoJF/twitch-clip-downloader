@@ -8,6 +8,9 @@ export class Downloader extends EventEmitter {
     private readonly url: string;
     private readonly path: string;
 
+    private tries: number;
+    private maxTries: number;
+
     private speed: TransferSpeedCalculator;
 
     constructor(url: string, path: string) {
@@ -15,6 +18,9 @@ export class Downloader extends EventEmitter {
 
         this.url = url;
         this.path = path;
+
+        this.tries = 0;
+        this.maxTries = 0;
 
         this.speed = new TransferSpeedCalculator;
 
@@ -24,38 +30,30 @@ export class Downloader extends EventEmitter {
 
     async download() {
         return new Promise(async (res, rej) => {
-            try {
-                const {data} = await axios({
-                    url: this.url,
-                    method: 'GET',
-                    responseType: 'stream'
-                });
+            do {
+                try {
+                    const {data} = await axios({
+                        url: this.url,
+                        method: 'GET',
+                        responseType: 'stream'
+                    });
 
-                // TODO: type this
-                data.on('data', (chunk: any) => {
-                    this.speed.data(chunk.length);
-                });
+                    // TODO: type this
+                    data.on('data', (chunk: any) => {
+                        this.speed.data(chunk.length);
+                    });
 
-                data.on('close', () => {
-                    logger.verbose(`Download ${this.url} finished on ${this.path}`);
-                    fs.renameSync(`${this.path}.progress`, `${this.path}`);
-                    res(this.path);
-                });
+                    data.on('close', () => {
+                        logger.verbose(`Download ${this.url} finished on ${this.path}`);
+                        fs.renameSync(`${this.path}.progress`, `${this.path}`);
+                        res(this.path);
+                    });
 
-                data.pipe(fs.createWriteStream(`${this.path}.progress`));
-            } catch (e) {
-                if (this.shouldReject()) {
+                    data.pipe(fs.createWriteStream(`${this.path}.progress`));
+                } catch (e) {
                     rej(e);
                 }
-            }
+            } while (++this.tries < this.maxTries)
         })
-    }
-
-    private shouldReject() {
-        this.tries++;
-
-        if (this.tries >= this.maxTries) {
-
-        }
     }
 }

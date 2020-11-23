@@ -1,73 +1,118 @@
-import ora                       from "ora";
-import {ClipFetcher} from "./clip-fetcher";
+import ora                     from "ora";
+import {ClipFetcher}             from "./clip-fetcher";
 import {writeMetaFile}           from "./meta";
 import prompts                   from "prompts";
-import {startClipsDownload}      from "./media-downloader";
 import cliProgress               from "cli-progress";
+import {EventEmitter}            from "events";
+import {Clip}                    from "./twitch";
+import {ensureDirectoryExists}   from "./filesystem";
+import pool                       from "tiny-async-pool";
+import {CLIPS_PARALLEL_DOWNLOADS} from "./configs";
+import {getClipUrl}               from "./clip-url-fetcher";
+import {Downloader}              from "./downloader";
+import {TransferSpeedCalculator} from "./transfer-speed-calculator";
+import {logger}                  from "./logger";
 
-let apiSpinner: ora.Ora | null;
-const downloadBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+export class ClipsDownloader extends EventEmitter {
+    private readonly channel: string;
+    private readonly userId: string;
 
-export async function clips(channel: string, userId: string) {
-    /**
-     * API fetching phase
-     */
+    private speed: TransferSpeedCalculator;
+    private apiSpinner: ora.Ora;
+    private downloadBar: cliProgress.SingleBar;
 
-    let totalBatches = 0;
-    let finishedBatches = 0;
-    if (!apiSpinner) {
-        apiSpinner = ora('Paginating API, please wait...').start();
+    constructor(channel: string, userId: string) {
+        super();
+
+        this.channel = channel;
+        this.userId = userId;
+
+        this.speed = new TransferSpeedCalculator;
+        this.apiSpinner = ora('Paginating API, please wait...');
+        this.downloadBar = new cliProgress.SingleBar({
+            format: 'Downloading clips [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} clips'
+        }, cliProgress.Presets.shades_classic);
     }
 
-    const clipsFetcher = new ClipFetcher(userId);
+    private async fetchClips() {
+        // API fetching phase
+        let totalBatches = 0;
+        let finishedBatches = 0;
 
-    clipsFetcher.on('clip-count', total => {
-        if (!apiSpinner) return;
+        this.apiSpinner.start();
 
-        apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
-    });
+        const clipsFetcher = new ClipFetcher(this.userId);
 
-    clipsFetcher.on('batch-generated', count => totalBatches = count);
+        clipsFetcher.on('clip-count', total => {
+            this.apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
+        });
 
-    clipsFetcher.on('batch-finished', () => finishedBatches++);
+        clipsFetcher.on('batch-generated', count => totalBatches = count);
 
-    const clips = await clipsFetcher.start();
+        clipsFetcher.on('batch-finished', () => finishedBatches++);
 
-    const clipCount = Object.values(clips).length;
+        const clips = await clipsFetcher.start();
 
-    apiSpinner.succeed('Finished API pagination.');
-    apiSpinner = null;
+        this.apiSpinner.succeed('Finished API pagination.');
+        this.apiSpinner.clear();
 
-    /**
-     * Metadata phase
-     */
-    writeMetaFile(channel, Object.values(clips));
+        /**
+         * Metadata phase
+         */
+        writeMetaFile(this.channel, Object.values(clips));
 
-    /**
-     * Confirmation phase
-     */
-
-    const confirmation = await prompts({
-        type: 'confirm',
-        name: 'value',
-        message: `Found ${clipCount} clips to download, download now?`,
-        initial: true
-    });
-
-    if (!confirmation.value) {
-        console.log('Bye!');
-        process.exit(0);
+        return clips;
     }
 
-    /**
-     * Download phase
-     */
+    async downloadClips(clips: Dict<Clip>) {
+        const clipCount = Object.values(clips).length;
 
-    downloadBar.start(clipCount, 0);
+        // Confirmation phase
+        const confirmation = await prompts({
+            type: 'confirm',
+            name: 'value',
+            message: `Found ${clipCount} clips to download, download now?`,
+            initial: true
+        });
 
-    const finished = await startClipsDownload(Object.values(clips), count => downloadBar.update(count));
+        if (!confirmation.value) {
+            console.log('Bye!');
+            process.exit(0);
+        }
 
-    downloadBar.stop();
+        ensureDirectoryExists('clips');
 
-    console.log(`Finished download of ${finished} out of ${clipCount}!`);
+        // Download phase
+        this.downloadBar.start(clipCount, 0);
+
+        this.speed.on('speed', speed => {
+            this.downloadBar.update({speed: Math.round(speed / 1000 / 1000 * 8 * 100) / 100});
+        });
+
+        await pool(CLIPS_PARALLEL_DOWNLOADS, Object.values(clips), this.downloadClip.bind(this));
+
+        this.downloadBar.stop();
+
+        console.log(`Finished download of ${clipCount} clips!`);
+    }
+
+    async downloadClip(clip: Clip) {
+        const url = await getClipUrl(clip);
+
+        const downloader = new Downloader(url, `clips/${clip.id}.mp4`);
+
+        downloader.on('progress', bytes => {
+            this.speed.data(bytes);
+        });
+
+        await downloader.download();
+
+        this.downloadBar.increment();
+    }
+
+    async start() {
+        const clips = await this.fetchClips();
+
+        await this.downloadClips(clips);
+    }
 }
