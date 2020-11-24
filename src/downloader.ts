@@ -30,31 +30,40 @@ export class Downloader extends EventEmitter {
     }
 
     async download() {
+        do {
+            try {
+                await this.startDownload();
+
+                return true;
+            } catch (e) {
+                logger.error(`[${this.tries}/${this.maxTries}] Error while starting download`);
+                logger.error(e);
+            }
+        } while (++this.tries < this.maxTries);
+
+        return false;
+    }
+
+    private startDownload() {
         return new Promise(async (res, rej) => {
-            do {
-                try {
-                    const {data} = await axios({
-                        url: this.url,
-                        method: 'GET',
-                        responseType: 'stream'
-                    });
+            const {data} = await axios({
+                url: this.url,
+                method: 'GET',
+                responseType: 'stream'
+            });
 
-                    // TODO: type this
-                    data.on('data', (chunk: any) => {
-                        this.speed.data(chunk.length);
-                    });
+            // TODO: type this
+            data.on('data', (chunk: any) => {
+                this.speed.data(chunk.length);
+            });
 
-                    data.on('close', () => {
-                        logger.verbose(`Download ${this.url} finished on ${this.path}`);
-                        fs.renameSync(`${this.path}.progress`, `${this.path}`);
-                        res(this.path);
-                    });
+            data.on('close', () => {
+                logger.verbose(`Download ${this.url} finished on ${this.path}`);
+                fs.renameSync(`${this.path}.progress`, `${this.path}`);
+                res(this.path);
+            });
 
-                    data.pipe(fs.createWriteStream(`${this.path}.progress`));
-                } catch (e) {
-                    rej(e);
-                }
-            } while (++this.tries < this.maxTries)
+            data.pipe(fs.createWriteStream(`${this.path}.progress`));
         })
     }
 }

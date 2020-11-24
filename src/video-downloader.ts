@@ -6,6 +6,7 @@ import {fragments}                            from "./video-fragments-fetcher";
 import {Downloader}                           from "./downloader";
 import {EventEmitter}                         from "events";
 import {TransferSpeedCalculator}              from "./transfer-speed-calculator";
+import {appPath}                              from "./utils";
 
 export class VideoDownloader extends EventEmitter {
     private video: Video;
@@ -56,7 +57,7 @@ export class VideoDownloader extends EventEmitter {
         const [name, url] = fragmentData;
         const path = `videos/${this.video.id}/${name}`;
 
-        if (!existsSync(path)) {
+        if (!existsSync(appPath(path))) {
             const downloader = new Downloader(url, path);
 
             downloader.on('progress', this.speed.data.bind(this.speed));
