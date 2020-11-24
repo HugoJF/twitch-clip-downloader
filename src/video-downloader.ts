@@ -1,8 +1,8 @@
 import pool                                from "tiny-async-pool";
 import {Video}                             from "./twitch";
-import {logger}                            from "./logger";
-import {ensureDirectoryExists, existsSync} from "./filesystem";
-import {fragments}                         from "./video-fragments-fetcher";
+import {logger}                                                      from "./logger";
+import {ensureAppDirectoryExists, ensureDirectoryExists, existsSync} from "./filesystem";
+import {fragments}                                                   from "./video-fragments-fetcher";
 import {Downloader}                        from "./downloader";
 import {EventEmitter}                      from "events";
 import {TransferSpeedCalculator}           from "./transfer-speed-calculator";
@@ -34,7 +34,7 @@ export class VideoDownloader extends EventEmitter {
         logger.info(`Found ${Object.values(urls).length} fragments`);
         logger.verbose({urls});
 
-        ensureDirectoryExists(`videos/${this.video.id}`);
+        ensureAppDirectoryExists(`videos/${this.video.id}`);
 
         this.speed.reset();
         this.speed.on('speed', bps => logger.verbose(`Downloading2 at ${bps / 1000 / 1000 * 8}mbps`));

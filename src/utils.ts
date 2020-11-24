@@ -1,6 +1,7 @@
 import * as fns                      from "date-fns";
 import {differenceInMinutes, format} from "date-fns";
 import {logger}                      from "./logger";
+import path                          from "path";
 
 const SPLIT_FACTOR = 2;
 
@@ -53,6 +54,12 @@ export function apiDelay(remaining: number, total: number, resetTime: number) {
     const factor = 1 - Math.pow(remaining / startsAt, degree);
 
     return resetTime * factor;
+}
+
+export function appPath(p: string) {
+    const basePath = process.env.BASEPATH ?? '';
+
+    return path.resolve(basePath, p);
 }
 
 export function pathableDate(date: Date) {

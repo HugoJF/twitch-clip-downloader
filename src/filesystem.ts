@@ -1,6 +1,7 @@
 import {promisify} from "util";
 import fs          from "fs";
 import {logger}    from "./logger";
+import {appPath}   from "./utils";
 
 export const access = promisify(fs.access);
 export const write = promisify(fs.writeFile);
@@ -24,6 +25,10 @@ export function ensureDirectoryExists (directory: string) {
     } else {
         logger.verbose(`"${directory}" directory found!`);
     }
+}
+
+export function ensureAppDirectoryExists(directory: string) {
+    ensureDirectoryExists(appPath(directory));
 }
 
 export const exists = async (filePath: string) => {

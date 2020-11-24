@@ -4,9 +4,9 @@ import {writeMetaFile}           from "./meta";
 import prompts                   from "prompts";
 import cliProgress               from "cli-progress";
 import {EventEmitter}            from "events";
-import {Clip}                    from "./twitch";
-import {ensureDirectoryExists}   from "./filesystem";
-import pool                       from "tiny-async-pool";
+import {Clip}                                            from "./twitch";
+import {ensureAppDirectoryExists, ensureDirectoryExists} from "./filesystem";
+import pool                                              from "tiny-async-pool";
 import {CLIPS_PARALLEL_DOWNLOADS} from "./configs";
 import {getClipUrl}               from "./clip-url-fetcher";
 import {Downloader}              from "./downloader";
@@ -80,7 +80,7 @@ export class ClipsDownloader extends EventEmitter {
             process.exit(0);
         }
 
-        ensureDirectoryExists('clips');
+        ensureAppDirectoryExists('clips');
 
         // Download phase
         this.downloadBar.start(clipCount, 0);

@@ -3,6 +3,7 @@ import fs                        from 'fs';
 import {logger}                  from "./logger";
 import {EventEmitter}            from "events";
 import {TransferSpeedCalculator} from "./transfer-speed-calculator";
+import {appPath}                 from "./utils";
 
 export class Downloader extends EventEmitter {
     private readonly url: string;
@@ -17,7 +18,7 @@ export class Downloader extends EventEmitter {
         super();
 
         this.url = url;
-        this.path = path;
+        this.path = appPath(path);
 
         this.tries = 0;
         this.maxTries = 0;
