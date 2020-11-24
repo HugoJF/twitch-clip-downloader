@@ -1,11 +1,11 @@
-import pool                                from "tiny-async-pool";
-import {Video}                             from "./twitch";
-import {logger}                                                      from "./logger";
-import {ensureAppDirectoryExists, ensureDirectoryExists, existsSync} from "./filesystem";
-import {fragments}                                                   from "./video-fragments-fetcher";
-import {Downloader}                        from "./downloader";
-import {EventEmitter}                      from "events";
-import {TransferSpeedCalculator}           from "./transfer-speed-calculator";
+import pool                                   from "tiny-async-pool";
+import {Video}                                from "./twitch";
+import {logger}                               from "./logger";
+import {ensureAppDirectoryExists, existsSync} from "./filesystem";
+import {fragments}                            from "./video-fragments-fetcher";
+import {Downloader}                           from "./downloader";
+import {EventEmitter}                         from "events";
+import {TransferSpeedCalculator}              from "./transfer-speed-calculator";
 
 export class VideoDownloader extends EventEmitter {
     private video: Video;
@@ -19,7 +19,7 @@ export class VideoDownloader extends EventEmitter {
 
         this.video = video;
 
-        this.downloadInstances = 30;
+        this.downloadInstances = parseInt(process.env.VIDEOS_PARALLEL_DOWNLOADS ?? '20');
 
         this.speed = new TransferSpeedCalculator;
 

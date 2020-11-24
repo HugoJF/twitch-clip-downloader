@@ -1,21 +1,21 @@
-import ora                     from "ora";
-import {ClipFetcher}             from "./clip-fetcher";
-import {writeMetaFile}           from "./meta";
-import prompts                   from "prompts";
-import cliProgress               from "cli-progress";
-import {EventEmitter}            from "events";
-import {Clip}                                            from "./twitch";
-import {ensureAppDirectoryExists, ensureDirectoryExists} from "./filesystem";
-import pool                                              from "tiny-async-pool";
-import {CLIPS_PARALLEL_DOWNLOADS} from "./configs";
+import ora                        from "ora";
+import {ClipFetcher}              from "./clip-fetcher";
+import {writeMetaFile}            from "./meta";
+import prompts                    from "prompts";
+import cliProgress                from "cli-progress";
+import {EventEmitter}             from "events";
+import {Clip}                     from "./twitch";
+import {ensureAppDirectoryExists} from "./filesystem";
+import pool                       from "tiny-async-pool";
 import {getClipUrl}               from "./clip-url-fetcher";
-import {Downloader}              from "./downloader";
-import {TransferSpeedCalculator} from "./transfer-speed-calculator";
-import {logger}                  from "./logger";
+import {Downloader}               from "./downloader";
+import {TransferSpeedCalculator}  from "./transfer-speed-calculator";
 
 export class ClipsDownloader extends EventEmitter {
     private readonly channel: string;
     private readonly userId: string;
+
+    private downloadInstances: number;
 
     private speed: TransferSpeedCalculator;
     private apiSpinner: ora.Ora;
@@ -26,6 +26,8 @@ export class ClipsDownloader extends EventEmitter {
 
         this.channel = channel;
         this.userId = userId;
+
+        this.downloadInstances = parseInt(process.env.CLIPS_PARALLEL_DOWNLOADS ?? '20');
 
         this.speed = new TransferSpeedCalculator;
         this.apiSpinner = ora('Paginating API, please wait...');
@@ -89,7 +91,11 @@ export class ClipsDownloader extends EventEmitter {
             this.downloadBar.update({speed: Math.round(speed / 1000 / 1000 * 8 * 100) / 100});
         });
 
-        await pool(CLIPS_PARALLEL_DOWNLOADS, Object.values(clips), this.downloadClip.bind(this));
+        await pool(
+            this.downloadInstances,
+            Object.values(clips),
+            this.downloadClip.bind(this)
+        );
 
         this.downloadBar.stop();
 
