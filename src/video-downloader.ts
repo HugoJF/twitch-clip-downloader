@@ -1,3 +1,4 @@
+import fs from 'fs';
 import pool                                   from "tiny-async-pool";
 import {Video}                                from "./twitch";
 import {logger}                               from "./logger";
@@ -30,6 +31,16 @@ export class VideoDownloader extends EventEmitter {
     async download() {
         logger.info(`Starting video download [${this.video.id}]: ${this.video.title}`);
         const urls = await fragments(this.video.url);
+
+        // Video metadata
+        fs.writeFileSync(appPath(`videos/${this.video.id}.meta`), JSON.stringify(this.video));
+
+        // Fragments ID with URL
+        fs.writeFileSync(appPath(`videos/${this.video.id}.fragments`), JSON.stringify(urls));
+
+        // Fragment list for ffmpeg
+        const ffmpegInput = Object.keys(urls).map(id => `file '${id}'`).join('\n');
+        fs.writeFileSync(appPath(`videos/${this.video.id}.all.ts`), ffmpegInput);
 
         this.emit('fragments-fetched', Object.values(urls).length);
         logger.info(`Found ${Object.values(urls).length} fragments`);
