@@ -40,7 +40,7 @@ export class VideoDownloader extends EventEmitter {
 
         // Fragment list for ffmpeg
         const ffmpegInput = Object.keys(urls).map(id => `file '${id}'`).join('\n');
-        fs.writeFileSync(appPath(`videos/${this.video.id}.all.ts`), ffmpegInput);
+        fs.writeFileSync(appPath(`videos/${this.video.id}/${this.video.id}.all.ts`), ffmpegInput);
 
         this.emit('fragments-fetched', Object.values(urls).length);
         logger.info(`Found ${Object.values(urls).length} fragments`);
