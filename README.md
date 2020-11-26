@@ -30,7 +30,11 @@ You must fill the `CLIENT_ID` and `CLIENT_SECRET` with your newly created creden
 That's it. But if you want to tweak some stuff, here are the descriptions for each variable:
 
   - `DEBUG`: print some extra information, just keep it false for normal use;
-  - `YOUTUBEDL_INSTANCES`: how many concurrent youtube-dl instances should be used to download clips. Don't go too high because youtube-dl is pretty CPU intensive, and if you are storing in a HDD, it's just not worth it to increase beyond 10 instances.
+  - `CLIENT_ID`: Twitch API Client ID;
+  - `CLIENT_SECRET`: Twitch API Client Secret;
+  - `BASEPATH`: where files (clips, VODs, fragments) should be stored;
+  - `VIDEOS_PARALLEL_DOWNLOADS`: how many VOD fragments should be downloaded at the same time.
+  - `CLIPS_PARALLEL_DOWNLOADS`: how many clips should be downloaded at the same time.
 
 ##### Install NodeJS dependencies
 
