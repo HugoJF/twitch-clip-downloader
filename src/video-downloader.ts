@@ -1,13 +1,14 @@
-import fs from 'fs';
-import pool                                   from "tiny-async-pool";
+import fs                                     from 'fs';
 import {Video}                                from "./twitch";
 import {logger}                               from "./logger";
+import pool                                   from 'tiny-async-pool';
 import {ensureAppDirectoryExists, existsSync} from "./filesystem";
 import {fragments}                            from "./video-fragments-fetcher";
 import {Downloader}                           from "./downloader";
 import {EventEmitter}                         from "events";
-import {TransferSpeedCalculator}              from "./transfer-speed-calculator";
-import {appPath}                              from "./utils";
+import {TransferSpeedCalculator} from "./transfer-speed-calculator";
+import {appPath, videosPath}     from "./utils";
+import ffmpeg                    from 'fluent-ffmpeg';
 
 export class VideoDownloader extends EventEmitter {
     private video: Video;
@@ -28,19 +29,48 @@ export class VideoDownloader extends EventEmitter {
         this.speed.on('speed', this.emit.bind(this, 'speed'));
     }
 
+    transcode() {
+        return new Promise((res, rej) => {
+            logger.info(`Started video ${this.video.id} transcode`);
+            ffmpeg()
+                .input(appPath(`videos/${this.video.id}.all.ts`))
+                .inputOption('-safe 0')
+                .inputFormat('concat')
+                .addOption('-bsf:a', 'aac_adtstoasc')
+                .videoCodec('copy')
+                .on('start', logger.verbose.bind(logger))
+                .on('progress', logger.verbose.bind(logger))
+                .on('stderr', logger.error.bind(logger))
+                .on('error', logger.error.bind(logger))
+                .on('end', () => {
+                    logger.verbose(`Transcode of ${this.video.id} finished`);
+                    // @ts-ignore
+                    res()
+                })
+                .save(appPath(`videos/${this.video.id}.mp4`));
+
+            logger.info(`Finished video ${this.video.id} transcode`);
+        })
+
+    }
+
     async download() {
         logger.info(`Starting video download [${this.video.id}]: ${this.video.title}`);
         const urls = await fragments(this.video.url);
 
         // Video metadata
-        fs.writeFileSync(appPath(`videos/${this.video.id}.meta`), JSON.stringify(this.video));
+        fs.writeFileSync(videosPath(`${this.video.id}.meta`), JSON.stringify(this.video));
 
         // Fragments ID with URL
-        fs.writeFileSync(appPath(`videos/${this.video.id}.fragments`), JSON.stringify(urls));
+        fs.writeFileSync(videosPath(`${this.video.id}.fragments`), JSON.stringify(urls));
 
         // Fragment list for ffmpeg
-        const ffmpegInput = Object.keys(urls).map(id => `file '${id}'`).join('\n');
-        fs.writeFileSync(appPath(`videos/${this.video.id}/${this.video.id}.all.ts`), ffmpegInput);
+        const ffmpegInput = Object.keys(urls).map(id => {
+            const fragPath = videosPath(`${this.video.id}/${id}'`);
+
+            return `file '${fragPath}'`;
+        }).join('\n');
+        fs.writeFileSync(videosPath(`${this.video.id}.all.ts`), ffmpegInput);
 
         this.emit('fragments-fetched', Object.values(urls).length);
         logger.info(`Found ${Object.values(urls).length} fragments`);

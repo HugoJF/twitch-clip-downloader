@@ -1,5 +1,5 @@
 const mix = require('laravel-mix');
-
+const webpack = require('webpack');
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -13,6 +13,13 @@ const mix = require('laravel-mix');
 
 mix.ts('src/index.ts', 'build/')
     .webpackConfig({
+        // Fixes fluent-ffmpeg conditional imports using environment variables.
+        // This has to be done here since it's the only way to pass this variable for transpilation without adding it to the .env file.
+        plugins: [
+            new webpack.DefinePlugin({
+                'process.env.FLUENTFFMPEG_COV': false
+            })
+        ],
         // Fixes net, fs, and other imports
         target: 'node',
         // Fixes __dirname resolving

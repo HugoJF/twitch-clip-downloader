@@ -102,6 +102,8 @@ export class VideosDownloader extends EventEmitter {
 
         await videoDownloader.download();
 
+        await videoDownloader.transcode();
+
         this.downloadBar.stop();
     }
 

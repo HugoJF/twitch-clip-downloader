@@ -56,10 +56,18 @@ export function apiDelay(remaining: number, total: number, resetTime: number) {
     return resetTime * factor;
 }
 
-export function appPath(p: string) {
+export function appPath(p: string): string {
     const basePath = process.env.BASEPATH ?? '';
 
     return path.resolve(basePath, p);
+}
+
+export function videosPath(p: string): string {
+    return path.resolve(appPath('videos'), p);
+}
+
+export function quotes(s: string) {
+    return ['"', s, '"'].join('');
 }
 
 export function pathableDate(date: Date) {
