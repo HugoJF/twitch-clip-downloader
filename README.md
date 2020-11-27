@@ -8,9 +8,11 @@ This tool can PROBABLY download ALL clips from a channel (not only the top 1000)
 This is not fully tested but seems to work as expected (tested with summit1g at around 163k clips).
 
 ## Dependencies
-  - NodeJS
-  - NPM
-  - Twitch App Client-ID and Client Secret
+  - [NodeJS](https://nodejs.org/en/download/) - used to run this tool;
+  - [Python](https://www.python.org/downloads/) - used to run `youtube-dl`;
+  - [ffmpeg](https://ffmpeg.org/download.html) - used to transcode VODs from `.ts` to `.mp4`;
+  - NPM or Yarn - to install dependencies;
+  - Twitch App Client-ID and Client Secret (explained below) - to access Twitch's API.
   
 ## How to use
 
@@ -33,6 +35,7 @@ That's it. But if you want to tweak some stuff, here are the descriptions for ea
   - `CLIENT_ID`: Twitch API Client ID;
   - `CLIENT_SECRET`: Twitch API Client Secret;
   - `BASEPATH`: where files (clips, VODs, fragments) should be stored;
+  - `YOUTUBE_DL_PATH`: where youtube-dl executable is located;
   - `VIDEOS_PARALLEL_DOWNLOADS`: how many VOD fragments should be downloaded at the same time.
   - `CLIPS_PARALLEL_DOWNLOADS`: how many clips should be downloaded at the same time.
 
