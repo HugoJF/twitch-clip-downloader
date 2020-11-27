@@ -4,13 +4,12 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node build/index.js",
+    "start": "npm run dev && npm run start",
+    "go": "node build/index.js",
     "lint": "eslint src/**",
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch": "npm run development -- --watch",
-    "prod": "npm run production",
-    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    "watch": "npm run development -- --watch"
   },
   "author": "",
   "license": "ISC",
