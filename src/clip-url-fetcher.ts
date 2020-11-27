@@ -1,10 +1,6 @@
-import {logger} from "./logger";
-import axios    from "axios";
-// @ts-ignore
-import Wrap     from "youtube-dl-wrap";
-import {Clip}   from "./twitch";
-
-const youtubedl = new Wrap('./bin/youtube-dl.exe');
+import {logger}  from "./logger";
+import youtubedl from "./youtubedl";
+import {Clip}    from "./twitch";
 
 export async function getClipUrl(clip: Clip): Promise<string> {
     logger.verbose(`Fetching clip URL for: ${clip.title}`);

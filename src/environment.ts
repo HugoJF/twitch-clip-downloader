@@ -1,8 +1,8 @@
 import dotenv               from "dotenv";
 import path                 from "path";
-import chalk                from "chalk";
-import {envPrompt}          from "./prompts/env-prompt";
-import {exists, write}      from "./filesystem";
+import chalk           from "chalk";
+import {envPrompt}     from "./env-prompt";
+import {exists, write} from "./filesystem";
 import {printErrorsAndExit} from "./errors";
 
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
@@ -13,6 +13,7 @@ const DEFAULTS: object = {
     CLIENT_SECRET: '',
     VIDEOS_PARALLEL_DOWNLOADS: 20,
     CLIPS_PARALLEL_DOWNLOADS: 10,
+    YOUTUBE_DL_PATH: './bin/youtube-dl.exe',
 };
 
 const loadEnvironment = () => {
