@@ -1,5 +1,6 @@
 import prompts              from "prompts";
 import {printErrorsAndExit} from "../errors";
+import {getKey, writeKey}   from "../preferences";
 
 const CHANNEL_REGEX = /\.tv|\//g;
 
@@ -20,6 +21,7 @@ export async function channelPrompt() {
         type:     'text',
         name:     'channel',
         message:  'Which channel do you want to download media from?',
+        initial: getKey('channel'),
         validate: validateChannel
     });
 
@@ -27,5 +29,9 @@ export async function channelPrompt() {
         printErrorsAndExit('Couldn\'t get channel input.');
     }
 
-    return response.channel;
+    const channel = response.channel;
+
+    writeKey('channel', channel);
+
+    return channel;
 }

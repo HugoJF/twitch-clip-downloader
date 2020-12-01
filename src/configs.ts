@@ -6,3 +6,6 @@ export const BATCH_CLIP_THRESHOLD = 500;
 
 // Where to store the API token
 export const API_TOKEN_PATH = './token.txt';
+
+// Where preferences are stored
+export const PREFERENCES_PATH = './preferences.json';
