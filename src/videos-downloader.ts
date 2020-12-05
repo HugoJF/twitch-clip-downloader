@@ -1,12 +1,12 @@
-import ora                     from "ora";
-import prompts                 from "prompts";
-import cliProgress             from "cli-progress";
-import {Video}                 from "./twitch";
-import {logger}                                          from "./logger";
-import {ensureAppDirectoryExists, ensureDirectoryExists} from "./filesystem";
-import {EventEmitter}                                    from "events";
-import {VideoDownloader}       from "./video-downloader";
-import {VideosFetcher}         from "./videos-fetcher";
+import ora                        from "ora";
+import prompts                    from "prompts";
+import cliProgress                from "cli-progress";
+import {Video}                    from "./twitch";
+import {logger}                   from "./logger";
+import {ensureAppDirectoryExists} from "./filesystem";
+import {EventEmitter}             from "events";
+import {VideoDownloader}          from "./video-downloader";
+import {VideosFetcher}            from "./videos-fetcher";
 
 export class VideosDownloader extends EventEmitter {
     private readonly channel: string;

@@ -6,9 +6,9 @@ import {ensureAppDirectoryExists, existsSync} from "./filesystem";
 import {fragments}                            from "./video-fragments-fetcher";
 import {Downloader}                           from "./downloader";
 import {EventEmitter}                         from "events";
-import {TransferSpeedCalculator} from "./transfer-speed-calculator";
-import {appPath, videosPath}     from "./utils";
-import ffmpeg                    from 'fluent-ffmpeg';
+import {TransferSpeedCalculator}              from "./transfer-speed-calculator";
+import {appPath, videosPath}                  from "./utils";
+import ffmpeg                                 from 'fluent-ffmpeg';
 
 export class VideoDownloader extends EventEmitter {
     private video: Video;

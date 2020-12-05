@@ -1,4 +1,4 @@
-import {logger} from "./logger";
+import {logger}  from "./logger";
 import axios     from "axios";
 import youtubedl from "./youtubedl";
 

@@ -1,5 +1,4 @@
 import {EventEmitter} from "events";
-import {logger}       from "./logger";
 
 const nowSeconds = () => Math.round(Date.now() / 1000);
 
