@@ -1,7 +1,7 @@
-import fs               from "fs";
-import * as twitch      from "./twitch";
-import {API_TOKEN_PATH} from "./configs";
-import {readFile}       from "./filesystem";
+import fs               from 'fs';
+import * as twitch      from './twitch';
+import {API_TOKEN_PATH} from './configs';
+import {readFile}       from './filesystem';
 
 let instance: ReturnType<typeof twitch.api>;
 

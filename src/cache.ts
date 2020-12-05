@@ -1,5 +1,5 @@
-import {exists, existsSync, readFile, writeFile} from "./filesystem";
-import fs                                        from "fs";
+import {exists, existsSync, readFile, writeFile} from './filesystem';
+import fs                                        from 'fs';
 
 function getCachePath(path: string, key: string) {
     return `./cache/${path}/${key}.cache`;

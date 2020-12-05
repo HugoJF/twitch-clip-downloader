@@ -1,9 +1,9 @@
-import dotenv               from "dotenv";
-import path                 from "path";
-import chalk                from "chalk";
-import {envPrompt}          from "./env-prompt";
-import {exists, write}      from "./filesystem";
-import {printErrorsAndExit} from "./errors";
+import dotenv               from 'dotenv';
+import path                 from 'path';
+import chalk                from 'chalk';
+import {envPrompt}          from './env-prompt';
+import {exists, write}      from './filesystem';
+import {printErrorsAndExit} from './errors';
 
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
 

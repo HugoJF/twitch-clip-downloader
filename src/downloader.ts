@@ -1,9 +1,9 @@
 import axios                     from 'axios';
 import fs                        from 'fs';
-import {logger}                  from "./logger";
-import {EventEmitter}            from "events";
-import {TransferSpeedCalculator} from "./transfer-speed-calculator";
-import {appPath}                 from "./utils";
+import {logger}                  from './logger';
+import {EventEmitter}            from 'events';
+import {TransferSpeedCalculator} from './transfer-speed-calculator';
+import {appPath}                 from './utils';
 
 export class Downloader extends EventEmitter {
     private readonly url: string;
@@ -64,6 +64,6 @@ export class Downloader extends EventEmitter {
             });
 
             data.pipe(fs.createWriteStream(`${this.path}.progress`));
-        })
+        });
     }
 }

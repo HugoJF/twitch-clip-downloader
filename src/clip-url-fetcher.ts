@@ -1,6 +1,6 @@
-import {logger}  from "./logger";
-import youtubedl from "./youtubedl";
-import {Clip}    from "./twitch";
+import {logger}  from './logger';
+import youtubedl from './youtubedl';
+import {Clip}    from './twitch';
 
 export async function getClipUrl(clip: Clip): Promise<string> {
     logger.verbose(`Fetching clip URL for: ${clip.title}`);

@@ -1,7 +1,7 @@
-import path     from "path";
-import {write}  from "./filesystem";
-import {Clip}   from "./twitch";
-import {logger} from "./logger";
+import path     from 'path';
+import {write}  from './filesystem';
+import {Clip}   from './twitch';
+import {logger} from './logger';
 
 const metaPath = (channel: string) => path.resolve(path.join(__dirname, '..', `${channel}.meta`));
 

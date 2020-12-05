@@ -1,7 +1,7 @@
-import {promisify} from "util";
-import fs          from "fs";
-import {logger}    from "./logger";
-import {appPath}   from "./utils";
+import {promisify} from 'util';
+import fs          from 'fs';
+import {logger}    from './logger';
+import {appPath}   from './utils';
 
 export const access = promisify(fs.access);
 export const write = promisify(fs.writeFile);

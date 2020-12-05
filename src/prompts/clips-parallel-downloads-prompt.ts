@@ -1,5 +1,5 @@
-import prompts              from "prompts";
-import {printErrorsAndExit} from "../errors";
+import prompts              from 'prompts';
+import {printErrorsAndExit} from '../errors';
 
 export async function clipsParallelDownloadsPrompt() {
     const response = await prompts({

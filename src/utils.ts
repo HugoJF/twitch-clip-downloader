@@ -1,7 +1,7 @@
-import * as fns                      from "date-fns";
-import {differenceInMinutes, format} from "date-fns";
-import {logger}                      from "./logger";
-import path                          from "path";
+import * as fns                      from 'date-fns';
+import {differenceInMinutes, format} from 'date-fns';
+import {logger}                      from './logger';
+import path                          from 'path';
 
 const SPLIT_FACTOR = 2;
 
@@ -16,7 +16,7 @@ export function splitPeriod(period: Period): Period[] {
     const ceil = Math.ceil(diffInMinutes / SPLIT_FACTOR);
 
     if (diffInMinutes === ceil) {
-        throw Error(`Reached 1 minute periods, something is probably wrong.`);
+        throw Error('Reached 1 minute periods, something is probably wrong.');
     }
 
     logger.verbose(`Splitting period of ${diffInMinutes}min in ${ceil}min increments`);
@@ -71,7 +71,7 @@ export function quotes(s: string) {
 }
 
 export function pathableDate(date: Date) {
-    return format(date, 'yyyy-LL-dd_hh-mm-ss')
+    return format(date, 'yyyy-LL-dd_hh-mm-ss');
 }
 
 export function sleep(delay: number) {

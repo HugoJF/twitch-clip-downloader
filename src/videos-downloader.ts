@@ -1,12 +1,12 @@
-import ora                        from "ora";
-import prompts                    from "prompts";
-import cliProgress                from "cli-progress";
-import {Video}                    from "./twitch";
-import {logger}                   from "./logger";
-import {ensureAppDirectoryExists} from "./filesystem";
-import {EventEmitter}             from "events";
-import {VideoDownloader}          from "./video-downloader";
-import {VideosFetcher}            from "./videos-fetcher";
+import ora                        from 'ora';
+import prompts                    from 'prompts';
+import cliProgress                from 'cli-progress';
+import {Video}                    from './twitch';
+import {logger}                   from './logger';
+import {ensureAppDirectoryExists} from './filesystem';
+import {EventEmitter}             from 'events';
+import {VideoDownloader}          from './video-downloader';
+import {VideosFetcher}            from './videos-fetcher';
 
 export class VideosDownloader extends EventEmitter {
     private readonly channel: string;
@@ -33,8 +33,8 @@ export class VideosDownloader extends EventEmitter {
 
     private async fetchVideos() {
         // API fetching phase
-        let totalBatches = 0;
-        let finishedBatches = 0;
+        const totalBatches = 0;
+        const finishedBatches = 0;
 
         this.apiSpinner.start();
 
@@ -76,7 +76,7 @@ export class VideosDownloader extends EventEmitter {
         ensureAppDirectoryExists('videos');
 
         logger.verbose('Starting videos download');
-        for (let video of Object.values(videos)) {
+        for (const video of Object.values(videos)) {
             await this.downloadVideo(video);
         }
     }

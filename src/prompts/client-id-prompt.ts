@@ -1,5 +1,5 @@
-import prompts              from "prompts";
-import {printErrorsAndExit} from "../errors";
+import prompts              from 'prompts';
+import {printErrorsAndExit} from '../errors';
 
 const validateClientId = (value: string) => {
     if (value.trim().length === 0) {

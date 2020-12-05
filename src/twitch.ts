@@ -1,9 +1,9 @@
-import axios, {AxiosRequestConfig} from "axios";
-import {apiDelay, sleep}           from "./utils";
-import {logger}                    from "./logger";
+import axios, {AxiosRequestConfig} from 'axios';
+import {apiDelay, sleep}           from './utils';
+import {logger}                    from './logger';
 
-export type HelixOptions = Omit<AxiosRequestConfig, "baseURL" | "Headers">
-export type OAuth2Options = Omit<AxiosRequestConfig, "baseURL" | "method">
+export type HelixOptions = Omit<AxiosRequestConfig, 'baseURL' | 'Headers'>
+export type OAuth2Options = Omit<AxiosRequestConfig, 'baseURL' | 'method'>
 export type TwitchClipsApiParams = {
     broadcaster_id: string,
     game_id?: string,
@@ -145,7 +145,7 @@ export const api = (token: string) => ({
         return helix<TwitchVideosApiResponse>(token, {
             url: 'videos',
             params,
-        })
+        });
     }
 });
 
@@ -168,7 +168,7 @@ export async function generateOauthToken(): Promise<string> {
     const token = response.data?.access_token;
 
     if (!token) {
-        logger.error(`API did not generate an access_token`);
+        logger.error('API did not generate an access_token');
         logger.error(response.data);
         throw new Error('API did not generate an access_token');
     }

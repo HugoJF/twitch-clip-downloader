@@ -1,6 +1,6 @@
-import prompts              from "prompts";
-import {printErrorsAndExit} from "../errors";
-import {getKey, writeKey}   from "../preferences";
+import prompts              from 'prompts';
+import {printErrorsAndExit} from '../errors';
+import {getKey, writeKey}   from '../preferences';
 
 const CHANNEL_REGEX = /\.tv|\//g;
 

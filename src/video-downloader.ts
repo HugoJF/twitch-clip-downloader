@@ -1,13 +1,13 @@
 import fs                                     from 'fs';
-import {Video}                                from "./twitch";
-import {logger}                               from "./logger";
+import {Video}                                from './twitch';
+import {logger}                               from './logger';
 import pool                                   from 'tiny-async-pool';
-import {ensureAppDirectoryExists, existsSync} from "./filesystem";
-import {fragments}                            from "./video-fragments-fetcher";
-import {Downloader}                           from "./downloader";
-import {EventEmitter}                         from "events";
-import {TransferSpeedCalculator}              from "./transfer-speed-calculator";
-import {appPath, videosPath}                  from "./utils";
+import {ensureAppDirectoryExists, existsSync} from './filesystem';
+import {fragments}                            from './video-fragments-fetcher';
+import {Downloader}                           from './downloader';
+import {EventEmitter}                         from 'events';
+import {TransferSpeedCalculator}              from './transfer-speed-calculator';
+import {appPath, videosPath}                  from './utils';
 import ffmpeg                                 from 'fluent-ffmpeg';
 
 export class VideoDownloader extends EventEmitter {
@@ -45,12 +45,12 @@ export class VideoDownloader extends EventEmitter {
                 .on('end', () => {
                     logger.verbose(`Transcode of ${this.video.id} finished`);
                     // @ts-ignore
-                    res()
+                    res();
                 })
                 .save(appPath(`videos/${this.video.id}.mp4`));
 
             logger.info(`Finished video ${this.video.id} transcode`);
-        })
+        });
 
     }
 

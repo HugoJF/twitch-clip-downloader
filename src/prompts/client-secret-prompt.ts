@@ -1,5 +1,5 @@
-import prompts              from "prompts";
-import {printErrorsAndExit} from "../errors";
+import prompts              from 'prompts';
+import {printErrorsAndExit} from '../errors';
 
 const validateClientSecret = (value: string) => {
     if (value.trim().length === 0) {
@@ -9,7 +9,7 @@ const validateClientSecret = (value: string) => {
     return true;
 };
 
-export async function clientSecretPrompt()  {
+export async function clientSecretPrompt() {
     const response = await prompts({
         type:     'text',
         name:     'CLIENT_SECRET',
@@ -22,4 +22,4 @@ export async function clientSecretPrompt()  {
     }
 
     return response.CLIENT_SECRET;
-};
+}

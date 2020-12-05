@@ -1,12 +1,12 @@
-import pool                                                                  from "tiny-async-pool";
-import * as fns                                                              from "date-fns";
-import {generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from "./utils";
-import {api}                                                                 from "./api";
-import {Clip, TwitchClipsApiResponse}                                        from "./twitch";
-import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                                 from "./configs";
-import {checkCache, getCache, saveCache}                                     from "./cache";
-import {logger}                                                              from "./logger";
-import {EventEmitter}                                                        from "events";
+import pool                                                                  from 'tiny-async-pool';
+import * as fns                                                              from 'date-fns';
+import {generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from './utils';
+import {api}                                                                 from './api';
+import {Clip, TwitchClipsApiResponse}                                        from './twitch';
+import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                                 from './configs';
+import {checkCache, getCache, saveCache}                                     from './cache';
+import {logger}                                                              from './logger';
+import {EventEmitter}                                                        from 'events';
 
 export class ClipFetcher extends EventEmitter {
     private readonly userId: string;
@@ -97,7 +97,7 @@ export class ClipFetcher extends EventEmitter {
 
             const newClipsDicts: Dict<Clip>[] = [];
 
-            for (let newPeriod of newPeriods) {
+            for (const newPeriod of newPeriods) {
                 logger.verbose(`Fetching clips from ${newPeriod.left} to ${newPeriod.right}`);
 
                 newClipsDicts.push(await this.fetchClipsFromBatch(newPeriod));

@@ -1,4 +1,4 @@
-import {EventEmitter} from "events";
+import {EventEmitter} from 'events';
 
 const nowSeconds = () => Math.round(Date.now() / 1000);
 
