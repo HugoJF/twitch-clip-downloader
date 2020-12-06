@@ -3,7 +3,7 @@ import path                 from 'path';
 import fs                   from 'fs';
 import {printErrorsAndExit} from '../errors';
 
-const validatePath = (input: string) => {
+const validatePath = (input: string): boolean|string => {
     const resolved = path.resolve(input);
 
     if (!fs.existsSync(resolved)) {
@@ -13,7 +13,7 @@ const validatePath = (input: string) => {
     return true;
 };
 
-export async function youtubeDlPathPrompt() {
+export async function youtubeDlPathPrompt(): Promise<string> {
     const response = await prompts({
         type: 'text',
         name: 'YOUTUBE_DL_PATH',

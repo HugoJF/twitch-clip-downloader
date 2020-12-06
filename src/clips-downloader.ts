@@ -5,7 +5,7 @@ import {writeMetaFile}                        from './meta';
 import prompts                                from 'prompts';
 import cliProgress                            from 'cli-progress';
 import {EventEmitter}                         from 'events';
-import {Clip}                                 from './twitch';
+import {Clip, Video}                          from './twitch';
 import {ensureAppDirectoryExists, existsSync} from './filesystem';
 import pool                                   from 'tiny-async-pool';
 import {getClipUrl}                           from './clip-url-fetcher';
@@ -39,7 +39,7 @@ export class ClipsDownloader extends EventEmitter {
         }, cliProgress.Presets.shades_classic);
     }
 
-    private async fetchClips() {
+    private async fetchClips(): Promise<Dict<Clip>> {
         // API fetching phase
         let totalBatches = 0;
         let finishedBatches = 0;
@@ -69,7 +69,7 @@ export class ClipsDownloader extends EventEmitter {
         return clips;
     }
 
-    async downloadClips(clips: Dict<Clip>) {
+    async downloadClips(clips: Dict<Clip>): Promise<void> {
         const clipCount = Object.values(clips).length;
 
         // Confirmation phase
@@ -105,7 +105,7 @@ export class ClipsDownloader extends EventEmitter {
         console.log(`Finished download of ${clipCount} clips!`);
     }
 
-    async downloadClip(clip: Clip) {
+    async downloadClip(clip: Clip): Promise<void> {
         const mp4Path = `clips/${clip.id}.mp4`;
         const metaPath = `clips/${clip.id}.meta`;
 
@@ -129,7 +129,7 @@ export class ClipsDownloader extends EventEmitter {
         this.downloadBar.increment();
     }
 
-    async start() {
+    async start(): Promise<void> {
         const clips = await this.fetchClips();
 
         await this.downloadClips(clips);

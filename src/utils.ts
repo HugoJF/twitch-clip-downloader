@@ -28,7 +28,7 @@ export function generateBatches(): Period[] {
     const left = new Date(2016, 4, 26);
     const right = fns.endOfToday();
 
-    return generateBatchesFrom(left, right, 30*24*60);
+    return generateBatchesFrom(left, right, 30 * 24 * 60);
 }
 
 export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: number): Period[] {
@@ -43,7 +43,7 @@ export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: 
     return batches;
 }
 
-export function apiDelay(remaining: number, total: number, resetTime: number) {
+export function apiDelay(remaining: number, total: number, resetTime: number): number {
     // How fast the delay grows
     const degree = 3;
     // Delay starts when remaining requests is below 10% the total rate-limit
@@ -66,22 +66,22 @@ export function videosPath(p: string): string {
     return path.resolve(appPath('videos'), p);
 }
 
-export function quotes(s: string) {
+export function quotes(s: string): string {
     return ['"', s, '"'].join('');
 }
 
-export function pathableDate(date: Date) {
+export function pathableDate(date: Date): string {
     return format(date, 'yyyy-LL-dd_hh-mm-ss');
 }
 
-export function sleep(delay: number) {
+export function sleep(delay: number): Promise<void> {
     return new Promise(resolve => {
         setTimeout(resolve, delay);
     });
 }
 
 // https://stackoverflow.com/questions/18884249/checking-whether-something-is-iterable
-export function iterable(obj: any) {
+export function iterable(obj: any): boolean {
     // checks for null and undefined
     if (obj == null) {
         return false;

@@ -21,7 +21,7 @@ const validatePath = (input: string) => {
     return true;
 };
 
-export async function basepathPrompt() {
+export async function basepathPrompt(): Promise<string> {
     const response = await prompts({
         type: 'text',
         name: 'BASEPATH',

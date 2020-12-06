@@ -1,7 +1,7 @@
 import prompts              from 'prompts';
 import {printErrorsAndExit} from '../errors';
 
-const validateClientSecret = (value: string) => {
+const validateClientSecret = (value: string): boolean|string => {
     if (value.trim().length === 0) {
         return 'CLIENT_SECRET can\'t be empty!';
     }
@@ -9,7 +9,7 @@ const validateClientSecret = (value: string) => {
     return true;
 };
 
-export async function clientSecretPrompt() {
+export async function clientSecretPrompt(): Promise<string> {
     const response = await prompts({
         type:     'text',
         name:     'CLIENT_SECRET',

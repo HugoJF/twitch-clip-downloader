@@ -13,7 +13,7 @@ export class TransferSpeedCalculator extends EventEmitter {
         this.bytes = 0;
     }
 
-    data(bytes: number) {
+    data(bytes: number): void {
         this.emit('progress', bytes);
 
         if (this.currentNow !== nowSeconds()) {
@@ -24,7 +24,7 @@ export class TransferSpeedCalculator extends EventEmitter {
         this.bytes += bytes;
     }
 
-    reset() {
+    reset(): void {
         this.bytes = 0;
         this.currentNow = nowSeconds();
     }

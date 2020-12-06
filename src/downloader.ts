@@ -29,7 +29,7 @@ export class Downloader extends EventEmitter {
         this.speed.on('progress', this.emit.bind(this, 'progress'));
     }
 
-    async download() {
+    async download(): Promise<boolean> {
         do {
             try {
                 await this.startDownload();

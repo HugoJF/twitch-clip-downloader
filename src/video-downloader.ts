@@ -29,7 +29,7 @@ export class VideoDownloader extends EventEmitter {
         this.speed.on('speed', this.emit.bind(this, 'speed'));
     }
 
-    transcode() {
+    transcode(): Promise<void> {
         return new Promise((res, rej) => {
             logger.info(`Started video ${this.video.id} transcode`);
             ffmpeg()
@@ -54,7 +54,7 @@ export class VideoDownloader extends EventEmitter {
 
     }
 
-    async download() {
+    async download(): Promise<void> {
         logger.info(`Starting video download [${this.video.id}]: ${this.video.title}`);
         const urls = await fragments(this.video.url);
 
@@ -86,7 +86,7 @@ export class VideoDownloader extends EventEmitter {
         logger.verbose('Starting download pool');
     }
 
-    async downloadFragments(fragmentsUrl: Dict<string>) {
+    async downloadFragments(fragmentsUrl: Dict<string>): Promise<void> {
         await pool<[string, string], string>(
             this.downloadInstances,
             Object.entries(fragmentsUrl),
@@ -94,7 +94,7 @@ export class VideoDownloader extends EventEmitter {
         );
     }
 
-    async downloadFragment(fragmentData: [string, string]) {
+    async downloadFragment(fragmentData: [string, string]): Promise<string> {
         const [name, url] = fragmentData;
         const path = `videos/${this.video.id}/${name}`;
 

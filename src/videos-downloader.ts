@@ -108,7 +108,7 @@ export class VideosDownloader extends EventEmitter {
     }
 
 
-    async start() {
+    async start(): Promise<void> {
         const videos = await this.fetchVideos();
 
         await this.downloadVideos(videos);

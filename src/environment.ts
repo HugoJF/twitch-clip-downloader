@@ -43,7 +43,7 @@ const createIfEnvNotSet = async () => {
     }
 };
 
-export const ensureConfigsAreLoaded = async () => {
+export const ensureConfigsAreLoaded = async (): Promise<void> => {
     await createIfEnvNotSet();
 
     loadEnvironment();
@@ -53,7 +53,7 @@ export const ensureConfigsAreLoaded = async () => {
     environmentKeys.forEach(ensureEnvironmentKeyIsLoaded);
 };
 
-export const writeEnvFile = async (values: object = {}) => {
+export const writeEnvFile = async (values: object = {}): Promise<void> => {
     const config = {...DEFAULTS, ...values};
 
     // @ts-ignore

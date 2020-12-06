@@ -1,7 +1,7 @@
 import prompts              from 'prompts';
 import {printErrorsAndExit} from '../errors';
 
-export async function clipsParallelDownloadsPrompt() {
+export async function clipsParallelDownloadsPrompt(): Promise<string> {
     const response = await prompts({
         type:    'number',
         name:    'CLIPS_PARALLEL_DOWNLOADS',

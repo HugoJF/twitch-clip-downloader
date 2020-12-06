@@ -2,7 +2,7 @@ import axios, {AxiosRequestConfig} from 'axios';
 import {apiDelay, sleep}           from './utils';
 import {logger}                    from './logger';
 
-export type HelixOptions = Omit<AxiosRequestConfig, 'baseURL' | 'Headers'>
+export type HelixOptions = Omit<AxiosRequestConfig, 'baseURL' | 'headers'>
 export type OAuth2Options = Omit<AxiosRequestConfig, 'baseURL' | 'method'>
 export type TwitchClipsApiParams = {
     broadcaster_id: string,

@@ -1,15 +1,15 @@
 import {exists, existsSync, readFile, writeFile} from './filesystem';
 import fs                                        from 'fs';
 
-function getCachePath(path: string, key: string) {
+function getCachePath(path: string, key: string): string {
     return `./cache/${path}/${key}.cache`;
 }
 
-export async function checkCache(path: string, key: string) {
+export async function checkCache(path: string, key: string): Promise<boolean> {
     return await exists(getCachePath(path, key));
 }
 
-export async function getCache(path: string, key: string) {
+export async function getCache(path: string, key: string): Promise<string> {
     ensureCacheDirectoryExists(path);
 
     const cachePath = getCachePath(path, key);
@@ -18,12 +18,12 @@ export async function getCache(path: string, key: string) {
     return buffer.toString();
 }
 
-export async function saveCache(path: string, key: string, content: string) {
+export async function saveCache(path: string, key: string, content: string): Promise<void> {
     ensureCacheDirectoryExists(path);
     writeFile(getCachePath(path, key), content);
 }
 
-function ensureCacheDirectoryExists(path: string) {
+function ensureCacheDirectoryExists(path: string): void {
     if (!existsSync('cache')) {
         fs.mkdirSync('cache');
     }
