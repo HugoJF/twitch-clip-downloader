@@ -37,8 +37,11 @@
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "eslint": "^7.22.0",
-    "laravel-mix": "^5.0.9",
+    "laravel-mix": "^6.0",
     "ts-loader": "^8.0.18",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "ssri": ">=8.0.1",
+    "is-svg": ">=4.2.2",
+    "node-notifier": ">=8.0.1"
   }
 }
