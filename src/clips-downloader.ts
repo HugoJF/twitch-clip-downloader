@@ -114,14 +114,16 @@ export class ClipsDownloader extends EventEmitter {
 
             fs.writeFileSync(appPath(metaPath), JSON.stringify(clip));
 
-            const downloader = new Downloader(url, mp4Path);
+            if (url) {
+                const downloader = new Downloader(url, mp4Path);
 
-            downloader.on('progress', bytes => {
-                this.speed.data(bytes);
-            });
+                downloader.on('progress', bytes => {
+                    this.speed.data(bytes);
+                });
 
-            logger.verbose(`Downloading clip ${clip.title}`);
-            await downloader.download();
+                logger.verbose(`Downloading clip ${clip.title}`);
+                await downloader.download();
+            }
         } else {
             logger.verbose(`Clip ${clip.title} found at ${appPath(mp4Path)}`);
         }
