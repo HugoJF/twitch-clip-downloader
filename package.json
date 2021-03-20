@@ -8,8 +8,8 @@
     "go": "node build/index.js",
     "lint": "eslint src/**",
     "dev": "npm run development",
-    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch": "npm run development -- --watch"
+    "development": "mix",
+    "watch": "mix watch"
   },
   "author": "",
   "license": "ISC",
@@ -20,28 +20,29 @@
     "@types/prompts": "^2.0.9",
     "@types/tiny-async-pool": "^1.0.0",
     "@types/youtube-dl": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
     "axios": "^0.21.1",
     "chalk": "^4.1.0",
     "cli-progress": "^3.9.0",
     "date-fns": "^2.19.0",
     "dotenv": "^8.2.0",
+    "eslint": "^7.22.0",
     "fluent-ffmpeg": "^2.1.2",
+    "is-svg": ">=4.2.2",
+    "laravel-mix": "^6.0.13",
+    "node-notifier": ">=8.0.1",
     "ora": "^4.0.4",
     "prompts": "^2.4.0",
+    "ssri": ">=8.0.1",
     "tiny-async-pool": "^1.2.0",
-    "webpack": "4.46.0",
+    "ts-loader": "^8.0.18",
+    "typescript": "^4.2.3",
+    "webpack-cli": "^4.5.0",
     "winston": "^3.3.3",
     "youtube-dl-wrap": "latest"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
-    "eslint": "^7.22.0",
-    "laravel-mix": "^6.0",
-    "ts-loader": "^8.0.18",
-    "typescript": "^4.2.3",
-    "ssri": ">=8.0.1",
-    "is-svg": ">=4.2.2",
-    "node-notifier": ">=8.0.1"
+    "postcss": "^8.1.14"
   }
 }
