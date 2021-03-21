@@ -5,7 +5,7 @@ import {printErrorsAndExit} from './errors';
 import {exists, write}      from '../lib/filesystem';
 import {envPrompt}          from './env-prompt';
 
-const envPath = path.resolve(path.join(__dirname, '..', '.env'));
+const envPath = path.resolve(path.join(__dirname, '..', '..', '.env'));
 
 const DEFAULTS: Record<string, number | boolean | string> = {
     DEBUG: false,
