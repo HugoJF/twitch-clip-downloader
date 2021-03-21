@@ -1,6 +1,6 @@
 import {videosParallelDownloadsPrompt} from './prompts/videos-parallel-downloads-prompt';
 import {clipsParallelDownloadsPrompt}  from './prompts/clips-parallel-downloads-prompt';
-import {youtubeDlPathPrompt}           from './prompts/youtube-dl-path-prompt';
+import {binPathPrompt}                 from './prompts/youtube-dl-path-prompt';
 import {clientSecretPrompt}            from './prompts/client-secret-prompt';
 import {basepathPrompt}                from './prompts/basepath-prompt';
 import {clientIdPrompt}                from './prompts/client-id-prompt';
@@ -13,13 +13,13 @@ enum EnvVariables {
     VIDEOS_PARALLEL_DOWNLOADS,
     CLIPS_PARALLEL_DOWNLOADS,
     BASEPATH,
-    YOUTUBE_DL_PATH,
+    BIN_PATH,
 }
 
 type EnvironmentRecordType = Record<keyof typeof EnvVariables, string>
 
 export const envPrompt = async (): Promise<EnvironmentRecordType> => {
-    const YOUTUBE_DL_PATH: string = await youtubeDlPathPrompt();
+    const BIN_PATH: string = await binPathPrompt();
     const BASEPATH: string = await basepathPrompt();
     const CLIENT_ID: string = await clientIdPrompt();
     const CLIENT_SECRET: string = await clientSecretPrompt();
@@ -34,6 +34,6 @@ export const envPrompt = async (): Promise<EnvironmentRecordType> => {
         VIDEOS_PARALLEL_DOWNLOADS,
         CLIPS_PARALLEL_DOWNLOADS,
         BASEPATH,
-        YOUTUBE_DL_PATH,
+        BIN_PATH,
     };
 };

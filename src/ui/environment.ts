@@ -13,7 +13,7 @@ const DEFAULTS: Record<string, number | boolean | string> = {
     CLIENT_SECRET: '',
     VIDEOS_PARALLEL_DOWNLOADS: 20,
     CLIPS_PARALLEL_DOWNLOADS: 10,
-    YOUTUBE_DL_PATH: './bin/youtube-dl.exe',
+    BIN_PATH: './bin',
 };
 
 const loadEnvironment = () => {
