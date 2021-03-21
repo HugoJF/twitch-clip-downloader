@@ -15,7 +15,7 @@ export function getKey(key: string, def?: string): string {
     return preferences[key] as string ?? def;
 }
 
-export function writePreference(preferences: Record<string, unknown>) {
+export function writePreference(preferences: Record<string, unknown>): void {
     fs.writeFileSync(PREFERENCES_PATH, JSON.stringify(preferences));
 }
 
@@ -25,7 +25,6 @@ export function loadPreferences(): Record<string, unknown> {
 
         return JSON.parse(buffer.toString());
     } else {
-        return {}; // initial preferen value
+        return {}; // initial preference value
     }
-
 }

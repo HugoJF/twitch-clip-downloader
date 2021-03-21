@@ -7,7 +7,7 @@ import {fragments}                            from './video-fragments-fetcher';
 import {Downloader}                           from './downloader';
 import {EventEmitter}                         from 'events';
 import {TransferSpeedCalculator}              from './transfer-speed-calculator';
-import {appPath, videosPath}                  from './utils';
+import {appPath, bpsToHuman, videosPath}      from './utils';
 import ffmpeg                                 from 'fluent-ffmpeg';
 
 export class VideoDownloader extends EventEmitter {
@@ -41,10 +41,12 @@ export class VideoDownloader extends EventEmitter {
                 .on('start', logger.verbose.bind(logger))
                 .on('progress', logger.verbose.bind(logger))
                 .on('stderr', logger.error.bind(logger))
-                .on('error', logger.error.bind(logger))
+                .on('error', (e) => {
+                    logger.error.bind(logger);
+                    rej(e);
+                })
                 .on('end', () => {
                     logger.verbose(`Transcode of ${this.video.id} finished`);
-                    // @ts-ignore
                     res();
                 })
                 .save(appPath(`videos/${this.video.id}.mp4`));
@@ -79,7 +81,7 @@ export class VideoDownloader extends EventEmitter {
         ensureAppDirectoryExists(`videos/${this.video.id}`);
 
         this.speed.reset();
-        this.speed.on('speed', bps => logger.verbose(`Downloading2 at ${bps / 1000 / 1000 * 8}mbps`));
+        this.speed.on('speed', bps => logger.verbose(`Downloading at ${bpsToHuman(bps)}`));
 
         await this.downloadFragments(urls);
 

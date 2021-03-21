@@ -6,7 +6,7 @@ import {readFile}       from './filesystem';
 type InstanceType = ReturnType<typeof twitch.api>;
 let instance: InstanceType;
 
-export async function load (): Promise<void> {
+export async function loadApi (): Promise<void> {
     let token: string;
 
     try {

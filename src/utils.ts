@@ -74,10 +74,33 @@ export function pathableDate(date: Date): string {
     return format(date, 'yyyy-LL-dd_hh-mm-ss');
 }
 
+export function nowSeconds(): number {
+    return Math.round(Date.now() / 1000);
+}
+
 export function sleep(delay: number): Promise<void> {
     return new Promise(resolve => {
         setTimeout(resolve, delay);
     });
+}
+
+export function E(number: number): number {
+    return 10 ** number;
+}
+
+export function round(number: number, precision: number): number {
+    return Math.round(number * E(precision)) / E(precision);
+}
+
+export function bpsToHuman(bps: number): string {
+    let index = 0;
+    const suffixes = ['bps', 'kbps', 'mbps', 'gbps', 'tbps'];
+    while (bps <= 1024 && suffixes[index + 1]) {
+        bps /= 1024;
+        index++;
+    }
+
+    return `${round(bps, 2)}${suffixes[index]}`;
 }
 
 // https://stackoverflow.com/questions/18884249/checking-whether-something-is-iterable

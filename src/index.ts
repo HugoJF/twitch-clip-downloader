@@ -1,7 +1,7 @@
 import {ensureConfigsAreLoaded} from './environment';
-import {channelPrompt}          from './prompts/channel-prompt';
-import {api, load}              from './api';
-import {ClipsDownloader}        from './clips-downloader';
+import {channelPrompt}   from './prompts/channel-prompt';
+import {api, loadApi}    from './api';
+import {ClipsDownloader} from './clips-downloader';
 import prompts                  from 'prompts';
 import {VideosDownloader}       from './videos-downloader';
 import {bootLogger}             from './logger';
@@ -18,8 +18,7 @@ async function start() {
 
     const channel = await channelPrompt();
 
-    // FIXME: LOAD WAT
-    await load();
+    await loadApi();
 
     const id = await fetchUserId(channel);
 

@@ -7,7 +7,7 @@ import {printErrorsAndExit} from './errors';
 
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
 
-const DEFAULTS: object = {
+const DEFAULTS: Record<string, number|boolean|string> = {
     DEBUG: false,
     CLIENT_ID: '',
     CLIENT_SECRET: '',
@@ -53,10 +53,9 @@ export const ensureConfigsAreLoaded = async (): Promise<void> => {
     environmentKeys.forEach(ensureEnvironmentKeyIsLoaded);
 };
 
-export const writeEnvFile = async (values: object = {}): Promise<void> => {
+export const writeEnvFile = async (values: Record<string, any> = {}): Promise<void> => {
     const config = {...DEFAULTS, ...values};
 
-    // @ts-ignore
     const pieces = Object.keys(config).map(key => `${key}=${config[key].toString()}`);
     const fileContent = pieces.join('\n');
 

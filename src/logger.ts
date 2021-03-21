@@ -16,7 +16,7 @@ export const logger = createLogger({
     ],
 });
 
-export function bootLogger() {
+export function bootLogger(): void {
     if (process.env.DEBUG === 'true') {
         logger.add(new transports.Console({
             format: format.combine(

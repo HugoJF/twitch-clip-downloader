@@ -1,9 +1,9 @@
 import pool                                                                  from 'tiny-async-pool';
 import * as fns                                                              from 'date-fns';
 import {generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from './utils';
-import {api}                                 from './api';
-import {Clip, TwitchClipsApiResponse, Video} from './twitch';
-import {API_INSTANCES, BATCH_CLIP_THRESHOLD} from './configs';
+import {api}                                                                 from './api';
+import {Clip, TwitchClipsApiResponse}                                        from './twitch';
+import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                                 from './configs';
 import {checkCache, getCache, saveCache}                                     from './cache';
 import {logger}                                                              from './logger';
 import {EventEmitter}                                                        from 'events';
@@ -39,9 +39,6 @@ export class ClipFetcher extends EventEmitter {
                 process.exit(1);
             }
 
-            // debug(headers);
-            // debug(data);
-
             return data;
         } catch (e) {
             console.error('Error while paginating the API', e);
@@ -49,7 +46,7 @@ export class ClipFetcher extends EventEmitter {
         }
     }
 
-    private async fetchClipsFromBatch (period: Period) {
+    private async fetchClipsFromBatch(period: Period) {
         const {left, right} = period;
         const clipsFromBatch: Dict<Clip> = {};
         let cursor;
@@ -115,13 +112,11 @@ export class ClipFetcher extends EventEmitter {
 
     async start(): Promise<Dict<Clip>> {
         const batches = generateBatches();
-        let id = 0;
 
         this.emit('batch-generated', batches.length);
 
         const process = async (period: Period) => {
             let clips;
-            const index = id++;
             // Build the cache file path
             const leftDate = pathableDate(period.left);
             const rightDate = pathableDate(period.right);

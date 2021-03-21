@@ -11,5 +11,5 @@ export const printErrors = (...errors: any[]): void => {
 export const printErrorsAndExit = (...errors: any[]): void => {
     printErrors(...errors);
 
-    process.exit(0);
+    process.exit(1);
 };

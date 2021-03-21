@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
+import {nowSeconds}   from "./utils";
 
-const nowSeconds = () => Math.round(Date.now() / 1000);
 
 export class TransferSpeedCalculator extends EventEmitter {
     private currentNow: number;

@@ -5,7 +5,7 @@ import {writeMetaFile}                        from './meta';
 import prompts                                from 'prompts';
 import cliProgress                            from 'cli-progress';
 import {EventEmitter}                         from 'events';
-import {Clip, Video}                          from './twitch';
+import {Clip}                                 from './twitch';
 import {ensureAppDirectoryExists, existsSync} from './filesystem';
 import pool                                   from 'tiny-async-pool';
 import {getClipUrl}                           from './clip-url-fetcher';
@@ -91,7 +91,9 @@ export class ClipsDownloader extends EventEmitter {
         this.downloadBar.start(clipCount, 0);
 
         this.speed.on('speed', speed => {
-            this.downloadBar.update({speed: Math.round(speed / 1000 / 1000 * 8 * 100) / 100});
+            this.downloadBar.update({
+                speed: Math.round(speed / 1000 / 1000 * 8 * 100) / 100
+            });
         });
 
         await pool(
