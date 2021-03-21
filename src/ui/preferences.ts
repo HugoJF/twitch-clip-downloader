@@ -1,6 +1,6 @@
 import fs                 from 'fs';
-import {PREFERENCES_PATH} from './configs';
-import {existsSync}       from './filesystem';
+import {PREFERENCES_PATH} from '../lib/configs';
+import {existsSync}       from '../lib/filesystem';
 
 export function writeKey(key: string, value: string): void {
     const preference = loadPreferences();

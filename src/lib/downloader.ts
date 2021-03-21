@@ -1,9 +1,9 @@
-import axios                     from 'axios';
 import fs                        from 'fs';
-import {logger}                  from './logger';
+import axios                     from 'axios';
 import {EventEmitter}            from 'events';
 import {TransferSpeedCalculator} from './transfer-speed-calculator';
 import {appPath}                 from './utils';
+import {logger}                  from './logger';
 
 export class Downloader extends EventEmitter {
     private readonly url: string;

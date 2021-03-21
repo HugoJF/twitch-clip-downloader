@@ -1,18 +1,18 @@
 import fs                                     from 'fs';
 import ora                                    from 'ora';
-import {ClipFetcher}                          from './clip-fetcher';
-import {writeMetaFile}                        from './meta';
+import pool                                   from 'tiny-async-pool';
 import prompts                                from 'prompts';
 import cliProgress                            from 'cli-progress';
 import {EventEmitter}                         from 'events';
-import {Clip}                                 from './twitch';
 import {ensureAppDirectoryExists, existsSync} from './filesystem';
-import pool                                   from 'tiny-async-pool';
-import {getClipUrl}                           from './clip-url-fetcher';
-import {Downloader}                           from './downloader';
 import {TransferSpeedCalculator}              from './transfer-speed-calculator';
+import {writeMetaFile}                        from './meta';
+import {ClipFetcher}                          from './clip-fetcher';
+import {Downloader}                           from './downloader';
+import {getClipUrl}                           from './clip-url-fetcher';
 import {appPath}                              from './utils';
 import {logger}                               from './logger';
+import {Clip}                                 from './twitch';
 
 export class ClipsDownloader extends EventEmitter {
     private readonly channel: string;

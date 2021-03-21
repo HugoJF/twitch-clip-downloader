@@ -1,13 +1,13 @@
-import dotenv               from 'dotenv';
 import path                 from 'path';
 import chalk                from 'chalk';
-import {envPrompt}          from './env-prompt';
-import {exists, write}      from './filesystem';
+import dotenv               from 'dotenv';
 import {printErrorsAndExit} from './errors';
+import {exists, write}      from '../lib/filesystem';
+import {envPrompt}          from './env-prompt';
 
 const envPath = path.resolve(path.join(__dirname, '..', '.env'));
 
-const DEFAULTS: Record<string, number|boolean|string> = {
+const DEFAULTS: Record<string, number | boolean | string> = {
     DEBUG: false,
     CLIENT_ID: '',
     CLIENT_SECRET: '',

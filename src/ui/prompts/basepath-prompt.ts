@@ -1,6 +1,6 @@
-import prompts              from 'prompts';
-import path                 from 'path';
 import fs                   from 'fs';
+import path                 from 'path';
+import prompts              from 'prompts';
 import {printErrorsAndExit} from '../errors';
 
 const validatePath = (input: string) => {

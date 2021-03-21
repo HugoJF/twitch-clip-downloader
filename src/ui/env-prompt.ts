@@ -1,10 +1,10 @@
-import {clientIdPrompt}                from './prompts/client-id-prompt';
-import {clientSecretPrompt}            from './prompts/client-secret-prompt';
-import {debugPrompt}                   from './prompts/debug-prompt';
 import {videosParallelDownloadsPrompt} from './prompts/videos-parallel-downloads-prompt';
 import {clipsParallelDownloadsPrompt}  from './prompts/clips-parallel-downloads-prompt';
-import {basepathPrompt}                from './prompts/basepath-prompt';
 import {youtubeDlPathPrompt}           from './prompts/youtube-dl-path-prompt';
+import {clientSecretPrompt}            from './prompts/client-secret-prompt';
+import {basepathPrompt}                from './prompts/basepath-prompt';
+import {clientIdPrompt}                from './prompts/client-id-prompt';
+import {debugPrompt}                   from './prompts/debug-prompt';
 
 enum EnvVariables {
     CLIENT_ID,

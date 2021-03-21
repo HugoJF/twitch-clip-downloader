@@ -1,6 +1,6 @@
 import path     from 'path';
-import {write}  from './filesystem';
 import {logger} from './logger';
+import {write}  from './filesystem';
 
 const metaPath = (channel: string) => path.resolve(path.join(__dirname, '..', `${channel}.meta`));
 

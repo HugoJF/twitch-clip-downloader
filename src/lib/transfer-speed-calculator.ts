@@ -1,6 +1,5 @@
 import {EventEmitter} from 'events';
-import {nowSeconds}   from "./utils";
-
+import {nowSeconds}   from './utils';
 
 export class TransferSpeedCalculator extends EventEmitter {
     private currentNow: number;
