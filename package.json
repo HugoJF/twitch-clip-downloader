@@ -14,7 +14,8 @@
     "test": "jest build --coverage",
     "t": "npm run test",
     "test-watch": "jest build --watch",
-    "tw": "npm run test-watch"
+    "tw": "npm run test-watch",
+    "ci": "jest build --ci --coverage"
   },
   "author": "",
   "license": "ISC",
