@@ -13,7 +13,7 @@ export function youtubeDlFilename(): string {
 }
 
 export function youtubeDlPath(): string {
-    return path.resolve(process.env.BIN_PATH ?? '', youtubeDlFilename());
+    return path.resolve(process.env.BIN_PATH ?? 'asd', youtubeDlFilename());
 }
 
 export function youtubeDlUrl(): string {

@@ -10,7 +10,7 @@ export async function fragments(url: string): Promise<Dict<string>> {
     logger.verbose(`Fetching fragments for URL: ${url}`);
 
     // Use YoutubeDL to fetch manifest URL
-    const meta = await youtubedl.getVideoInfo(url);
+    const meta = await youtubedl().getVideoInfo(url);
     logger.verbose(`youtube-dl reported video manifest URL: ${meta.manifest_url}`);
 
     // Download video manifest

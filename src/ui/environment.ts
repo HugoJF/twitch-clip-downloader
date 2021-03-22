@@ -17,7 +17,7 @@ const DEFAULTS: Record<string, number | boolean | string> = {
 };
 
 const loadEnvironment = () => {
-    dotenv.config();
+    dotenv.config({path: envPath});
 };
 
 const ensureEnvironmentKeyIsLoaded = (key: string) => {
