@@ -1,4 +1,5 @@
 import os                              from 'os';
+import fs                              from 'fs';
 import path                            from 'path';
 import {Downloader}                    from './downloader';
 import {logger}                        from './logger';
@@ -35,6 +36,9 @@ export async function downloadYoutubeDl(): Promise<void> {
 
     logger.verbose(`youtubedl: Download latest version ${url} to ${output}`);
     await downloader.download();
+
+    fs.chmodSync(output, '0o775');
+
     // Delay return to avoid EBUSY errors
     await sleep(1000);
 }
