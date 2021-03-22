@@ -1,4 +1,9 @@
 # Twitch Clips Downloader
+
+[![codecov](https://codecov.io/gh/HugoJF/twitch-clip-downloader/branch/master/graph/badge.svg?token=HL0PSDR9AA)](https://codecov.io/gh/HugoJF/twitch-clip-downloader)
+
+[![workflow](https://img.shields.io/github/workflow/status/HugoJF/twitch-clip-downloader/Run%20tests)](https://github.com/HugoJF/twitch-clip-downloader/actions)
+
 NodeJS tool to download every clip (and it's metadata) from a Twitch channel
 
 This tool can PROBABLY download ALL clips from a channel (not only the top 1000).
