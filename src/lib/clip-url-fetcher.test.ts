@@ -1,7 +1,7 @@
 import {Clip}                   from './twitch';
 import {getClipUrl}             from './clip-url-fetcher';
 import {ensureConfigsAreLoaded} from '../ui/environment';
-import {downloadYoutubeDl}      from "./youtubedl-downloader";
+import {downloadYoutubeDl}      from './youtubedl-downloader';
 
 test('existing clip successfully returns good url', async () => {
     // await ensureConfigsAreLoaded();
@@ -15,7 +15,7 @@ test('existing clip successfully returns good url', async () => {
     const url = await getClipUrl(clip as Clip);
 
     expect(url).toBe('https://production.assets.clips.twitchcdn.net/AT-cm%7C1085968337.mp4');
-});
+}, 30000);
 
 test('missing clip returns empty object', async () => {
     // await ensureConfigsAreLoaded();
@@ -28,4 +28,4 @@ test('missing clip returns empty object', async () => {
     const url = await getClipUrl(clip as Clip);
 
     expect(url).toBe(null);
-});
+}, 30000);

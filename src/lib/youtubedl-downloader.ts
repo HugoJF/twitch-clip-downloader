@@ -1,8 +1,9 @@
-import os                      from 'os';
-import path                    from 'path';
-import {Downloader}            from './downloader';
+import os                              from 'os';
+import path                            from 'path';
+import {Downloader}                    from './downloader';
 import {logger}                        from './logger';
 import {ensureDirectoryExists, exists} from './filesystem';
+import {sleep}                         from "./utils";
 
 export function youtubeDlFilename(): string {
     if (os.platform() === 'win32') {
@@ -34,4 +35,6 @@ export async function downloadYoutubeDl(): Promise<void> {
 
     logger.verbose(`youtubedl: Download latest version ${url} to ${output}`);
     await downloader.download();
+    // Delay return to avoid EBUSY errors
+    await sleep(1000);
 }
