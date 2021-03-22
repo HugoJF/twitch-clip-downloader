@@ -3,7 +3,7 @@ import {getClipUrl}             from './clip-url-fetcher';
 import {ensureConfigsAreLoaded} from '../ui/environment';
 
 test('existing clip successfully returns good url', async () => {
-    await ensureConfigsAreLoaded();
+    // await ensureConfigsAreLoaded();
     const clip = {
         title: 'a random clip',
         url: 'https://www.twitch.tv/de_nerdtv/clip/BashfulPhilanthropicPancakeTBCheesePull-VVHur9rg8ERqCgLp',
@@ -15,7 +15,7 @@ test('existing clip successfully returns good url', async () => {
 });
 
 test('missing clip returns empty object', async () => {
-    await ensureConfigsAreLoaded();
+    // await ensureConfigsAreLoaded();
     const clip = {
         title: 'not a clip',
         url: 'https://www.twitch.tv/de_nerdtv/clip/thisisnotavalidurl',
