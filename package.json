@@ -11,11 +11,11 @@
     "b": "npm run build",
     "build-watch": "tsc -w",
     "bw": "npm run build-watch",
-    "test": "jest build --coverage",
+    "test": "jest build --env=node --coverage",
     "t": "npm run test",
     "test-watch": "jest build --watch",
     "tw": "npm run test-watch",
-    "ci": "jest build --ci --coverage"
+    "ci": "jest build --env=node --ci --coverage"
   },
   "author": "",
   "license": "ISC",
