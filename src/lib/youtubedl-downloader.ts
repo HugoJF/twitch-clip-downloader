@@ -37,7 +37,7 @@ export async function downloadYoutubeDl(): Promise<void> {
     logger.verbose(`youtubedl: Download latest version ${url} to ${output}`);
     await downloader.download();
 
-    fs.chmodSync(output, '0o775');
+    fs.chmodSync(output, 0o775);
 
     // Delay return to avoid EBUSY errors
     await sleep(1000);
