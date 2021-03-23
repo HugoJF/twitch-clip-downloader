@@ -1,14 +1,14 @@
 import fs                                     from 'fs';
-import {Video}                                from './twitch';
-import {logger}                               from './logger';
 import pool                                   from 'tiny-async-pool';
-import {ensureAppDirectoryExists, existsSync} from './filesystem';
-import {fragments}                            from './video-fragments-fetcher';
-import {Downloader}                           from './downloader';
-import {EventEmitter}                         from 'events';
-import {TransferSpeedCalculator}              from './transfer-speed-calculator';
-import {appPath, bpsToHuman, videosPath}      from './utils';
 import ffmpeg                                 from 'fluent-ffmpeg';
+import {EventEmitter}                         from 'events';
+import {ensureAppDirectoryExists, existsSync} from './filesystem';
+import {appPath, bpsToHuman, videosPath}      from './utils';
+import {TransferSpeedCalculator}              from './transfer-speed-calculator';
+import {Downloader}                           from './downloader';
+import {fragments}                            from './video-fragments-fetcher';
+import {logger}                               from './logger';
+import {Video}                                from './twitch';
 
 export class VideoDownloader extends EventEmitter {
     private video: Video;

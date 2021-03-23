@@ -3,7 +3,7 @@ import path                 from 'path';
 import prompts              from 'prompts';
 import {printErrorsAndExit} from '../errors';
 
-const validatePath = (input: string) => {
+function validatePath(input: string) {
     const resolved = path.resolve(input);
     const testFile = path.resolve(resolved, 'test.txt');
 
@@ -19,7 +19,7 @@ const validatePath = (input: string) => {
     }
 
     return true;
-};
+}
 
 export async function basepathPrompt(): Promise<string> {
     const response = await prompts({

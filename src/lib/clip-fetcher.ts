@@ -63,12 +63,14 @@ export class ClipFetcher extends EventEmitter {
             if (response === false) {
                 logger.error('Error while paginating, waiting a few seconds before continuing...');
                 await sleep(10000);
+
                 continue;
             }
 
             if (!iterable(response.data)) {
                 logger.error('API returned 200 but data is not iterable, waiting before trying again...');
                 await sleep(10000);
+
                 continue;
             }
 
@@ -79,9 +81,7 @@ export class ClipFetcher extends EventEmitter {
 
             this.emitClipCount();
 
-            if (response.pagination) {
-                cursor = response.pagination.cursor;
-            }
+            cursor = response?.pagination?.cursor;
         } while (cursor);
 
         const clipCount = Object.keys(clipsFromBatch).length;

@@ -1,9 +1,9 @@
 import {videosParallelDownloadsPrompt} from './prompts/videos-parallel-downloads-prompt';
 import {clipsParallelDownloadsPrompt}  from './prompts/clips-parallel-downloads-prompt';
-import {binPathPrompt}                 from './prompts/youtube-dl-path-prompt';
 import {clientSecretPrompt}            from './prompts/client-secret-prompt';
 import {basepathPrompt}                from './prompts/basepath-prompt';
 import {clientIdPrompt}                from './prompts/client-id-prompt';
+import {binPathPrompt}                 from './prompts/youtube-dl-path-prompt';
 import {debugPrompt}                   from './prompts/debug-prompt';
 
 enum EnvVariables {

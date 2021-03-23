@@ -1,19 +1,19 @@
 import prompts              from 'prompts';
 import {printErrorsAndExit} from '../errors';
 
-const validateClientSecret = (value: string): boolean|string => {
+function validateClientSecret(value: string): boolean | string {
     if (value.trim().length === 0) {
         return 'CLIENT_SECRET can\'t be empty!';
     }
 
     return true;
-};
+}
 
 export async function clientSecretPrompt(): Promise<string> {
     const response = await prompts({
-        type:     'text',
-        name:     'CLIENT_SECRET',
-        message:  'What is your Twitch CLIENT_SECRET?',
+        type: 'text',
+        name: 'CLIENT_SECRET',
+        message: 'What is your Twitch CLIENT_SECRET?',
         validate: validateClientSecret
     });
 

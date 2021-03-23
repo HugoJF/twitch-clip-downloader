@@ -2,7 +2,7 @@ import fs                                        from 'fs';
 import {exists, existsSync, readFile, writeFile} from './filesystem';
 
 function getCachePath(path: string, key: string): string {
-    return `./cache/${path}/${key}.cache`;
+    return `cache/${path}/${key}.cache`;
 }
 
 export async function checkCache(path: string, key: string): Promise<boolean> {

@@ -30,6 +30,7 @@ export class VideosFetcher extends EventEmitter {
             return data;
         } catch (e) {
             console.error('Error while paginating the API', e);
+
             return false;
         }
     }
@@ -45,18 +46,18 @@ export class VideosFetcher extends EventEmitter {
             if (response === false) {
                 console.error('Error while paginating, waiting a few seconds before continuing...');
                 await sleep(10000);
+
                 continue;
             }
 
             if (!iterable(response.data)) {
                 console.error('API returned 200 but data is not iterable, waiting before trying again...');
                 await sleep(10000);
+
                 continue;
             }
 
-            if (response.pagination) {
-                cursor = response.pagination.cursor;
-            }
+            cursor = response?.pagination?.cursor;
 
             for (const video of response.data) {
                 this.videos[video.id] = video;
@@ -67,5 +68,4 @@ export class VideosFetcher extends EventEmitter {
 
         return this.videos;
     }
-
 }

@@ -1,10 +1,11 @@
-import os                              from 'os';
-import fs                              from 'fs';
-import path                            from 'path';
-import {Downloader}                    from './downloader';
-import {logger}                        from './logger';
-import {ensureDirectoryExists, exists} from './filesystem';
-import {sleep}                         from "./utils";
+import os                                    from 'os';
+import fs                                    from 'fs';
+import path                                  from 'path';
+import {YOUTUBEDL_PERMISSION, YOUTUBEDL_URL} from './configs';
+import {ensureDirectoryExists, exists}       from './filesystem';
+import {Downloader}                          from './downloader';
+import {logger}                              from './logger';
+import {sleep}                               from './utils';
 
 export function youtubeDlFilename(): string {
     if (os.platform() === 'win32') {
@@ -19,7 +20,7 @@ export function youtubeDlPath(): string {
 }
 
 export function youtubeDlUrl(): string {
-    return 'https://github.com/ytdl-org/youtube-dl/releases/latest/download/' + youtubeDlFilename();
+    return YOUTUBEDL_URL.replace('{filename}', youtubeDlFilename());
 }
 
 export async function downloadYoutubeDl(): Promise<void> {
@@ -37,7 +38,7 @@ export async function downloadYoutubeDl(): Promise<void> {
     logger.verbose(`youtubedl: Download latest version ${url} to ${output}`);
     await downloader.download();
 
-    fs.chmodSync(output, 0o775);
+    fs.chmodSync(output, YOUTUBEDL_PERMISSION);
 
     // Delay return to avoid EBUSY errors
     await sleep(1000);

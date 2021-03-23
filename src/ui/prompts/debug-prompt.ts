@@ -1,13 +1,13 @@
 import prompts              from 'prompts';
 import {printErrorsAndExit} from '../errors';
 
-export async function debugPrompt (): Promise<string> {
+export async function debugPrompt(): Promise<string> {
     const response = await prompts({
-        type:    'confirm',
-        name:    'DEBUG',
+        type: 'confirm',
+        name: 'DEBUG',
         message: 'Run in debug mode?',
         initial: false,
-        format:  (value: any) => value.toString()
+        format: (value: any) => value.toString()
     });
 
     if (Object.keys(response).length === 0) {

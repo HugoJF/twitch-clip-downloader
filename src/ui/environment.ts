@@ -1,11 +1,11 @@
-import path                 from 'path';
 import chalk                from 'chalk';
 import dotenv               from 'dotenv';
 import {printErrorsAndExit} from './errors';
 import {exists, write}      from '../lib/filesystem';
 import {envPrompt}          from './env-prompt';
+import {appPath}            from '../lib/utils';
 
-const envPath = path.resolve(path.join(__dirname, '..', '..', '.env'));
+const envPath = appPath('.env');
 
 const DEFAULTS: Record<string, number | boolean | string> = {
     DEBUG: false,

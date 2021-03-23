@@ -4,7 +4,7 @@ import {getKey, writeKey}   from '../preferences';
 
 const CHANNEL_REGEX = /\.tv|\//g;
 
-const validateChannel = (channel: string): boolean|string => {
+function validateChannel(channel: string): boolean | string {
     if (channel.match(CHANNEL_REGEX)) {
         return 'Usernames only (without URLs)!';
     }
@@ -14,13 +14,13 @@ const validateChannel = (channel: string): boolean|string => {
     }
 
     return true;
-};
+}
 
 export async function channelPrompt(): Promise<string> {
     const response = await prompts({
-        type:     'text',
-        name:     'channel',
-        message:  'Which channel do you want to download media from?',
+        type: 'text',
+        name: 'channel',
+        message: 'Which channel do you want to download media from?',
         initial: getKey('channel'),
         validate: validateChannel
     });

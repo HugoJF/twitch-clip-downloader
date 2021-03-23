@@ -8,7 +8,7 @@ export const write = promisify(fs.writeFile);
 export const readFile = promisify(fs.readFile);
 export const writeFile = promisify(fs.writeFile);
 
-export const existsSync = (filePath: string): boolean => {
+export function existsSync (filePath: string): boolean {
     try {
         fs.accessSync(filePath, fs.constants.F_OK);
 
@@ -16,7 +16,7 @@ export const existsSync = (filePath: string): boolean => {
     } catch (e) {
         return false;
     }
-};
+}
 
 export function ensureDirectoryExists(directory: string): void {
     if (!existsSync(directory)) {
@@ -31,7 +31,7 @@ export function ensureAppDirectoryExists(directory: string): void {
     ensureDirectoryExists(appPath(directory));
 }
 
-export const exists = async (filePath: string): Promise<boolean> => {
+export async function exists (filePath: string): Promise<boolean> {
     try {
         // throws if it doesn't exist
         await access(filePath, fs.constants.F_OK);
@@ -40,4 +40,4 @@ export const exists = async (filePath: string): Promise<boolean> => {
     } catch (error) {
         return false;
     }
-};
+}

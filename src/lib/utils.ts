@@ -1,7 +1,7 @@
+import path                          from 'path';
 import * as fns                      from 'date-fns';
 import {differenceInMinutes, format} from 'date-fns';
 import {logger}                      from './logger';
-import path                          from 'path';
 
 const SPLIT_FACTOR = 2;
 
@@ -57,7 +57,7 @@ export function apiDelay(remaining: number, total: number, resetTime: number): n
 }
 
 export function appPath(p: string): string {
-    const basePath = process.env.BASEPATH ?? '';
+    const basePath = process.env.BASEPATH ?? path.resolve(__dirname, '..', '..');
 
     return path.resolve(basePath, p);
 }

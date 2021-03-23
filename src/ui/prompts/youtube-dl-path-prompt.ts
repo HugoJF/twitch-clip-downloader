@@ -2,9 +2,9 @@ import fs                   from 'fs';
 import path                 from 'path';
 import prompts              from 'prompts';
 import {printErrorsAndExit} from '../errors';
-import {youtubeDlFilename}  from "../../lib/youtubedl-downloader";
+import {youtubeDlFilename}  from '../../lib/youtubedl-downloader';
 
-const validatePath = (input: string): boolean|string => {
+function validatePath(input: string): boolean | string {
     const resolved = path.resolve(input);
 
     if (!fs.existsSync(resolved)) {
@@ -12,7 +12,7 @@ const validatePath = (input: string): boolean|string => {
     }
 
     return true;
-};
+}
 
 export async function binPathPrompt(): Promise<string> {
     const response = await prompts({

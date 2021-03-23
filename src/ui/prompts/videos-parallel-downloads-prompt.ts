@@ -3,11 +3,11 @@ import {printErrorsAndExit} from '../errors';
 
 export async function videosParallelDownloadsPrompt(): Promise<string> {
     const response = await prompts({
-        type:    'number',
-        name:    'VIDEOS_PARALLEL_DOWNLOADS',
+        type: 'number',
+        name: 'VIDEOS_PARALLEL_DOWNLOADS',
         message: 'How many video fragments should be downloaded at the same time?',
         initial: 20,
-        min:     1
+        min: 1
     });
 
     if (Object.keys(response).length === 0) {

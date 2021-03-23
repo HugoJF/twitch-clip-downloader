@@ -1,7 +1,6 @@
-import {Clip}                   from './twitch';
-import {getClipUrl}             from './clip-url-fetcher';
-import {ensureConfigsAreLoaded} from '../ui/environment';
-import {downloadYoutubeDl}      from './youtubedl-downloader';
+import {Clip}              from './twitch';
+import {getClipUrl}        from './clip-url-fetcher';
+import {downloadYoutubeDl} from './youtubedl-downloader';
 
 test('existing clip successfully returns good url', async () => {
     // await ensureConfigsAreLoaded();
