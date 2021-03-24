@@ -1,9 +1,10 @@
-import {Clip}              from './twitch';
-import {getClipUrl}        from './clip-url-fetcher';
 import {downloadYoutubeDl} from './youtubedl-downloader';
+import {loadEnvironment}   from '../ui/environment';
+import {getClipUrl}        from './clip-url-fetcher';
+import {Clip}              from './twitch';
 
 test('existing clip successfully returns good url', async () => {
-    // await ensureConfigsAreLoaded();
+    loadEnvironment();
     await downloadYoutubeDl();
 
     const clip = {
@@ -17,7 +18,7 @@ test('existing clip successfully returns good url', async () => {
 }, 30000);
 
 test('missing clip returns empty object', async () => {
-    // await ensureConfigsAreLoaded();
+    loadEnvironment();
     await downloadYoutubeDl();
 
     const clip = {

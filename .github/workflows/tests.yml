@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: npm run b
 
-      - name: copy file
+      - name: Copy .env file
         uses: canastro/copy-file-action@master
         with:
           source: '.env.actions'

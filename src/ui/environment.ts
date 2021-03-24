@@ -16,7 +16,7 @@ const DEFAULTS: Record<string, number | boolean | string> = {
     BIN_PATH: './bin',
 };
 
-const loadEnvironment = () => {
+export const loadEnvironment = () => {
     dotenv.config({path: envPath});
 };
 
