@@ -7,11 +7,12 @@ import {checkCache, getCache, saveCache}                                     fro
 import {Clip, TwitchClipsApiResponse}                                        from './twitch';
 import {logger}                                                              from './logger';
 import {api}                                                                 from './api';
+import {formatRFC7231}                                                       from "date-fns";
 
 export class ClipFetcher extends EventEmitter {
     private readonly userId: string;
 
-    private clips: Dict<Clip>;
+    private readonly clips: Dict<Clip>;
 
     constructor(userId: string) {
         super();
@@ -87,7 +88,7 @@ export class ClipFetcher extends EventEmitter {
 
         const clipCount = Object.keys(clipsFromBatch).length;
 
-        logger.verbose('Period', left, 'to', right, 'resulted in', clipCount, 'clips');
+        logger.verbose(`Period ${formatRFC7231(left)} to ${formatRFC7231(right)} resulted in ${clipCount} clips`);
 
         if (clipCount > BATCH_CLIP_THRESHOLD) {
             logger.info(`Found ${clipCount} in one period, which is above the ${BATCH_CLIP_THRESHOLD} limit, splitting period...`);
@@ -104,11 +105,17 @@ export class ClipFetcher extends EventEmitter {
             const newClips = newClipsDicts.reduce((total, part) => ({...total, ...part}), {});
 
             logger.info(`After splitting period, found ${Object.keys(newClips).length} (from period ${clipCount})`);
-            this.clips = {...this.clips, ...newClips};
+
+            // this.clips = {...this.clips, ...newClips};
+            for (const [key, value] of Object.entries(newClips)) {
+                this.clips[key] = value;
+            }
             this.emitClipCount();
+
+            return newClips;
         }
 
-        return this.clips;
+        return clipsFromBatch;
     }
 
     async start(): Promise<Dict<Clip>> {
@@ -139,7 +146,7 @@ export class ClipFetcher extends EventEmitter {
                     loaded = true;
                 } catch (e) {
                     logger.error(`Error parsing JSON from ${cacheKey}: ${e.message}`);
-                    logger.verbose(e);
+                    logger.verbose({e});
                 }
             }
 
@@ -148,7 +155,11 @@ export class ClipFetcher extends EventEmitter {
                 saveCache(cacheDir, cacheKey, JSON.stringify(clips));
             }
 
-            this.clips = {...this.clips, ...clips};
+            // this.clips = {...this.clips, ...clips};
+            for (const [key, value] of Object.entries(clips)) {
+                this.clips[key] = value as Clip;
+            }
+
             this.emitClipCount();
 
             this.emit('batch-finished');
@@ -160,6 +171,6 @@ export class ClipFetcher extends EventEmitter {
     }
 
     private emitClipCount() {
-        this.emit('clip-count', Object.values(this.clips).length);
+        this.emit('clip-count', Object.keys(this.clips).length);
     }
 }

@@ -161,7 +161,7 @@ export async function generateOauthToken(): Promise<string> {
 
     if (response.status !== 200 && response.status !== 201) {
         console.log(`Failed to generate Twitch API token, response status: ${response.status}`);
-        logger.verbose(response.data);
+        logger.verbose({responseData: response.data});
         throw new Error(response.statusText);
     }
 
