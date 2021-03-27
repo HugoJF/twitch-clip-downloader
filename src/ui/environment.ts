@@ -7,13 +7,15 @@ import {appPath}            from '../lib/utils';
 
 const envPath = appPath('.env');
 
-const DEFAULTS: Record<string, number | boolean | string> = {
+const DEFAULTS: Environment = {
     DEBUG: false,
     CLIENT_ID: '',
     CLIENT_SECRET: '',
     VIDEOS_PARALLEL_DOWNLOADS: 20,
     CLIPS_PARALLEL_DOWNLOADS: 10,
-    BIN_PATH: './bin',
+    BIN_PATH: appPath(),
+    BASEPATH: '',
+    DEFAULT_PERIOD_HOURS: 24,
 };
 
 export const loadEnvironment = () => {
@@ -53,11 +55,11 @@ export const ensureConfigsAreLoaded = async (): Promise<void> => {
     environmentKeys.forEach(ensureEnvironmentKeyIsLoaded);
 };
 
-export const writeEnvFile = async (values: Record<string, any> = {}): Promise<void> => {
+export const writeEnvFile = async (values: Partial<Environment> = {}): Promise<void> => {
     const config = {...DEFAULTS, ...values};
 
-    const pieces = Object.keys(config).map(key => `${key}=${config[key].toString()}`);
-    const fileContent = pieces.join('\n');
+    const lines = Object.keys(config).map(key => [key, config[key as EnvironmentKeys]].join('='));
+    const fileContent = lines.join('\n');
 
     return write(envPath, fileContent);
 };

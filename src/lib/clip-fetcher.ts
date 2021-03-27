@@ -42,6 +42,7 @@ export class ClipFetcher extends EventEmitter {
             return data;
         } catch (e) {
             console.error('Error while paginating the API', e);
+
             return false;
         }
     }
@@ -124,12 +125,25 @@ export class ClipFetcher extends EventEmitter {
             const cacheDir = `${this.userId}-clips`;
             const cacheExists = await checkCache(cacheDir, cacheKey);
 
+            let loaded = false;
+
+            if (!cacheExists) {
+                logger.verbose(`Could not find cache for key ${cacheKey}`);
+            }
+
             if (cacheExists) {
                 logger.verbose(`Found cache for key ${cacheKey}`);
                 const buffer = await getCache(cacheDir, cacheKey);
-                clips = JSON.parse(buffer);
-            } else {
-                logger.verbose(`Could not find cache for key ${cacheKey}`);
+                try {
+                    clips = JSON.parse(buffer);
+                    loaded = true;
+                } catch (e) {
+                    logger.error(`Error parsing JSON from ${cacheKey}: ${e.message}`);
+                    logger.verbose(e);
+                }
+            }
+
+            if (!loaded) {
                 clips = await this.fetchClipsFromBatch(period);
                 saveCache(cacheDir, cacheKey, JSON.stringify(clips));
             }
@@ -138,13 +152,11 @@ export class ClipFetcher extends EventEmitter {
             this.emitClipCount();
 
             this.emit('batch-finished');
-
-            return clips;
         };
 
-        const clipBatches = await pool(API_INSTANCES, batches, process);
+        await pool(API_INSTANCES, batches, process);
 
-        return clipBatches.reduce((all, batch) => ({...all, ...batch}), {});
+        return this.clips;
     }
 
     private emitClipCount() {

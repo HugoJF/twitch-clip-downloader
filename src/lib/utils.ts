@@ -28,7 +28,7 @@ export function generateBatches(): Period[] {
     const left = new Date(2016, 4, 26);
     const right = fns.endOfToday();
 
-    return generateBatchesFrom(left, right, 30 * 24 * 60);
+    return generateBatchesFrom(left, right, parseInt(process.env.DEFAULT_PERIOD_HOURS ?? '24') * 60);
 }
 
 export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: number): Period[] {
@@ -39,7 +39,7 @@ export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: 
         batches.push({left: left, right: next});
         left = next;
     }
-    console.log(batches);
+
     return batches;
 }
 
@@ -56,7 +56,7 @@ export function apiDelay(remaining: number, total: number, resetTime: number): n
     return resetTime * factor;
 }
 
-export function appPath(p: string): string {
+export function appPath(p = ''): string {
     const basePath = process.env.BASEPATH ?? path.resolve(__dirname, '..', '..');
 
     return path.resolve(basePath, p);

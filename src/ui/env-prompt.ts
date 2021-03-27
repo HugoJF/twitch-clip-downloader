@@ -6,19 +6,8 @@ import {clientIdPrompt}                from './prompts/client-id-prompt';
 import {binPathPrompt}                 from './prompts/youtube-dl-path-prompt';
 import {debugPrompt}                   from './prompts/debug-prompt';
 
-enum EnvVariables {
-    CLIENT_ID,
-    CLIENT_SECRET,
-    DEBUG,
-    VIDEOS_PARALLEL_DOWNLOADS,
-    CLIPS_PARALLEL_DOWNLOADS,
-    BASEPATH,
-    BIN_PATH,
-}
 
-type EnvironmentRecordType = Record<keyof typeof EnvVariables, string>
-
-export const envPrompt = async (): Promise<EnvironmentRecordType> => {
+export const envPrompt = async (): Promise<Environment> => {
     const BIN_PATH: string = await binPathPrompt();
     const BASEPATH: string = await basepathPrompt();
     const CLIENT_ID: string = await clientIdPrompt();
@@ -35,5 +24,6 @@ export const envPrompt = async (): Promise<EnvironmentRecordType> => {
         CLIPS_PARALLEL_DOWNLOADS,
         BASEPATH,
         BIN_PATH,
+        DEFAULT_PERIOD_HOURS: 24,
     };
 };

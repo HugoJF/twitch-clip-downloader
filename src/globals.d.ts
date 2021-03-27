@@ -1,3 +1,17 @@
+enum EnvironmentVariables {
+    DEBUG,
+    CLIENT_ID,
+    CLIENT_SECRET,
+    VIDEOS_PARALLEL_DOWNLOADS,
+    CLIPS_PARALLEL_DOWNLOADS,
+    BASEPATH,
+    BIN_PATH,
+    DEFAULT_PERIOD_HOURS,
+}
+
+type EnvironmentKeys = keyof typeof EnvironmentVariables;
+type Environment = Record<keyof typeof EnvironmentVariables, string|boolean|number>;
+
 interface Dict<T> {
     [key: string]: T;
 }
