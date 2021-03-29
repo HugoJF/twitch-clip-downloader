@@ -1,5 +1,6 @@
 import pool                                                                  from 'tiny-async-pool';
 import * as fns                                                              from 'date-fns';
+import {formatRFC7231}                                                       from 'date-fns';
 import {EventEmitter}                                                        from 'events';
 import {generateBatches, iterable, pathableDate, Period, sleep, splitPeriod} from './utils';
 import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                                 from './configs';
@@ -7,7 +8,6 @@ import {checkCache, getCache, saveCache}                                     fro
 import {Clip, TwitchClipsApiResponse}                                        from './twitch';
 import {logger}                                                              from './logger';
 import {api}                                                                 from './api';
-import {formatRFC7231}                                                       from "date-fns";
 
 export class ClipFetcher extends EventEmitter {
     private readonly userId: string;

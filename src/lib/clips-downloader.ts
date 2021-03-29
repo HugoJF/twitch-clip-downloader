@@ -1,18 +1,17 @@
-import fs                                     from 'fs';
-import ora                                    from 'ora';
-import pool                                   from 'tiny-async-pool';
-import prompts                                from 'prompts';
-import cliProgress                            from 'cli-progress';
-import {EventEmitter}                         from 'events';
-import {ensureAppDirectoryExists, existsSync} from './filesystem';
-import {TransferSpeedCalculator}              from './transfer-speed-calculator';
-import {writeMetaFile}                        from './meta';
-import {ClipFetcher}                          from './clip-fetcher';
-import {Downloader}                           from './downloader';
-import {getClipUrl}                           from './clip-url-fetcher';
-import {appPath}                              from './utils';
-import {logger}                               from './logger';
-import {Clip}                                 from './twitch';
+import ora                                               from 'ora';
+import pool                                              from 'tiny-async-pool';
+import prompts                                           from 'prompts';
+import cliProgress                                       from 'cli-progress';
+import {EventEmitter}                                    from 'events';
+import {ensureAppDirectoryExists, existsSync, writeFile} from './filesystem';
+import {TransferSpeedCalculator}                         from './transfer-speed-calculator';
+import {writeMetaFile}                                   from './meta';
+import {ClipFetcher}                                     from './clip-fetcher';
+import {Downloader}                                      from './downloader';
+import {getClipUrl}                                      from './clip-url-fetcher';
+import {appPath, round}                                  from './utils';
+import {logger}                                          from './logger';
+import {Clip}                                            from './twitch';
 
 export class ClipsDownloader extends EventEmitter {
     private readonly channel: string;
@@ -92,7 +91,7 @@ export class ClipsDownloader extends EventEmitter {
 
         this.speed.on('speed', speed => {
             this.downloadBar.update({
-                speed: Math.round(speed / 1000 / 1000 * 8 * 100) / 100
+                speed: round(speed / 1000 / 1000 * 8, 2)
             });
         });
 
@@ -114,7 +113,7 @@ export class ClipsDownloader extends EventEmitter {
         if (!existsSync(appPath(mp4Path))) {
             const url = await getClipUrl(clip);
 
-            fs.writeFileSync(appPath(metaPath), JSON.stringify(clip));
+            writeFile(appPath(metaPath), JSON.stringify(clip));
 
             if (url) {
                 const downloader = new Downloader(url, mp4Path);

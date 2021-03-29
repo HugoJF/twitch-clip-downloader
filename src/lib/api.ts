@@ -1,7 +1,6 @@
-import fs               from 'fs';
-import * as twitch      from './twitch';
-import {API_TOKEN_PATH} from './configs';
-import {readFile}       from './filesystem';
+import * as twitch           from './twitch';
+import {API_TOKEN_PATH}      from './configs';
+import {readFile, writeFile} from './filesystem';
 
 type InstanceType = ReturnType<typeof twitch.api>;
 let instance: InstanceType;
@@ -18,7 +17,7 @@ export async function loadApi (): Promise<void> {
 
         token = await twitch.generateOauthToken();
 
-        fs.writeFileSync(API_TOKEN_PATH, token);
+        writeFile(API_TOKEN_PATH, token);
     }
 
     instance = twitch.api(token);

@@ -1,14 +1,13 @@
-import fs                                     from 'fs';
-import pool                                   from 'tiny-async-pool';
-import ffmpeg                                 from 'fluent-ffmpeg';
-import {EventEmitter}                         from 'events';
-import {ensureAppDirectoryExists, existsSync} from './filesystem';
-import {appPath, bpsToHuman, videosPath}      from './utils';
-import {TransferSpeedCalculator}              from './transfer-speed-calculator';
-import {Downloader}                           from './downloader';
-import {fragments}                            from './video-fragments-fetcher';
-import {logger}                               from './logger';
-import {Video}                                from './twitch';
+import pool                                              from 'tiny-async-pool';
+import ffmpeg                                            from 'fluent-ffmpeg';
+import {EventEmitter}                                    from 'events';
+import {ensureAppDirectoryExists, existsSync, writeFile} from './filesystem';
+import {appPath, bpsToHuman, videosPath}                 from './utils';
+import {TransferSpeedCalculator}                         from './transfer-speed-calculator';
+import {Downloader}                                      from './downloader';
+import {fragments}                                       from './video-fragments-fetcher';
+import {logger}                                          from './logger';
+import {Video}                                           from './twitch';
 
 export class VideoDownloader extends EventEmitter {
     private video: Video;
@@ -61,10 +60,10 @@ export class VideoDownloader extends EventEmitter {
         const urls = await fragments(this.video.url);
 
         // Video metadata
-        fs.writeFileSync(videosPath(`${this.video.id}.meta`), JSON.stringify(this.video));
+        writeFile(videosPath(`${this.video.id}.meta`), JSON.stringify(this.video));
 
         // Fragments ID with URL
-        fs.writeFileSync(videosPath(`${this.video.id}.fragments`), JSON.stringify(urls));
+        writeFile(videosPath(`${this.video.id}.fragments`), JSON.stringify(urls));
 
         // Fragment list for ffmpeg
         const ffmpegInput = Object.keys(urls).map(id => {
@@ -72,7 +71,7 @@ export class VideoDownloader extends EventEmitter {
 
             return `file '${fragPath}'`;
         }).join('\n');
-        fs.writeFileSync(videosPath(`${this.video.id}.all.ts`), ffmpegInput);
+        writeFile(videosPath(`${this.video.id}.all.ts`), ffmpegInput);
 
         this.emit('fragments-fetched', Object.values(urls).length);
         logger.info(`Found ${Object.values(urls).length} fragments`);
