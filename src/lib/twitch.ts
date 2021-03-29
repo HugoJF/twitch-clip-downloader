@@ -1,102 +1,6 @@
-import axios, {AxiosRequestConfig} from 'axios';
-import {apiDelay, sleep}           from './utils';
-import {logger}                    from './logger';
-
-export type HelixOptions = Omit<AxiosRequestConfig, 'baseURL' | 'headers'>
-export type OAuth2Options = Omit<AxiosRequestConfig, 'baseURL' | 'method'>
-export type TwitchClipsApiParams = {
-    broadcaster_id: string,
-    game_id?: string,
-    id?: string,
-    after?: string,
-    before?: string,
-    ended_at?: string,
-    first?: number,
-    started_at?: string,
-};
-
-export type TwitchClipsApiResponse = {
-    data: Clip[],
-    pagination: {
-        cursor: string
-    }
-}
-
-export type TwitchUsersApiParams = {
-    id?: string,
-    login?: string,
-}
-
-export type TwitchUsersApiResponse = {
-    data: User[],
-}
-
-export type TwitchVideosApiParams = {
-    user_id: string,
-    game_id?: string,
-    after?: string,
-    before?: string,
-    first?: number,
-    language?: string,
-    period?: string,
-    sort?: string,
-    type?: string,
-};
-
-export type TwitchVideosApiResponse = {
-    data: Video[],
-    pagination: {
-        cursor: string
-    }
-};
-
-export type User = {
-    broadcaster_type: string,
-    description: string,
-    display_name: string,
-    email: string,
-    id: string,
-    login: string,
-    offline_image_url: string,
-    profile_image_url: string,
-    type: string,
-    view_count: string,
-    created_at: string,
-}
-
-export type Clip = {
-    broadcaster_id: string,
-    broadcaster_name: string,
-    created_at: string,
-    creator_id: string,
-    creator_name: string,
-    embed_url: string,
-    game_id: string,
-    id: string,
-    language: string,
-    thumbnail_url: string,
-    title: string,
-    url: string,
-    video_id: string,
-    view_count: number,
-}
-
-export type Video = {
-    created_at: string,
-    description: string,
-    duration: string,
-    id: string,
-    language: string,
-    published_at: string,
-    thumbnail_url: string,
-    title: string,
-    type: string,
-    url: string,
-    user_id: string,
-    user_name: string,
-    view_count: number,
-    viewable: string,
-}
+import axios                      from 'axios';
+import {apiDelay, convert, sleep} from './utils';
+import {logger}                   from './logger';
 
 const helix = async <T>(token: string, options: HelixOptions) => {
     const request = await axios.request<T>({
@@ -112,7 +16,11 @@ const helix = async <T>(token: string, options: HelixOptions) => {
     const rateLimitLimit = request.headers?.['ratelimit-limit'];
 
     if (rateLimitLimit && rateLimitRemaining) {
-        const delay = apiDelay(parseInt(rateLimitRemaining), parseInt(rateLimitLimit), 60 * 1000 /* millis */);
+        const delay = apiDelay(
+            parseInt(rateLimitRemaining),
+            parseInt(rateLimitLimit),
+            convert(60).seconds.to.millis()
+        );
         logger.info(`Delaying API response by ${delay}ms. Rate limit ${rateLimitRemaining}/${rateLimitLimit}`);
         await sleep(delay);
     } else {

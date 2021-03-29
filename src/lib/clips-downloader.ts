@@ -8,10 +8,9 @@ import {TransferSpeedCalculator}                         from './transfer-speed-
 import {writeMetaFile}                                   from './meta';
 import {ClipFetcher}                                     from './clip-fetcher';
 import {Downloader}                                      from './downloader';
-import {getClipUrl}                                      from './clip-url-fetcher';
-import {appPath, round}                                  from './utils';
-import {logger}                                          from './logger';
-import {Clip}                                            from './twitch';
+import {getClipUrl}              from './clip-url-fetcher';
+import {appPath, convert, round} from './utils';
+import {logger}                  from './logger';
 
 export class ClipsDownloader extends EventEmitter {
     private readonly channel: string;
@@ -91,7 +90,7 @@ export class ClipsDownloader extends EventEmitter {
 
         this.speed.on('speed', speed => {
             this.downloadBar.update({
-                speed: round(speed / 1000 / 1000 * 8, 2)
+                speed: round(convert(speed).Bps.to.Mbps(), 2)
             });
         });
 

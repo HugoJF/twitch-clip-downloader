@@ -2,8 +2,8 @@ import * as twitch           from './twitch';
 import {API_TOKEN_PATH}      from './configs';
 import {readFile, writeFile} from './filesystem';
 
-type InstanceType = ReturnType<typeof twitch.api>;
-let instance: InstanceType;
+type Instance = ReturnType<typeof twitch.api>;
+let instance: Instance;
 
 export async function loadApi (): Promise<void> {
     let token: string;
@@ -23,6 +23,6 @@ export async function loadApi (): Promise<void> {
     instance = twitch.api(token);
 }
 
-export function api (): InstanceType {
+export function api (): Instance {
     return instance;
 }

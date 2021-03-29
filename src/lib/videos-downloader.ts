@@ -6,7 +6,7 @@ import {ensureAppDirectoryExists} from './filesystem';
 import {VideoDownloader}          from './video-downloader';
 import {VideosFetcher}            from './videos-fetcher';
 import {logger}                   from './logger';
-import {Video}                    from './twitch';
+import {convert}                  from './utils';
 
 export class VideosDownloader extends EventEmitter {
     private readonly channel: string;
@@ -96,7 +96,7 @@ export class VideosDownloader extends EventEmitter {
 
         videoDownloader.on('speed', speed => {
             this.downloadBar.update({
-                speed: speed / 1000 / 1000 * 8,
+                speed: convert(speed).Bps.to.Mbps(),
             });
         });
 

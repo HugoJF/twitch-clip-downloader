@@ -7,7 +7,6 @@ import {TransferSpeedCalculator}                         from './transfer-speed-
 import {Downloader}                                      from './downloader';
 import {fragments}                                       from './video-fragments-fetcher';
 import {logger}                                          from './logger';
-import {Video}                                           from './twitch';
 
 export class VideoDownloader extends EventEmitter {
     private video: Video;

@@ -5,11 +5,6 @@ import {logger}                      from './logger';
 
 const SPLIT_FACTOR = 2;
 
-export type Period = {
-    left: Date,
-    right: Date,
-}
-
 export function splitPeriod(period: Period): Period[] {
     // left/right is reversed so we get a positive number
     const diffInMinutes = differenceInMinutes(period.right, period.left);
@@ -49,7 +44,9 @@ export function apiDelay(remaining: number, total: number, resetTime: number): n
     // Delay starts when remaining requests is below 10% the total rate-limit
     const startsAt = total * 0.1;
 
-    if (startsAt < remaining) return 0;
+    if (startsAt < remaining) {
+        return 0;
+    }
 
     const factor = 1 - Math.pow(remaining / startsAt, degree);
 
@@ -100,7 +97,22 @@ export function bpsToHuman(bps: number): string {
         index++;
     }
 
-    return `${round(bps, 2)}${suffixes[index]}`;
+    return [round(bps, 2), suffixes[index]].join('');
+}
+
+export function convert(amount: number) {
+    return {
+        Bps: {
+            to: {
+                Mbps: () => amount / 1000 / 1000 * 8,
+            }
+        },
+        seconds: {
+            to: {
+                millis: () => amount * 1000
+            }
+        }
+    };
 }
 
 // https://stackoverflow.com/questions/18884249/checking-whether-something-is-iterable

@@ -10,10 +10,111 @@ enum EnvironmentVariables {
 }
 
 type EnvironmentKeys = keyof typeof EnvironmentVariables;
-type Environment = Record<keyof typeof EnvironmentVariables, string|boolean|number>;
+type Environment = Record<EnvironmentKeys, string|boolean|number>;
 
 interface Dict<T> {
     [key: string]: T;
+}
+
+type Period = {
+    left: Date,
+    right: Date,
+}
+
+type HelixOptions = Omit<AxiosRequestConfig, 'baseURL' | 'headers'>
+type OAuth2Options = Omit<AxiosRequestConfig, 'baseURL' | 'method'>
+type TwitchClipsApiParams = {
+    broadcaster_id: string,
+    game_id?: string,
+    id?: string,
+    after?: string,
+    before?: string,
+    ended_at?: string,
+    first?: number,
+    started_at?: string,
+};
+
+type TwitchClipsApiResponse = {
+    data: Clip[],
+    pagination: {
+        cursor: string
+    }
+}
+
+type TwitchUsersApiParams = {
+    id?: string,
+    login?: string,
+}
+
+type TwitchUsersApiResponse = {
+    data: User[],
+}
+
+type TwitchVideosApiParams = {
+    user_id: string,
+    game_id?: string,
+    after?: string,
+    before?: string,
+    first?: number,
+    language?: string,
+    period?: string,
+    sort?: string,
+    type?: string,
+};
+
+type TwitchVideosApiResponse = {
+    data: Video[],
+    pagination: {
+        cursor: string
+    }
+};
+
+type User = {
+    broadcaster_type: string,
+    description: string,
+    display_name: string,
+    email: string,
+    id: string,
+    login: string,
+    offline_image_url: string,
+    profile_image_url: string,
+    type: string,
+    view_count: string,
+    created_at: string,
+}
+
+type Clip = {
+    broadcaster_id: string,
+    broadcaster_name: string,
+    created_at: string,
+    creator_id: string,
+    creator_name: string,
+    embed_url: string,
+    game_id: string,
+    id: string,
+    language: string,
+    thumbnail_url: string,
+    title: string,
+    url: string,
+    video_id: string,
+    view_count: number,
+}
+
+type Video = {
+    created_at: string,
+    description: string,
+    duration: string,
+    id: string,
+    language: string,
+    published_at: string,
+    thumbnail_url: string,
+    title: string,
+    type: string,
+    url: string,
+    user_id: string,
+    user_name: string,
+    view_count: number,
+    viewable: string,
 }
 
 interface YoutubeDlDumpHttpHeaders {

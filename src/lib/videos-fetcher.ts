@@ -1,5 +1,4 @@
 import {EventEmitter}                   from 'events';
-import {TwitchVideosApiResponse, Video} from './twitch';
 import {iterable, sleep}                from './utils';
 import {api}                            from './api';
 

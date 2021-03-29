@@ -1,7 +1,6 @@
 import {downloadYoutubeDl} from './youtubedl-downloader';
 import {loadEnvironment}   from '../ui/environment';
 import {getClipUrl}        from './clip-url-fetcher';
-import {Clip}              from './twitch';
 
 test('existing clip successfully returns good url', async () => {
     loadEnvironment();
