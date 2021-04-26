@@ -4,9 +4,10 @@ import cliProgress                from 'cli-progress';
 import {EventEmitter}             from 'events';
 import {ensureAppDirectoryExists} from './filesystem';
 import {VideoDownloader}          from './video-downloader';
+import {ChatDownloader}           from './chat-downloader';
 import {VideosFetcher}            from './videos-fetcher';
-import {logger}                   from './logger';
 import {convert}                  from './utils';
+import {logger}                   from './logger';
 
 export class VideosDownloader extends EventEmitter {
     private readonly channel: string;
@@ -77,7 +78,10 @@ export class VideosDownloader extends EventEmitter {
 
         logger.verbose('Starting videos download');
         for (const video of Object.values(videos)) {
-            await this.downloadVideo(video);
+            await Promise.all([
+                this.downloadVideo(video),
+                this.downloadChat(video)
+            ]);
         }
     }
 
@@ -105,6 +109,12 @@ export class VideosDownloader extends EventEmitter {
         await videoDownloader.transcode();
 
         this.downloadBar.stop();
+    }
+
+    private async downloadChat(video: Video) {
+        const chatDownloader = new ChatDownloader(video);
+
+        await chatDownloader.download();
     }
 
     async start(): Promise<void> {

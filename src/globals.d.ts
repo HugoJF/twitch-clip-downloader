@@ -10,7 +10,7 @@ enum EnvironmentVariables {
 }
 
 type EnvironmentKeys = keyof typeof EnvironmentVariables;
-type Environment = Record<EnvironmentKeys, string|boolean|number>;
+type Environment = Record<EnvironmentKeys, string | boolean | number>;
 
 interface Dict<T> {
     [key: string]: T;
@@ -20,9 +20,6 @@ type Period = {
     left: Date,
     right: Date,
 }
-
-type HelixOptions = Omit<AxiosRequestConfig, 'baseURL' | 'headers'>
-type OAuth2Options = Omit<AxiosRequestConfig, 'baseURL' | 'method'>
 type TwitchClipsApiParams = {
     broadcaster_id: string,
     game_id?: string,
@@ -50,6 +47,10 @@ type TwitchUsersApiResponse = {
     data: User[],
 }
 
+type TwitchVideoCommentsApiParams = {
+    cursor?: string,
+}
+
 type TwitchVideosApiParams = {
     user_id: string,
     game_id?: string,
@@ -68,6 +69,11 @@ type TwitchVideosApiResponse = {
         cursor: string
     }
 };
+
+type TwitchVideoCommentsApiResponse = {
+    comments: VideoComment[],
+    _next: string,
+}
 
 type User = {
     broadcaster_type: string,
@@ -115,6 +121,45 @@ type Video = {
     user_name: string,
     view_count: number,
     viewable: string,
+}
+
+type VideoComment = {
+    _id: string,
+    created_at: string,
+    updated_at: string,
+    channel_id: string,
+    content_type: string,
+    content_id: string,
+    content_offset_seconds: number,
+    commenter: {
+        _id: string,
+        display_name: string,
+        name: string,
+        type: string,
+        bio: string,
+        created_at: string,
+        updated_at: string,
+        logo: string,
+    },
+    source: string,
+    state: string,
+    message: {
+        body: string,
+        fragments: {
+            text: string,
+            emoticon?: {
+                emoticon_id: string,
+                emotion_set_id: string,
+            }
+        }[],
+        is_action: boolean,
+        user_badges: {
+            _id: string,
+            version: string,
+        }[],
+        user_color: string,
+        user_notice_params: any,
+    },
 }
 
 interface YoutubeDlDumpHttpHeaders {

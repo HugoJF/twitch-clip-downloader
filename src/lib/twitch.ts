@@ -1,6 +1,18 @@
-import axios                      from 'axios';
-import {apiDelay, convert, sleep} from './utils';
-import {logger}                   from './logger';
+import axios                                    from 'axios';
+import {HelixOptions, OAuth2Options, V5Options} from '../types';
+import {apiDelay, convert, sleep}               from './utils';
+import {logger}                                 from './logger';
+
+const v5 = async <T>(options: V5Options) => {
+    return await axios.request<T>({
+        baseURL: 'https://api.twitch.tv/v5',
+        headers: {
+            Accept: 'application/vnd.twitchtv.v5+json',
+            'Client-ID': process.env.CLIENT_ID
+        },
+        ...options,
+    });
+};
 
 const helix = async <T>(token: string, options: HelixOptions) => {
     const request = await axios.request<T>({
@@ -54,7 +66,13 @@ export const api = (token: string) => ({
             url: 'videos',
             params,
         });
-    }
+    },
+    videoComments: function (videoId: number | string, params: TwitchVideoCommentsApiParams) {
+        return v5<TwitchVideoCommentsApiResponse>({
+            url: `videos/${videoId}/comments`,
+            params,
+        });
+    },
 });
 
 export async function generateOauthToken(): Promise<string> {
