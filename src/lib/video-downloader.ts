@@ -4,16 +4,16 @@ import {EventEmitter}                                    from 'events';
 import {ensureAppDirectoryExists, existsSync, writeFile} from './filesystem';
 import {appPath, bpsToHuman, videosPath}                 from './utils';
 import {TransferSpeedCalculator}                         from './transfer-speed-calculator';
+import {VideoFragmentsFetcher}                           from './video-fragments-fetcher';
 import {Downloader}                                      from './downloader';
-import {fragments}                                       from './video-fragments-fetcher';
 import {logger}                                          from './logger';
 
 export class VideoDownloader extends EventEmitter {
-    private video: Video;
+    private readonly video: Video;
 
     private readonly downloadInstances: number;
 
-    private speed: TransferSpeedCalculator;
+    private readonly speed: TransferSpeedCalculator;
 
     constructor(video: Video) {
         super();
@@ -56,7 +56,7 @@ export class VideoDownloader extends EventEmitter {
 
     async download(): Promise<void> {
         logger.info(`Starting video download [${this.video.id}]: ${this.video.title}`);
-        const urls = await fragments(this.video.url);
+        const urls = await (new VideoFragmentsFetcher(this.video.url)).fragments();
 
         // Video metadata
         writeFile(videosPath(`${this.video.id}.meta`), JSON.stringify(this.video));

@@ -1,11 +1,11 @@
 import prompts                  from 'prompts';
 import {ensureConfigsAreLoaded} from './ui/environment';
-import {downloadYoutubeDl}      from './lib/youtubedl-downloader';
 import {VideosDownloader}       from './lib/videos-downloader';
 import {ClipsDownloader}        from './lib/clips-downloader';
 import {channelPrompt}          from './ui/prompts/channel-prompt';
 import {api, loadApi}           from './lib/api';
 import {bootLogger}             from './lib/logger';
+import {YoutubedlDownloader}    from "./lib/youtubedl-downloader";
 
 async function fetchUserId(name: string) {
     const user = await api().users({login: name});
@@ -17,7 +17,8 @@ async function start() {
     await ensureConfigsAreLoaded();
     bootLogger();
 
-    await downloadYoutubeDl();
+    await (new YoutubedlDownloader).download();
+
     await loadApi();
 
     const channel = await channelPrompt();

@@ -6,49 +6,57 @@ import {logger}  from './logger';
 const firstManifestStreamPattern = /#EXT-X-STREAM.*?\n(http.*?\.m3u8)/;
 const manifestFragmentPattern = /#EXTINF.*?\n(.*?\.ts)/g;
 
-export async function fragments(url: string): Promise<Dict<string>> {
-    logger.verbose(`Fetching fragments for URL: ${url}`);
+export class VideoFragmentsFetcher {
+    private readonly videoUrl: string;
 
-    // Use YoutubeDL to fetch manifest URL
-    const meta = await youtubedl().getVideoInfo(url);
-    logger.verbose(`youtube-dl reported video manifest URL: ${meta.manifest_url}`);
+    constructor(videoUrl: string) {
+        this.videoUrl = videoUrl;
+    }
 
-    // Download video manifest
-    const videoManifestRequest = await axios.get(meta.manifest_url);
-    const videoManifest = videoManifestRequest.data;
-    logger.verbose({videoManifest});
+    async fragments(): Promise<Dict<string>> {
+        logger.verbose(`Fetching fragments for URL: ${this.videoUrl}`);
 
-    // Grab the first stream listed in the manifest and hope it's the original quality
-    const manifestUrlMatch = videoManifest.match(firstManifestStreamPattern);
-    const manifestUrl = manifestUrlMatch[1];
-    logger.verbose(`Selected manifest URL: ${manifestUrl}`);
+        // Use YoutubeDL to fetch manifest URL
+        const meta = await youtubedl().getVideoInfo(this.videoUrl);
+        logger.verbose(`youtube-dl reported video manifest URL: ${meta.manifest_url}`);
 
-    const manifestUrlParts = manifestUrl.split('/');
-    const manifestBaseUrl = manifestUrlParts.slice(0, manifestUrlParts.length - 1).join('/');
-    logger.verbose(`Computed base manifest URL: ${manifestBaseUrl}`);
+        // Download video manifest
+        const videoManifestRequest = await axios.get(meta.manifest_url);
+        const videoManifest = videoManifestRequest.data;
+        logger.verbose({videoManifest});
 
-    // Download the specific stream manifest
-    const streamManifestRequest = await axios.get(manifestUrl);
-    const streamManifest = streamManifestRequest.data;
-    logger.verbose({streamManifest});
+        // Grab the first stream listed in the manifest and hope it's the original quality
+        const manifestUrlMatch = videoManifest.match(firstManifestStreamPattern);
+        const manifestUrl = manifestUrlMatch[1];
+        logger.verbose(`Selected manifest URL: ${manifestUrl}`);
 
-    // Match fragments listed in the manifest
-    const matchedFragments = streamManifest.matchAll(manifestFragmentPattern);
-    logger.verbose({matchedFragments});
+        const manifestUrlParts = manifestUrl.split('/');
+        const manifestBaseUrl = manifestUrlParts.slice(0, manifestUrlParts.length - 1).join('/');
+        logger.verbose(`Computed base manifest URL: ${manifestBaseUrl}`);
 
-    // Extract from match
-    // FIXME: any
-    const fragments = Array.from(matchedFragments).map((matches: any) => matches[1]);
-    logger.verbose({fragments});
+        // Download the specific stream manifest
+        const streamManifestRequest = await axios.get(manifestUrl);
+        const streamManifest = streamManifestRequest.data;
+        logger.verbose({streamManifest});
 
-    // Join the base manifestUrl with fragment name
-    const fragmentsUrl = fragments.reduce((result, frag) => {
-        result[frag] = [manifestBaseUrl, frag].join('/');
+        // Match fragments listed in the manifest
+        const matchedFragments = streamManifest.matchAll(manifestFragmentPattern);
+        logger.verbose({matchedFragments});
 
-        return result;
-    }, {});
+        // Extract from match
+        // FIXME: any
+        const fragments = Array.from(matchedFragments).map((matches: any) => matches[1]);
+        logger.verbose({fragments});
 
-    logger.verbose({fragmentsUrl});
+        // Join the base manifestUrl with fragment name
+        const fragmentsUrl = fragments.reduce((result, frag) => {
+            result[frag] = [manifestBaseUrl, frag].join('/');
 
-    return fragmentsUrl;
+            return result;
+        }, {});
+
+        logger.verbose({fragmentsUrl});
+
+        return fragmentsUrl;
+    }
 }

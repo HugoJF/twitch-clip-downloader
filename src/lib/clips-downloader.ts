@@ -1,16 +1,15 @@
-import ora                                               from 'ora';
-import pool                                              from 'tiny-async-pool';
-import prompts                                           from 'prompts';
-import cliProgress                                       from 'cli-progress';
-import {EventEmitter}                                    from 'events';
-import {ensureAppDirectoryExists, existsSync, writeFile} from './filesystem';
-import {TransferSpeedCalculator}                         from './transfer-speed-calculator';
-import {writeMetaFile}                                   from './meta';
-import {ClipFetcher}                                     from './clip-fetcher';
-import {Downloader}                                      from './downloader';
-import {getClipUrl}              from './clip-url-fetcher';
-import {appPath, convert, round} from './utils';
-import {logger}                  from './logger';
+import ora                                                      from 'ora';
+import pool                                                     from 'tiny-async-pool';
+import prompts                                                  from 'prompts';
+import cliProgress                                              from 'cli-progress';
+import {EventEmitter}                                           from 'events';
+import {ensureAppDirectoryExists, existsSync, write, writeFile} from './filesystem';
+import {TransferSpeedCalculator}                                from './transfer-speed-calculator';
+import {appPath, convert, round}                                from './utils';
+import {ClipFetcher}                                            from './clip-fetcher';
+import {Downloader}                                             from './downloader';
+import {getClipUrl}                                             from './clip-url-fetcher';
+import {logger}                                                 from './logger';
 
 export class ClipsDownloader extends EventEmitter {
     private readonly channel: string;
@@ -62,10 +61,15 @@ export class ClipsDownloader extends EventEmitter {
         /**
          * Metadata phase
          */
-        writeMetaFile(this.channel, Object.values(clips));
+        this.writeMetaFile(this.channel, Object.values(clips));
 
         return clips;
     }
+
+    writeMetaFile = async (channel: string, data: any): Promise<void> => {
+        logger.info('Writing meta data to disk');
+        return write(appPath(`${channel}.meta`), JSON.stringify(data));
+    };
 
     async downloadClips(clips: Dict<Clip>): Promise<void> {
         const clipCount = Object.values(clips).length;
