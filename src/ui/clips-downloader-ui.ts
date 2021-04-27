@@ -2,9 +2,9 @@ import ora               from 'ora';
 import prompts           from 'prompts';
 import cliProgress       from 'cli-progress';
 import {EventEmitter}    from 'events';
-import {convert, round}  from '../lib/utils';
 import {ClipsDownloader} from '../lib/clips-downloader';
-import {logger}          from "../lib/logger";
+import {convert, round}  from '../lib/utils';
+import {logger}          from '../lib/logger';
 
 export class ClipsDownloaderUi extends EventEmitter {
     private readonly channel: string;

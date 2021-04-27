@@ -6,6 +6,7 @@ import {channelPrompt}          from './ui/prompts/channel-prompt';
 import {api, loadApi}           from './lib/api';
 import {bootLogger}             from './lib/logger';
 import {downloadYoutubeDl}      from './lib/youtubedl-downloader';
+import {VideosDownloaderUi}     from "./ui/videos-downloader-ui";
 
 async function fetchUserId(name: string) {
     const user = await api().users({login: name});
@@ -44,7 +45,7 @@ async function start() {
     });
 
     if (downloadVideos.value) {
-        const videosDownloader = new VideosDownloader(channel, id);
+        const videosDownloader = new VideosDownloaderUi(channel, id);
 
         await videosDownloader.start();
     }

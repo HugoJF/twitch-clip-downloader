@@ -1,22 +1,17 @@
-import ora                        from 'ora';
-import prompts                    from 'prompts';
-import cliProgress                from 'cli-progress';
 import {EventEmitter}             from 'events';
 import {ensureAppDirectoryExists} from './filesystem';
 import {VideoDownloader}          from './video-downloader';
 import {ChatDownloader}           from './chat-downloader';
 import {VideosFetcher}            from './videos-fetcher';
-import {convert}                  from './utils';
 import {logger}                   from './logger';
 
 export class VideosDownloader extends EventEmitter {
     private readonly channel: string;
     private readonly userId: string;
 
-    private fragmentDownloadInstances: number;
+    public readonly videoFetcher: VideosFetcher;
 
-    private apiSpinner: ora.Ora;
-    private downloadBar: cliProgress.SingleBar;
+    private fragmentDownloadInstances: number;
 
     constructor(channel: string, userId: string) {
         super();
@@ -24,56 +19,16 @@ export class VideosDownloader extends EventEmitter {
         this.channel = channel;
         this.userId = userId;
 
-        this.fragmentDownloadInstances = 50;
+        this.videoFetcher = new VideosFetcher(this.userId);
 
-        this.apiSpinner = ora('Paginating API, please wait...');
-        this.downloadBar = new cliProgress.SingleBar({
-            format: 'Downloading video [{video}] | [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} fragments'
-        }, cliProgress.Presets.shades_classic);
+        this.fragmentDownloadInstances = 50;
     }
 
-    private async fetchVideos() {
-        // API fetching phase
-        const totalBatches = 0;
-        const finishedBatches = 0;
-
-        this.apiSpinner.start();
-
-        const videoFetcher = new VideosFetcher(this.userId);
-
-        // TODO: type me
-        // @ts-ignore
-        videoFetcher.on('video', ({videos}) => {
-            this.apiSpinner.text = `Paginating API, found ${Object.values(videos).length} videos, ${finishedBatches}/${totalBatches} please wait...`;
-        });
-
-        const videos = await videoFetcher.fetchVideos();
-
-        this.apiSpinner.succeed('Finished API pagination.');
-        this.apiSpinner.clear();
-
-        // Metadata phase
-        // TODO: migrate to videos
-        // writeMetaFile(channel, Object.values(videos));
-
-        return videos;
+    fetchVideos() {
+        return this.videoFetcher.fetchVideos();
     }
 
     private async downloadVideos(videos: Dict<Video>) {
-        // Confirmation phase
-        const videoCount = Object.values(videos).length;
-        const confirmation = await prompts({
-            type: 'confirm',
-            name: 'value',
-            message: `Found ${videoCount} videos to download, download now?`,
-            initial: true
-        });
-
-        if (!confirmation.value) {
-            console.log('Bye!');
-            process.exit(0);
-        }
-
         ensureAppDirectoryExists('videos');
 
         logger.verbose('Starting videos download');
@@ -88,27 +43,9 @@ export class VideosDownloader extends EventEmitter {
     private async downloadVideo(video: Video) {
         const videoDownloader = new VideoDownloader(video);
 
-        videoDownloader.on('fragments-fetched', fragments => {
-            this.downloadBar.start(fragments, 0, {
-                video: video.title,
-            });
-        });
-
-        videoDownloader.on('fragment-downloaded', name => {
-            this.downloadBar.increment();
-        });
-
-        videoDownloader.on('speed', speed => {
-            this.downloadBar.update({
-                speed: convert(speed).Bps.to.Mbps(),
-            });
-        });
-
         await videoDownloader.download();
 
         await videoDownloader.transcode();
-
-        this.downloadBar.stop();
     }
 
     private async downloadChat(video: Video) {
