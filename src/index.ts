@@ -1,11 +1,11 @@
 import prompts                  from 'prompts';
 import {ensureConfigsAreLoaded} from './ui/environment';
-import {downloadYoutubeDl}      from './lib/youtubedl-downloader';
+import {ClipsDownloaderUi}      from './ui/clips-downloader-ui';
 import {VideosDownloader}       from './lib/videos-downloader';
-import {ClipsDownloader}        from './lib/clips-downloader';
 import {channelPrompt}          from './ui/prompts/channel-prompt';
 import {api, loadApi}           from './lib/api';
 import {bootLogger}             from './lib/logger';
+import {downloadYoutubeDl}      from './lib/youtubedl-downloader';
 
 async function fetchUserId(name: string) {
     const user = await api().users({login: name});
@@ -31,7 +31,7 @@ async function start() {
     });
 
     if (downloadClips.value) {
-        const clipsDownloader = new ClipsDownloader(channel, id);
+        const clipsDownloader = new ClipsDownloaderUi(channel, id);
 
         await clipsDownloader.start();
     }
