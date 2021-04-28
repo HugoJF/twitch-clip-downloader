@@ -5,8 +5,8 @@ import {EventEmitter}                                                from 'event
 import {generateBatches, iterable, pathableDate, sleep, splitPeriod} from './utils';
 import {API_INSTANCES, BATCH_CLIP_THRESHOLD}                         from './configs';
 import {checkCache, getCache, saveCache}                             from './cache';
+import {instance}                                                    from './twitch';
 import {logger}                                                      from './logger';
-import {api}                                                         from './api';
 
 export class ClipFetcher extends EventEmitter {
     private readonly userId: string;
@@ -24,7 +24,7 @@ export class ClipFetcher extends EventEmitter {
         try {
             const {left, right} = period;
 
-            const response = await api().clips({
+            const response = await instance().api().clips({
                 broadcaster_id: this.userId,
                 first: 100,
                 after: cursor,

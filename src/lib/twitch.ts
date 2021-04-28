@@ -2,14 +2,41 @@ import axios                                    from 'axios';
 import {HelixOptions, OAuth2Options, V5Options} from '../types';
 import {apiDelay, convert, sleep}               from './utils';
 import {logger}                                 from './logger';
+import {readFile, writeFile}                    from './filesystem';
+import {API_TOKEN_PATH}                         from './configs';
+
+let _instance: Twitch;
+
+export async function loadInstance(clientId: string): Promise<void> {
+    _instance = new Twitch(clientId);
+
+    return _instance.load();
+}
+
+export function instance(): Twitch {
+    return _instance;
+}
 
 export class Twitch {
-    generateOauthTokenRequest(options: OAuth2Options) {
-        return axios.request({
-            baseURL: 'https://id.twitch.tv/oauth2/token',
-            method: 'POST',
-            ...options
-        });
+    private readonly clientId: string;
+
+    private token: string;
+
+    constructor(clientId: string) {
+        this.clientId = clientId;
+        this.token = '';
+    }
+
+    async load(): Promise<void> {
+        try {
+            const buffer = await readFile(API_TOKEN_PATH);
+            this.token = buffer.toString();
+            console.log('Read Twitch API OAuth2 token from file.');
+        } catch (e) {
+            console.log('Could not read Twich API OAuth2 token from file, generating another one...');
+
+            await this.generateToken();
+        }
     }
 
     v5<T>(options: V5Options) {
@@ -17,7 +44,7 @@ export class Twitch {
             baseURL: 'https://api.twitch.tv/v5',
             headers: {
                 Accept: 'application/vnd.twitchtv.v5+json',
-                'Client-ID': process.env.CLIENT_ID
+                'Client-ID': this.clientId,
             },
             ...options,
         });
@@ -28,7 +55,7 @@ export class Twitch {
             baseURL: 'https://api.twitch.tv/helix',
             headers: {
                 Authorization: `Bearer ${token}`,
-                'Client-ID': process.env.CLIENT_ID
+                'Client-ID': this.clientId,
             },
             ...options
         });
@@ -51,22 +78,22 @@ export class Twitch {
         return request;
     }
 
-    api(token: string) {
+    api() {
         return ({
             clips: (params: TwitchClipsApiParams) => {
-                return this.helix<TwitchClipsApiResponse>(token, {
+                return this.helix<TwitchClipsApiResponse>(this.token, {
                     url: 'clips',
                     params
                 });
             },
             users: (params: TwitchUsersApiParams) => {
-                return this.helix<TwitchUsersApiResponse>(token, {
+                return this.helix<TwitchUsersApiResponse>(this.token, {
                     url: 'users',
                     params
                 });
             },
             videos: (params: TwitchVideosApiParams) => {
-                return this.helix<TwitchVideosApiResponse>(token, {
+                return this.helix<TwitchVideosApiResponse>(this.token, {
                     url: 'videos',
                     params,
                 });
@@ -80,8 +107,16 @@ export class Twitch {
         });
     }
 
-    async generateOauthToken(): Promise<string> {
-        const response = await this.generateOauthTokenRequest({
+    tokenRequest(options: OAuth2Options) {
+        return axios.request({
+            baseURL: 'https://id.twitch.tv/oauth2/token',
+            method: 'POST',
+            ...options
+        });
+    }
+
+    async generateToken(): Promise<string> {
+        const response = await this.tokenRequest({
             params: {
                 client_id: process.env.CLIENT_ID,
                 client_secret: process.env.CLIENT_SECRET,
@@ -96,14 +131,16 @@ export class Twitch {
             throw new Error(response.statusText);
         }
 
-        const token = response.data?.access_token;
+        this.token = response.data?.access_token;
 
-        if (!token) {
+        if (!this.token) {
             logger.error('API did not generate an access_token');
             logger.error(response.data);
             throw new Error('API did not generate an access_token');
         }
 
-        return token.toString();
+        writeFile(API_TOKEN_PATH, this.token);
+
+        return this.token.toString();
     }
 }

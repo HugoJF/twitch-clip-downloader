@@ -1,15 +1,14 @@
 import prompts                  from 'prompts';
 import {ensureConfigsAreLoaded} from './ui/environment';
+import {VideosDownloaderUi}     from './ui/videos-downloader-ui';
 import {ClipsDownloaderUi}      from './ui/clips-downloader-ui';
-import {VideosDownloader}       from './lib/videos-downloader';
-import {channelPrompt}          from './ui/prompts/channel-prompt';
-import {api, loadApi}           from './lib/api';
-import {bootLogger}             from './lib/logger';
 import {downloadYoutubeDl}      from './lib/youtubedl-downloader';
-import {VideosDownloaderUi}     from "./ui/videos-downloader-ui";
+import {channelPrompt}          from './ui/prompts/channel-prompt';
+import {instance, loadInstance} from './lib/twitch';
+import {bootLogger}             from './lib/logger';
 
 async function fetchUserId(name: string) {
-    const user = await api().users({login: name});
+    const user = await instance().api().users({login: name});
 
     return user.data.data[0].id;
 }
@@ -19,7 +18,7 @@ async function start() {
     bootLogger();
 
     await downloadYoutubeDl();
-    await loadApi();
+    await loadInstance(process.env.CLIENT_ID ?? '');
 
     const channel = await channelPrompt();
     const id = await fetchUserId(channel);

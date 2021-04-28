@@ -1,8 +1,8 @@
 import {EventEmitter} from 'events';
 import {writeFile}    from './filesystem';
 import {videosPath}   from './utils';
+import {instance}     from './twitch';
 import {logger}       from './logger';
-import {api}          from './api';
 
 export class ChatDownloader extends EventEmitter {
     private video: Video;
@@ -21,7 +21,7 @@ export class ChatDownloader extends EventEmitter {
         logger.info(`Started downloading chat data from video ${this.video.id}`);
         do {
             logger.verbose(`Requesting comments from video ${this.video.id} with cursor ${cursor}`);
-            const promise = api().videoComments(this.video.id, {cursor});
+            const promise = instance().api().videoComments(this.video.id, {cursor});
             const request = await promise;
 
             // this.comments = [...this.comments, ...request.data.comments];

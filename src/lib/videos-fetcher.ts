@@ -1,6 +1,6 @@
-import {EventEmitter}                   from 'events';
-import {iterable, sleep}                from './utils';
-import {api}                            from './api';
+import {EventEmitter}    from 'events';
+import {iterable, sleep} from './utils';
+import {instance}        from './twitch';
 
 export class VideosFetcher extends EventEmitter {
     private readonly userId: string;
@@ -13,7 +13,7 @@ export class VideosFetcher extends EventEmitter {
 
     private async paginate(cursor: undefined | string): Promise<TwitchVideosApiResponse | false> {
         try {
-            const response = await api().videos({
+            const response = await instance().api().videos({
                 user_id: this.userId,
                 first: 100,
                 after: cursor,
