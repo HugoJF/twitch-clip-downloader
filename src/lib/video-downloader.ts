@@ -8,19 +8,23 @@ import {Downloader}                                      from './downloader';
 import {fragments}                                       from './video-fragments-fetcher';
 import {logger}                                          from './logger';
 
+type ExtraOptions = {
+    parallelDownloads?: number;
+}
+
 export class VideoDownloader extends EventEmitter {
-    private video: Video;
+    private readonly video: Video;
 
     private readonly downloadInstances: number;
 
-    private speed: TransferSpeedCalculator;
+    private readonly speed: TransferSpeedCalculator;
 
-    constructor(video: Video) {
+    constructor(video: Video, options: ExtraOptions = {}) {
         super();
 
         this.video = video;
 
-        this.downloadInstances = parseInt(process.env.VIDEOS_PARALLEL_DOWNLOADS ?? '20');
+        this.downloadInstances = options.parallelDownloads ?? 20;
 
         this.speed = new TransferSpeedCalculator;
 

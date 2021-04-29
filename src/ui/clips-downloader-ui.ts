@@ -12,8 +12,6 @@ export class ClipsDownloaderUi extends EventEmitter {
 
     private readonly downloader: ClipsDownloader;
 
-    private readonly downloadInstances: number;
-
     private apiSpinner: ora.Ora;
     private downloadBar: cliProgress.SingleBar;
 
@@ -23,9 +21,9 @@ export class ClipsDownloaderUi extends EventEmitter {
         this.channel = channel;
         this.userId = userId;
 
-        this.downloader = new ClipsDownloader(channel, userId);
-
-        this.downloadInstances = parseInt(process.env.CLIPS_PARALLEL_DOWNLOADS ?? '20');
+        this.downloader = new ClipsDownloader(channel, userId, {
+            parallelDownloads: parseInt(process.env.CLIPS_PARALLEL_DOWNLOADS ?? '20'),
+        });
 
         this.apiSpinner = ora('Paginating API, please wait...');
         this.downloadBar = new cliProgress.SingleBar({

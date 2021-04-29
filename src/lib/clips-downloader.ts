@@ -8,6 +8,10 @@ import {getClipUrl}                                      from './clip-url-fetche
 import {appPath}                                         from './utils';
 import {logger}                                          from './logger';
 
+type ExtraOptions = {
+    parallelDownloads?: number;
+}
+
 export class ClipsDownloader extends EventEmitter {
     private readonly channel: string;
     private readonly userId: string;
@@ -15,9 +19,9 @@ export class ClipsDownloader extends EventEmitter {
     public readonly clipsFetcher: ClipFetcher;
     public readonly speed: TransferSpeedCalculator;
 
-    private readonly downloadInstances: number;
+    private readonly parallelDownloads: number;
 
-    constructor(channel: string, userId: string) {
+    constructor(channel: string, userId: string, options: ExtraOptions = {}) {
         super();
 
         this.channel = channel;
@@ -26,7 +30,7 @@ export class ClipsDownloader extends EventEmitter {
         this.clipsFetcher = new ClipFetcher(this.userId);
         this.speed = new TransferSpeedCalculator;
 
-        this.downloadInstances = parseInt(process.env.CLIPS_PARALLEL_DOWNLOADS ?? '20');
+        this.parallelDownloads = options.parallelDownloads ?? 20;
     }
 
     fetchClips(): Promise<Dict<Clip>> {
@@ -39,7 +43,7 @@ export class ClipsDownloader extends EventEmitter {
         ensureAppDirectoryExists('clips');
 
         await pool(
-            this.downloadInstances,
+            this.parallelDownloads,
             Object.values(clips),
             this.downloadClip.bind(this)
         );

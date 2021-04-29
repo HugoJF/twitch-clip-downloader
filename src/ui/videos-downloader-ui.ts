@@ -9,6 +9,10 @@ import {ChatDownloader}           from '../lib/chat-downloader';
 import {convert}                  from '../lib/utils';
 import {logger}                   from '../lib/logger';
 
+type ExtraOptions = {
+    parallelDownloads?: number;
+}
+
 export class VideosDownloaderUi extends EventEmitter {
     private readonly channel: string;
     private readonly userId: string;
@@ -26,7 +30,9 @@ export class VideosDownloaderUi extends EventEmitter {
         this.channel = channel;
         this.userId = userId;
 
-        this.videosDownloader = new VideosDownloader(channel, userId);
+        this.videosDownloader = new VideosDownloader(channel, userId, {
+            parallelDownloads: parseInt(process.env.VIDEOS_PARALLEL_DOWNLOADS ?? '50'),
+        });
 
         this.fragmentDownloadInstances = 50;
 

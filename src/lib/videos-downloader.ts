@@ -5,6 +5,10 @@ import {ChatDownloader}           from './chat-downloader';
 import {VideosFetcher}            from './videos-fetcher';
 import {logger}                   from './logger';
 
+type ExtraOptions = {
+    parallelDownloads?: number;
+}
+
 export class VideosDownloader extends EventEmitter {
     private readonly channel: string;
     private readonly userId: string;
@@ -13,7 +17,9 @@ export class VideosDownloader extends EventEmitter {
 
     private fragmentDownloadInstances: number;
 
-    constructor(channel: string, userId: string) {
+    private options: ExtraOptions;
+
+    constructor(channel: string, userId: string, options: ExtraOptions) {
         super();
 
         this.channel = channel;
@@ -22,6 +28,8 @@ export class VideosDownloader extends EventEmitter {
         this.videoFetcher = new VideosFetcher(this.userId);
 
         this.fragmentDownloadInstances = 50;
+
+        this.options = options;
     }
 
     fetchVideos() {
@@ -41,7 +49,7 @@ export class VideosDownloader extends EventEmitter {
     }
 
     private async downloadVideo(video: Video) {
-        const videoDownloader = new VideoDownloader(video);
+        const videoDownloader = new VideoDownloader(video, this.options);
 
         await videoDownloader.download();
 
