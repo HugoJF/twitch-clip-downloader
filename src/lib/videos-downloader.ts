@@ -1,7 +1,6 @@
 import {EventEmitter}             from 'events';
 import {ensureAppDirectoryExists} from './filesystem';
 import {VideoDownloader}          from './video-downloader';
-import {ChatDownloader}           from './chat-downloader';
 import {VideosFetcher}            from './videos-fetcher';
 import {logger}                   from './logger';
 
@@ -41,25 +40,19 @@ export class VideosDownloader extends EventEmitter {
 
         logger.verbose('Starting videos download');
         for (const video of Object.values(videos)) {
-            await Promise.all([
-                this.downloadVideo(video),
-                this.downloadChat(video)
-            ]);
+            await this.downloadVideo(video);
         }
     }
 
     private async downloadVideo(video: Video) {
         const videoDownloader = new VideoDownloader(video, this.options);
 
-        await videoDownloader.download();
+        await Promise.all([
+            videoDownloader.download(),
+            videoDownloader.downloadChat(),
+        ]);
 
         await videoDownloader.transcode();
-    }
-
-    private async downloadChat(video: Video) {
-        const chatDownloader = new ChatDownloader(video);
-
-        await chatDownloader.download();
     }
 
     async start(): Promise<void> {

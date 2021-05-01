@@ -7,6 +7,7 @@ import {TransferSpeedCalculator}                         from './transfer-speed-
 import {Downloader}                                      from './downloader';
 import {fragments}                                       from './video-fragments-fetcher';
 import {logger}                                          from './logger';
+import {ChatDownloader}                                  from "./chat-downloader";
 
 type ExtraOptions = {
     parallelDownloads?: number;
@@ -56,6 +57,12 @@ export class VideoDownloader extends EventEmitter {
             logger.info(`Finished video ${this.video.id} transcode`);
         });
 
+    }
+
+    async downloadChat(): Promise<void> {
+        const chatDownloader = new ChatDownloader(this.video);
+
+        await chatDownloader.download();
     }
 
     async download(): Promise<void> {
