@@ -18,12 +18,12 @@ export function splitPeriod(period: Period): Period[] {
     return generateBatchesFrom(period.left, period.right, ceil);
 }
 
-export function generateBatches(): Period[] {
+export function generateBatches(periodDurationHours = 24): Period[] {
     // The day Twitch Clips were announced
     const left = new Date(2016, 4, 26);
     const right = fns.endOfToday();
 
-    return generateBatchesFrom(left, right, parseInt(process.env.DEFAULT_PERIOD_HOURS ?? '24') * 60);
+    return generateBatchesFrom(left, right, periodDurationHours * 60);
 }
 
 export function generateBatchesFrom(left: Date, right: Date, minutesIncrements: number): Period[] {
@@ -53,6 +53,11 @@ export function apiDelay(remaining: number, total: number, resetTime: number): n
     return resetTime * factor;
 }
 
+export function binPath(p = ''): string {
+    return path.resolve(process.env.BIN_PATH ?? 'bin', p);
+}
+
+// FIXME: 2 resolve() calls, why?
 export function appPath(p = ''): string {
     const basePath = process.env.BASEPATH ?? path.resolve(__dirname, '..', '..');
 

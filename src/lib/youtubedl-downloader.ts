@@ -4,15 +4,15 @@ import path                                  from 'path';
 import {YOUTUBEDL_PERMISSION, YOUTUBEDL_URL} from './configs';
 import {ensureDirectoryExists, exists}       from './filesystem';
 import {Downloader}                          from './downloader';
-import {logger}                              from './logger';
-import {sleep}                               from './utils';
+import {logger}         from './logger';
+import {binPath, sleep} from './utils';
 
 export class YoutubedlDownloader {
     async download(): Promise<void> {
         const output = this.path();
         const url = this.url();
 
-        ensureDirectoryExists(path.resolve(process.env.BIN_PATH ?? 'bin'));
+        ensureDirectoryExists(binPath());
 
         if (await exists(output)) {
             return;
@@ -35,7 +35,7 @@ export class YoutubedlDownloader {
     }
 
     path(): string {
-        return path.resolve(process.env.BIN_PATH ?? 'bin', this.filename());
+        return binPath(this.filename());
     }
 
     filename(): string {

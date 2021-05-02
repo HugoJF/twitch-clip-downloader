@@ -15,9 +15,9 @@ async function fetchUserId(name: string) {
 
 async function start() {
     await ensureConfigsAreLoaded();
-    bootLogger();
+    bootLogger(process.env.DEBUG === 'true');
 
-    await loadInstance(process.env.CLIENT_ID ?? '');
+    await loadInstance(process.env.CLIENT_ID ?? '', process.env.CLIENT_SECRET ?? '');
     await (new YoutubedlDownloader).download();
 
     const channel = await channelPrompt();

@@ -7,8 +7,8 @@ import {API_TOKEN_PATH}                         from './configs';
 
 let _instance: Twitch;
 
-export async function loadInstance(clientId: string): Promise<void> {
-    _instance = new Twitch(clientId);
+export async function loadInstance(clientId: string, clientSecret: string): Promise<void> {
+    _instance = new Twitch(clientId, clientSecret);
 
     return _instance.load();
 }
@@ -19,11 +19,14 @@ export function instance(): Twitch {
 
 export class Twitch {
     private readonly clientId: string;
+    private readonly clientSecret: string;
 
     private token: string;
 
-    constructor(clientId: string) {
+    constructor(clientId: string, clientSecret: string) {
         this.clientId = clientId;
+        this.clientSecret = clientSecret;
+
         this.token = '';
     }
 
@@ -118,8 +121,8 @@ export class Twitch {
     async generateToken(): Promise<string> {
         const response = await this.tokenRequest({
             params: {
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET,
+                client_id: this.clientId,
+                client_secret: this.clientSecret,
                 scope: '',
                 grant_type: 'client_credentials'
             }
