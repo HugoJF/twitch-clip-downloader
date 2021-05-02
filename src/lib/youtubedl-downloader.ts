@@ -7,39 +7,42 @@ import {Downloader}                          from './downloader';
 import {logger}                              from './logger';
 import {sleep}                               from './utils';
 
-export function youtubeDlFilename(): string {
-    if (os.platform() === 'win32') {
-        return 'youtube-dl.exe';
-    } else {
-        return 'youtube-dl';
-    }
-}
+export class YoutubedlDownloader {
+    async download(): Promise<void> {
+        const output = this.path();
+        const url = this.url();
 
-export function youtubeDlPath(): string {
-    return path.resolve(process.env.BIN_PATH ?? 'bin', youtubeDlFilename());
-}
+        ensureDirectoryExists(path.resolve(process.env.BIN_PATH ?? 'bin'));
 
-export function youtubeDlUrl(): string {
-    return YOUTUBEDL_URL.replace('{filename}', youtubeDlFilename());
-}
+        if (await exists(output)) {
+            return;
+        }
 
-export async function downloadYoutubeDl(): Promise<void> {
-    const output = youtubeDlPath();
-    const url = youtubeDlUrl();
+        const downloader = new Downloader(url, output);
 
-    ensureDirectoryExists(path.resolve(process.env.BIN_PATH ?? 'bin'));
+        logger.verbose(`youtubedl: Download latest version ${url} to ${output}`);
+        await downloader.download();
 
-    if (await exists(output)) {
-        return;
+        // TODO: move this to downloader
+        fs.chmodSync(output, YOUTUBEDL_PERMISSION);
+
+        // Delay return to avoid EBUSY errors
+        await sleep(1000);
     }
 
-    const downloader = new Downloader(url, output);
+    url(): string {
+        return YOUTUBEDL_URL.replace('{filename}', this.filename());
+    }
 
-    logger.verbose(`youtubedl: Download latest version ${url} to ${output}`);
-    await downloader.download();
+    path(): string {
+        return path.resolve(process.env.BIN_PATH ?? 'bin', this.filename());
+    }
 
-    fs.chmodSync(output, YOUTUBEDL_PERMISSION);
-
-    // Delay return to avoid EBUSY errors
-    await sleep(1000);
+    filename(): string {
+        if (os.platform() === 'win32') {
+            return 'youtube-dl.exe';
+        } else {
+            return 'youtube-dl';
+        }
+    }
 }

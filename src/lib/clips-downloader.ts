@@ -1,7 +1,7 @@
 import pool                                              from 'tiny-async-pool';
-import {EventEmitter}                                    from 'events';
-import {ensureAppDirectoryExists, existsSync, writeFile} from './filesystem';
-import {TransferSpeedCalculator}                         from './transfer-speed-calculator';
+import {EventEmitter}                                           from 'events';
+import {ensureAppDirectoryExists, existsSync, write, writeFile} from './filesystem';
+import {TransferSpeedCalculator}                                from './transfer-speed-calculator';
 import {ClipFetcher}                                     from './clip-fetcher';
 import {Downloader}                                      from './downloader';
 import {getClipUrl}                                      from './clip-url-fetcher';
@@ -36,6 +36,11 @@ export class ClipsDownloader extends EventEmitter {
     fetchClips(): Promise<Dict<Clip>> {
         return this.clipsFetcher.start();
     }
+
+    writeMetaFile = async (channel: string, data: any): Promise<void> => {
+        logger.info('Writing meta data to disk');
+        return write(appPath(`${channel}.meta`), JSON.stringify(data));
+    };
 
     async downloadClips(clips: Dict<Clip>): Promise<void> {
         const clipCount = Object.values(clips).length;

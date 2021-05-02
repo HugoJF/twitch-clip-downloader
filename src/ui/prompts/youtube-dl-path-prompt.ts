@@ -1,8 +1,8 @@
-import fs                   from 'fs';
-import path                 from 'path';
-import prompts              from 'prompts';
-import {printErrorsAndExit} from '../errors';
-import {youtubeDlFilename}  from '../../lib/youtubedl-downloader';
+import fs                    from 'fs';
+import path                  from 'path';
+import prompts               from 'prompts';
+import {YoutubedlDownloader} from '../../lib/youtubedl-downloader';
+import {printErrorsAndExit}  from '../errors';
 
 function validatePath(input: string): boolean | string {
     const resolved = path.resolve(input);
@@ -19,7 +19,7 @@ export async function binPathPrompt(): Promise<string> {
         type: 'text',
         name: 'BIN_PATH',
         message: 'Where should binaries be located at?',
-        initial: path.resolve(process.cwd(), 'bin', youtubeDlFilename()),
+        initial: path.resolve(process.cwd(), 'bin', (new YoutubedlDownloader).filename()),
         validate: validatePath
     });
 
