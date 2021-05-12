@@ -42,7 +42,7 @@
     "typescript": "^4.2.3",
     "winston": "^3.3.3",
     "youtube-dl-wrap": "latest",
-    "postcss": "^8.1.14"
+    "postcss": "^8.2.10"
   },
   "devDependencies": {
     "@types/jest": "^26.0.21",
