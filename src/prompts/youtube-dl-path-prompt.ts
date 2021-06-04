@@ -1,7 +1,7 @@
 import fs                    from 'fs';
 import path                  from 'path';
 import prompts               from 'prompts';
-import {YoutubedlDownloader} from '../../lib/youtubedl-downloader';
+import {YoutubedlDownloader} from 'twitch-tools';
 import {printErrorsAndExit}  from '../errors';
 
 function validatePath(input: string): boolean | string {

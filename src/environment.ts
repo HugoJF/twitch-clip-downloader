@@ -1,9 +1,8 @@
-import chalk                from 'chalk';
-import dotenv               from 'dotenv';
-import {printErrorsAndExit} from './errors';
-import {exists, write}      from '../lib/filesystem';
-import {envPrompt}          from './env-prompt';
-import {appPath}            from '../lib/utils';
+import chalk                                                  from 'chalk';
+import dotenv                                                 from 'dotenv';
+import {appPath, Environment, EnvironmentKeys, exists, write} from 'twitch-tools';
+import {printErrorsAndExit}                                   from './errors';
+import {envPrompt}                                            from './env-prompt';
 
 const envPath = appPath('.env');
 

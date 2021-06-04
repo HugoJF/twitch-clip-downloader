@@ -1,10 +1,9 @@
-import ora               from 'ora';
-import prompts           from 'prompts';
-import cliProgress       from 'cli-progress';
-import {EventEmitter}    from 'events';
-import {ClipsDownloader} from '../lib/clips-downloader';
-import {convert, round}  from '../lib/utils';
-import {logger}          from '../lib/logger';
+import ora                                           from 'ora';
+import prompts                                       from 'prompts';
+import cliProgress                                   from 'cli-progress';
+import {EventEmitter}                                from 'events';
+import {Clip, ClipsDownloader, convert, Dict, round} from 'twitch-tools';
+import {logger}                                      from './logger';
 
 export class ClipsDownloaderUi extends EventEmitter {
     private readonly channel: string;
@@ -29,29 +28,6 @@ export class ClipsDownloaderUi extends EventEmitter {
         this.downloadBar = new cliProgress.SingleBar({
             format: 'Downloading clips [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} clips'
         }, cliProgress.Presets.shades_classic);
-    }
-
-    private async fetchClips(): Promise<Dict<Clip>> {
-        // API fetching phase
-        let totalBatches = 0;
-        let finishedBatches = 0;
-
-        this.apiSpinner.start();
-
-        this.downloader.clipsFetcher.on('clip-count', total => {
-            this.apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
-        });
-
-        this.downloader.clipsFetcher.on('batch-generated', count => totalBatches = count);
-
-        this.downloader.clipsFetcher.on('batch-finished', () => finishedBatches++);
-
-        const clips = await this.downloader.fetchClips();
-
-        this.apiSpinner.succeed('Finished API pagination.');
-        this.apiSpinner.clear();
-
-        return clips;
     }
 
     async downloadClips(clips: Dict<Clip>): Promise<void> {
@@ -90,5 +66,28 @@ export class ClipsDownloaderUi extends EventEmitter {
         const clips = await this.fetchClips();
 
         await this.downloadClips(clips);
+    }
+
+    private async fetchClips(): Promise<Dict<Clip>> {
+        // API fetching phase
+        let totalBatches = 0;
+        let finishedBatches = 0;
+
+        this.apiSpinner.start();
+
+        this.downloader.clipsFetcher.on('clip-count', total => {
+            this.apiSpinner.text = `Paginating API, found ${total} clips, ${finishedBatches}/${totalBatches} please wait...`;
+        });
+
+        this.downloader.clipsFetcher.on('batch-generated', count => totalBatches = count);
+
+        this.downloader.clipsFetcher.on('batch-finished', () => finishedBatches++);
+
+        const clips = await this.downloader.fetchClips();
+
+        this.apiSpinner.succeed('Finished API pagination.');
+        this.apiSpinner.clear();
+
+        return clips;
     }
 }

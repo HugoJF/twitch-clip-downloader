@@ -1,17 +1,9 @@
-import ora                        from 'ora';
-import prompts                    from 'prompts';
-import cliProgress                from 'cli-progress';
-import {EventEmitter}             from 'events';
-import {ensureAppDirectoryExists} from '../lib/filesystem';
-import {VideosDownloader}         from '../lib/videos-downloader';
-import {VideoDownloader}          from '../lib/video-downloader';
-import {ChatDownloader}           from '../lib/chat-downloader';
-import {convert}                  from '../lib/utils';
-import {logger}                   from '../lib/logger';
-
-type ExtraOptions = {
-    parallelDownloads?: number;
-}
+import ora                                                                                                  from 'ora';
+import prompts                                                                                              from 'prompts';
+import cliProgress                                                                                          from 'cli-progress';
+import {EventEmitter}                                                                                       from 'events';
+import {ChatDownloader, convert, Dict, ensureAppDirectoryExists, Video, VideoDownloader, VideosDownloader,} from 'twitch-tools';
+import {logger}                                                                                             from './logger';
 
 export class VideosDownloaderUi extends EventEmitter {
     private readonly channel: string;
@@ -40,6 +32,12 @@ export class VideosDownloaderUi extends EventEmitter {
         this.downloadBar = new cliProgress.SingleBar({
             format: 'Downloading video [{video}] | [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} fragments'
         }, cliProgress.Presets.shades_classic);
+    }
+
+    async start(): Promise<void> {
+        const videos = await this.fetchVideos();
+
+        await this.downloadVideos(videos);
     }
 
     private async fetchVideos() {
@@ -123,11 +121,5 @@ export class VideosDownloaderUi extends EventEmitter {
         const chatDownloader = new ChatDownloader(video);
 
         await chatDownloader.download();
-    }
-
-    async start(): Promise<void> {
-        const videos = await this.fetchVideos();
-
-        await this.downloadVideos(videos);
     }
 }

@@ -37,14 +37,13 @@
     "fluent-ffmpeg": "^2.1.2",
     "node-notifier": ">=8.0.1",
     "ora": "^4.0.4",
+    "postcss": "^8.1.14",
     "prompts": "^2.4.0",
     "tiny-async-pool": "^1.2.0",
+    "twitch-tools": "0.0.1",
     "typescript": "^4.2.3",
     "winston": "^3.3.3",
     "youtube-dl-wrap": "latest",
-    "postcss": "^8.1.14"
-  },
-  "devDependencies": {
     "@types/jest": "^26.0.21",
     "jest": "^26.6.3"
   }

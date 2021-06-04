@@ -1,3 +1,4 @@
+import {Environment}                   from 'twitch-tools';
 import {videosParallelDownloadsPrompt} from './prompts/videos-parallel-downloads-prompt';
 import {clipsParallelDownloadsPrompt}  from './prompts/clips-parallel-downloads-prompt';
 import {clientSecretPrompt}            from './prompts/client-secret-prompt';

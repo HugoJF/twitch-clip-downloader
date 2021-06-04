@@ -1,6 +1,5 @@
-import fs                 from 'fs';
-import {PREFERENCES_PATH} from '../lib/configs';
-import {existsSync}       from '../lib/filesystem';
+import fs                             from 'fs';
+import {existsSync, PREFERENCES_PATH} from 'twitch-tools';
 
 export function writeKey(key: string, value: string): void {
     const preference = loadPreferences();
