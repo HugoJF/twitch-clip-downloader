@@ -10,6 +10,32 @@ This tool can PROBABLY download ALL clips from a channel (not only the top 1000)
 
 In order to maximize clip coverage, this tool will not allow Twitch API to report more then [500](https://github.com/HugoJF/twitch-clip-downloader/blob/master/src/lib/configs.ts#L5) clips in a single period. Pagination beyond this point is unreliable (caps around 1k clips but varies alot). To fix this, periods with more than 500 clips, will be split in [2](https://github.com/HugoJF/twitch-clip-downloader/blob/master/src/lib/utils.ts#L6), and the process will restart until a single period reports less than 500 clips.
 
+## State of the project
+
+This project is not abandoned but at the same time not being actively developed because of my time constraints.
+
+I realized the project grew beyond the scope of its name: a batch clip downloader, and figured I needed to re-organize everything into more manageable pieces. I'm still figuring out what the final plan of attack will be, for now this is what I'm planning:
+ 
+#### Export core functionalities into a separate package
+
+This is mostly done by now, but was needed to keep user stuff from developer stuff. This also allows me to focus on keeping the core functionalities up-to-date and frequently tested and also share the most important code between all the tools
+
+#### Make this project more usable
+
+Currently this tool will only download EVERYTHING from a channel, and this is not the most common use-case (even for me). I plan on adding things like: download single VOD/clip, download from list of URLs, filters, a better CLI, etc.
+
+#### A GUI version
+
+Since most users are scared of the CLI, I want to implement a GUI using Electron to this project more accessible and user-friendly.
+
+#### A VOD player
+
+This tool is also capable of downloading the entire VOD chat from Twitch, allowing a player to replay the entire chat just like you can for VODs that are still available.
+
+#### Proper documentation
+
+The ultimate plan is to turn the core functionalities package into the swiss-knife of tools for Twitch media related backups, allowing any developer to easily write their own backup/download tool without having to worry about requests, multiple connections, API auth, fetching VOD .m3u8 playlists, etc
+
 ## Dependencies
   - [NodeJS](https://nodejs.org/en/download/) - used to run this tool;
   - [Python](https://www.python.org/downloads/) - used to run `youtube-dl`;
