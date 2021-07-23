@@ -1,34 +1,11 @@
 import chalk                                                  from 'chalk';
 import dotenv                                                 from 'dotenv';
 import {appPath, Environment, EnvironmentKeys, exists, write} from 'twitch-tools';
-import {printErrorsAndExit}                                   from './errors';
-import {envPrompt}                                            from './env-prompt';
+import {definition}                                           from './environment-definition';
 
 const envPath = appPath('.env');
 
-const DEFAULTS: Environment = {
-    DEBUG: false,
-    CLIENT_ID: '',
-    CLIENT_SECRET: '',
-    VIDEOS_PARALLEL_DOWNLOADS: 20,
-    CLIPS_PARALLEL_DOWNLOADS: 10,
-    BIN_PATH: appPath(),
-    BASEPATH: '',
-    DEFAULT_PERIOD_HOURS: 24,
-};
-
-export const loadEnvironment = () => {
-    dotenv.config({path: envPath});
-};
-
-const ensureEnvironmentKeyIsLoaded = (key: string) => {
-    if (!process.env[key]) {
-        printErrorsAndExit(`Environment variable ${chalk.underline.blue(key)} not set!`,
-            `\nPlease set ${chalk.blue(key)} on ${chalk.cyan('.env')} file.`);
-    }
-};
-
-const createIfEnvNotSet = async () => {
+const checkEnvExists = async () => {
     const envExists = await exists(envPath);
 
     if (!envExists) {
@@ -37,26 +14,24 @@ const createIfEnvNotSet = async () => {
         console.log('If you don\'t have these at hand, here\'s a guide:');
         console.log(`Register an application on ${chalk.magenta('Twitch')} Console: ${chalk.underline.blue('https://dev.twitch.tv/console/apps')}`);
         console.log(`Click ${chalk.cyan('Manage')} and copy the ${chalk.green('CLIENT_ID')} and generate a ${chalk.green('CLIENT_SECRET')}.\n\n`);
-
-        const data = await envPrompt();
-
-        await writeEnvFile(data);
     }
 };
 
+export const loadEnvironment = (): void => {
+    dotenv.config({path: envPath});
+};
+
 export const ensureConfigsAreLoaded = async (): Promise<void> => {
-    await createIfEnvNotSet();
+    await checkEnvExists();
 
     loadEnvironment();
 
-    const environmentKeys = Object.keys(DEFAULTS);
+    const env = await definition.resolve();
 
-    environmentKeys.forEach(ensureEnvironmentKeyIsLoaded);
+    await writeEnvFile(env);
 };
 
-export const writeEnvFile = async (values: Partial<Environment> = {}): Promise<void> => {
-    const config = {...DEFAULTS, ...values};
-
+export const writeEnvFile = async (config: Partial<Environment> = {}): Promise<void> => {
     const lines = Object.keys(config).map(key => [key, config[key as EnvironmentKeys]].join('='));
     const fileContent = lines.join('\n');
 

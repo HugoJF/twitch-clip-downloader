@@ -1,5 +1,7 @@
-import fs                             from 'fs';
-import {existsSync, PREFERENCES_PATH} from 'twitch-tools';
+import fs                    from 'fs';
+import {appPath, existsSync} from 'twitch-tools';
+
+const PREFERENCES_PATH = appPath('preferences.json');
 
 export function writeKey(key: string, value: string): void {
     const preference = loadPreferences();
@@ -24,6 +26,6 @@ export function loadPreferences(): Record<string, unknown> {
 
         return JSON.parse(buffer.toString());
     } else {
-        return {}; // initial preference value
+        return {}; // placeholder preference value
     }
 }

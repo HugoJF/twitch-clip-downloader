@@ -4,7 +4,9 @@ import {bootLogger as bootLocalLogger}                           from './logger'
 import {ensureConfigsAreLoaded}                                  from './environment';
 import {VideosDownloaderUi}                                      from './videos-downloader-ui';
 import {ClipsDownloaderUi}                                       from './clips-downloader-ui';
-import {channelPrompt}                                           from './prompts/channel-prompt';
+import {channelPrompt}                                           from './channel-prompt';
+
+export type Stringable = string | number | boolean;
 
 async function fetchUserId(name: string) {
     const user = await instance().api().users({login: name});

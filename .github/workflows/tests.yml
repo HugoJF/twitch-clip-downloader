@@ -22,11 +22,11 @@ jobs:
       - name: Build
         run: npm run b
 
-      - name: Copy .env file
+      - name: Copy .prompt file
         uses: canastro/copy-file-action@master
         with:
-          source: '.env.actions'
-          target: '.env'
+          source: '.prompt.actions'
+          target: '.prompt'
 
       - name: Test
         run: npm run ci
