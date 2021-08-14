@@ -2,10 +2,15 @@
     "name": "clips-downloader",
     "version": "1.0.0",
     "description": "",
-    "main": "src/index.ts",
+    "main": "lib/index.ts",
+    "types": "lib/index.d.ts",
+    "bin": {
+        "tcd": "./bin/run"
+    },
+    "bugs": "https://github.com/HugoJF/twitch-clip-downloader/issues",
     "scripts": {
         "start": "npm run build && npm run go",
-        "go": "node build/index.js",
+        "run": "./bin/run",
         "lint": "eslint src/**",
         "build": "tsc",
         "b": "npm run build",
@@ -15,25 +20,36 @@
         "t": "npm run test",
         "test-watch": "jest build --watch",
         "tw": "npm run test-watch",
-        "ci": "jest build --env=node --ci --coverage --collectCoverageFrom=build/**/*.js"
+        "ci": "jest build --env=node --ci --coverage --collectCoverageFrom=build/**/*.js",
+        "postpack": "rm -f oclif.manifest.json",
+        "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@oclif/command": "^1.8.0",
+        "@oclif/config": "^1.17.0",
+        "@oclif/plugin-help": "^3.2.3",
         "axios": "^0.21.1",
         "chalk": "^4.1.2",
         "cli-progress": "^3.9.0",
         "date-fns": "^2.23.0",
+        "dotenv": "^10.0.0",
         "eslint": "^7.32.0",
         "fluent-ffmpeg": "^2.1.2",
         "ora": "^5.4.1",
         "prompts": "^2.4.1",
         "tiny-async-pool": "^1.2.0",
+        "tslib": "^1.14.1",
         "twitch-tools": "^0.3.1",
         "winston": "^3.3.3",
         "youtube-dl-wrap": "latest"
     },
     "devDependencies": {
+        "@oclif/dev-cli": "^1.26.0",
+        "globby": "^10.0.2",
+        "ts-node": "^8.10.2",
+        "typescript": "^4.3.5",
         "@types/cli-progress": "^3.9.2",
         "@types/fluent-ffmpeg": "^2.1.18",
         "@types/jest": "^26.0.24",
@@ -44,7 +60,22 @@
         "@typescript-eslint/eslint-plugin": "^4.29.0",
         "@typescript-eslint/parser": "^4.29.0",
         "jest": "^26.6.3",
-        "node-notifier": "^10.0.0",
-        "typescript": "^4.3.5"
+        "node-notifier": "^10.0.0"
+    },
+    "engines": {
+        "node": ">=8.0.0"
+    },
+    "files": [
+        "/bin",
+        "/lib",
+        "/npm-shrinkwrap.json",
+        "/oclif.manifest.json"
+    ],
+    "oclif": {
+        "commands": "./lib/commands",
+        "bin": "tcd",
+        "plugins": [
+            "@oclif/plugin-help"
+        ]
     }
 }

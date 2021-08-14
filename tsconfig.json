@@ -3,7 +3,8 @@
         "src/**/*"
     ],
     "compilerOptions": {
-        "outDir": "build",
+        "rootDir": "src",
+        "outDir": "lib",
         "target": "es2018",
         "lib": [
             "es6",
