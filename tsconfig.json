@@ -19,6 +19,7 @@
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "sourceMap": true,
+        "noImplicitAny": false,
         "isolatedModules": false
     }
 }

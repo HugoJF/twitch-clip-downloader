@@ -51,7 +51,7 @@ export class Prompt {
     path(options: PathOptions = {}): Prompt {
         this.pathOptions = options;
         this.options.type = 'text';
-        this.options.validate = this.validatePath;
+        this.options.validate = this.validatePath.bind(this);
 
         return this;
     }
