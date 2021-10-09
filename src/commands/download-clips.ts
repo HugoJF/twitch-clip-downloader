@@ -1,15 +1,15 @@
-import {Command, flags} from '@oclif/command';
-import {bootLogger, Clip, ClipsDownloader, convert, Dict, instance, loadInstance, round} from 'twitch-tools';
+import {flags} from '@oclif/command';
+import {Clip, ClipsDownloader, convert, Dict, instance, round} from 'twitch-tools';
 import ora from 'ora';
-import cliProgress from 'cli-progress';
-import {bootLogger as bootLocalLogger, logger} from '../../src2/logger';
-import {ensureConfigsAreLoaded} from '../../src2/environment';
+import {Presets, SingleBar} from 'cli-progress';
+import {logger} from '../../src2/logger';
+import {BaseCommand} from '../bases/base';
 
-export default class DownloadClips extends Command {
+export default class DownloadClips extends BaseCommand {
     private downloader!: ClipsDownloader;
 
     private apiSpinner!: ora.Ora;
-    private downloadBar!: cliProgress.SingleBar;
+    private downloadBar!: SingleBar;
 
     static description = 'downloads clips from channel name';
 
@@ -89,13 +89,6 @@ export default class DownloadClips extends Command {
     async run() {
         const {args: {channel}, flags: {workers}} = this.parse(DownloadClips);
 
-        await ensureConfigsAreLoaded();
-
-        bootLogger(process.env.DEBUG === 'true');
-        bootLocalLogger(process.env.DEBUG === 'DEBUG');
-
-        await loadInstance(process.env.CLIENT_ID ?? '', process.env.CLIENT_SECRET ?? '');
-
         const id = await this.fetchUserId(channel);
 
         this.downloader = new ClipsDownloader(channel, id, {
@@ -103,9 +96,9 @@ export default class DownloadClips extends Command {
         });
 
         this.apiSpinner = ora('Paginating API, please wait...');
-        this.downloadBar = new cliProgress.SingleBar({
+        this.downloadBar = new SingleBar({
             format: 'Downloading clips [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} clips'
-        }, cliProgress.Presets.shades_classic);
+        }, Presets.shades_classic);
 
         await this.start();
     }
