@@ -30,15 +30,24 @@ export default class DownloadClips extends BaseCommand {
             parallelDownloads: workers,
         });
 
-        this.apiSpinner = ora('Paginating API, please wait...');
+        this.apiSpinner = ora('Downloading chat, please wait...');
         this.downloadBar = new cliProgress.SingleBar({
             format: 'Downloading clips [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} fragments'
         }, cliProgress.Presets.shades_classic);
 
-        this.downloader.on('fragments-fetched', count => this.downloadBar.start(count, 0));
+        await this.downloader.resolveVideo();
+
+        let pages = 0;
+        this.apiSpinner.start();
+        this.downloader.on('page-downloaded', () => this.apiSpinner.text = `Downloading chat, ${++pages} pages downloaded, please wait...`);
+        await this.downloader.downloadChat();
+        this.apiSpinner.stop();
+
+        this.downloader.on('fragments-fetched', count => this.downloadBar.start(count, 0, {speed: 0}));
         this.downloader.on('fragment-downloaded', () => this.downloadBar.increment());
         this.downloader.on('speed', speed => this.downloadBar.update({speed: round(convert(speed).Bps.to.Mbps(), 2)}));
 
         await this.downloader.download();
+        this.downloadBar.stop();
     }
 }
