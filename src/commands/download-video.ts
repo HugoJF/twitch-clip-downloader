@@ -1,5 +1,5 @@
 import {flags} from '@oclif/command';
-import {instance, Video, VideoDownloader} from 'twitch-tools';
+import {convert, round, VideoDownloader} from 'twitch-tools';
 import ora from 'ora';
 import cliProgress from 'cli-progress';
 import {BaseCommand} from '../bases/base';
@@ -23,26 +23,21 @@ export default class DownloadClips extends BaseCommand {
 
     static args = [{name: 'id'}];
 
-    fetchVideoById(id: string): Video {
-        // @ts-ignore FIXME
-        const videos = instance().api().videos({id});
-
-        return videos[0];
-    }
-
     async run() {
-        const {args: {channel}, flags: {workers}} = this.parse(DownloadClips);
+        const {args: {id}, flags: {workers}} = this.parse(DownloadClips);
 
-        const video = this.fetchVideoById(channel);
-
-        this.downloader = new VideoDownloader(video, {
+        this.downloader = new VideoDownloader(id, {
             parallelDownloads: workers,
         });
 
         this.apiSpinner = ora('Paginating API, please wait...');
         this.downloadBar = new cliProgress.SingleBar({
-            format: 'Downloading clips [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} clips'
+            format: 'Downloading clips [{bar}] | {percentage}% | Speed: {speed}Mbps | ETA: {eta}s | {value}/{total} fragments'
         }, cliProgress.Presets.shades_classic);
+
+        this.downloader.on('fragments-fetched', count => this.downloadBar.start(count, 0));
+        this.downloader.on('fragment-downloaded', () => this.downloadBar.increment());
+        this.downloader.on('speed', speed => this.downloadBar.update({speed: round(convert(speed).Bps.to.Mbps(), 2)}));
 
         await this.downloader.download();
     }
